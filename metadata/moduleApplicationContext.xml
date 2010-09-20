@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- Beans to add to the current Application context definition -->
+  
+<beans>	
+    <bean id="phrUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="order" value="1"/>
+    	<property name="mappings">
+            <props>
+	           <prop key="module/@MODULE_ID@/basicmoduleLink.form">basicmoduleFormController</prop>
+			   <prop key="phr/*.htm">phrSpringController</prop>
+			   <prop key="phr/patientDashboard.form">phrPatientDashboardForm</prop>
+			   <prop key="phr/personDashboard.form">phrPersonDashboardForm</prop>
+			   
+			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
+			   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
+	    	</props>
+		</property>
+    </bean>
+	
+    <!-- Controllers -->
+	
+    <bean id="basicmoduleFormController" class="@MODULE_PACKAGE@.web.controller.BasicModuleFormController">
+		<property name="commandName"><value>thePatientList</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/basicmoduleForm</value></property>
+		<property name="successView"><value>basicmoduleLink.form</value></property>
+    </bean>
+
+	<bean id="phrSpringController" class="@MODULE_PACKAGE@.web.controller.SpringController" />
+	
+    <!-- Form Controllers -->
+	<bean id="phrPatientDashboardForm"
+		class="org.openmrs.module.personalhr.web.controller.PatientDashboardController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>patient</value></property>
+		<property name="formView"><value>/module/personalhr/view/patientDashboardForm</value></property>
+		<property name="successView"><value>patientDashboard.form</value></property>
+	</bean>
+	<bean id="phrPersonDashboardForm"
+		class="org.openmrs.web.controller.person.PersonDashboardController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>person</value></property>
+		<property name="formView"><value>/module/personalhr/view/personDashboardForm</value></property>
+		<property name="successView"><value>personDashboard.form</value></property>
+	</bean>
+
+	
+    <!-- Portlet Controllers -->
+	<bean id="phrPortletController" class="org.openmrs.module.personalhr.web.controller.PortletController" />
+	<bean id="phrPersonRelationshipsPortletController" class="org.openmrs.module.personalhr.web.controller.PersonRelationshipsPortletController" />
+	    
+</beans>
