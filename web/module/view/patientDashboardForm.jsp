@@ -113,6 +113,7 @@
 		<li><a id="patientFollowTestsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.followTests"/></a></li>
 		<li><a id="patientJournalTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.journal"/></a></li>
 		<li><a id="patientMessagingTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.messaging"/></a></li>
+		<li><a id="patientCommunitiesTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.communities"/></a></li>
 	</ul>
 </div>
 
@@ -153,6 +154,9 @@
 		</div>		
 		<div id="patientDemographics" style="display:none;">
 			<personalhr:portlet url="../module/personalhr/portlets/patientDemographics" id="patientDashboardDemographics" patientId="${patient.patientId}"/>
+		</div>
+		<div id="patientCommunities" style="display:none;">
+			<personalhr:portlet url="../module/personalhr/portlets/patientCommunities" id="patientDashboardCommunities" patientId="${patient.patientId}"/>
 		</div>
 	
 </div>

@@ -36,22 +36,25 @@ public class PersonalhrUtil {
 	    OpenmrsConstants.PRIV_VIEW_IDENTIFIER_TYPES,
 	    OpenmrsConstants.PRIV_VIEW_OBS,
 	    OpenmrsConstants.PRIV_VIEW_ORDERS,
-	    OpenmrsConstants.PRIV_VIEW_PATIENTS
+	    OpenmrsConstants.PRIV_VIEW_PATIENTS,
+	    OpenmrsConstants.PRIV_VIEW_USERS,
+	    OpenmrsConstants.PRIV_ADD_ENCOUNTERS,
+	    OpenmrsConstants.PRIV_EDIT_ENCOUNTERS
 	};
 	
 	public static void addTemporayPrivileges() {
 		//Add temporary privilege
 		for(String priv : temporaryPrivileges) {
-			log.debug("Adding tempary privilege: " + priv);
+			//log.debug("Adding tempary privilege: " + priv);
 			Context.addProxyPrivilege(priv);
 		}
 	}
 
 	public static void removeTemporayPrivileges() {
-		//Add temporary privilege
+		//Remove temporary privilege
 		for(String priv : temporaryPrivileges) {
-			log.debug("Adding tempary privilege: " + priv);
-			Context.removeProxyPrivilege(priv);
+			//log.debug("Removing tempary privilege: " + priv);
+			//Context.removeProxyPrivilege(priv);
 		}
 	}	
 				

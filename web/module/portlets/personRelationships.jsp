@@ -81,6 +81,12 @@
 			str += ' <input type="button" value="<spring:message code="personalhr.shareJournal" javaScriptEscape="true"/>" onClick="handleShareJournal(' + relId + ')"/>';
 			str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'share_journal_' + relId + '\'); hideDiv(\'shareJournalRel' + relId + '\')"/>';
 			str += '</span>';
+			str += '&nbsp;<a id="share_everything_' + relId + '" href="javascript:showDiv(\'shareEverythingRel' + relId + '\'); hideDiv(\'share_everything_' + relId + '\');"><spring:message code="personalhr.shareEverythingLink" javaScriptEscape="true" /></a>';
+			str += ' <span style="display: none; border: 1px black dashed; margin: 2px" id="shareJEverythingRel' + relId + '">';
+			str += ' <spring:message code="personalhr.shareEmailQuestion" javaScriptEscape="true"/>: <input type="text" id="share_email_' + relId + '"/>';
+			str += ' <input type="button" value="<spring:message code="personalhr.shareEverything" javaScriptEscape="true"/>" onClick="handleShareEverything(' + relId + ')"/>';
+			str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'share_everything_' + relId + '\'); hideDiv(\'shareEverythingRel' + relId + '\')"/>';
+			str += '</span>';
 			dwr.util.addOptions('new_relationships', [ str ], {escapeHtml: false});
 		}
 	}

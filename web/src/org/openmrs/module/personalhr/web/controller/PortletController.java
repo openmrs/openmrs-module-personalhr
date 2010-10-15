@@ -142,6 +142,7 @@ public class PortletController implements Controller {
 				}
 			}
 			
+			log.debug("PortletController.handleRequest: uri=" + uri);
 			if (uri != null) {
 				long timeAtStart = System.currentTimeMillis();
 				portletPath = uri.toString();
@@ -426,7 +427,7 @@ public class PortletController implements Controller {
 				log.debug(portletPath + " took " + (System.currentTimeMillis() - timeAtStart) + " ms");
 			}
 		} finally {
-			PersonalhrUtil.removeTemporayPrivileges();			
+			//PersonalhrUtil.removeTemporayPrivileges();			
 		}
 		return new ModelAndView(portletPath, "model", model);
 		
@@ -438,6 +439,7 @@ public class PortletController implements Controller {
 	 * could be null when this method is called.
 	 */
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
+		log.debug("Entering PortletController.populateModel");
 	}
 	
 }

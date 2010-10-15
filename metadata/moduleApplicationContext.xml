@@ -14,8 +14,9 @@
 			   <prop key="phr/personDashboard.form">phrPersonDashboardForm</prop>
 			   
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
-			   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
-	    	</props>
+			   <prop key="**/personalhr/portlets/patientTreatmentSummary.portlet">patientTreatmentSummaryPortletController</prop>
+	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
+			</props>
 		</property>
     </bean>
 	
@@ -28,6 +29,7 @@
     </bean>
 
 	<bean id="phrSpringController" class="@MODULE_PACKAGE@.web.controller.SpringController" />
+	<bean id="patientTreatmentSummaryPortletController" class="@MODULE_PACKAGE@.web.controller.PatientTreatmentSummaryPortletController" />
 	
     <!-- Form Controllers -->
 	<bean id="phrPatientDashboardForm"
@@ -48,6 +50,5 @@
 	
     <!-- Portlet Controllers -->
 	<bean id="phrPortletController" class="org.openmrs.module.personalhr.web.controller.PortletController" />
-	<bean id="phrPersonRelationshipsPortletController" class="org.openmrs.module.personalhr.web.controller.PersonRelationshipsPortletController" />
-	    
+	<bean id="phrPersonRelationshipsPortletController" class="org.openmrs.module.personalhr.web.controller.PersonRelationshipsPortletController" />	    
 </beans>
