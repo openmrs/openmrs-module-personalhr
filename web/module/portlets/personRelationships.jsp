@@ -68,13 +68,13 @@
 			str += ' <spring:message code="general.voidReasonQuestion" javaScriptEscape="true"/>: <input type="text" id="void_reason_' + relId + '"/>';
 			str += ' <input type="button" value="<spring:message code="general.delete" javaScriptEscape="true"/>" onClick="handleDeleteRelationship(' + relId + ')"/>';
 			str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'del_rel_' + relId + '\'); hideDiv(\'voidRel' + relId + '\')"/>';
-			str += '</span>'
+			str += '</span>';
 			str += '&nbsp;<a id="share_profile_' + relId + '" href="javascript:showDiv(\'shareProfileRel' + relId + '\'); hideDiv(\'share_profile_' + relId + '\');"><spring:message code="personalhr.shareProfileLink" javaScriptEscape="true" /></a>';
 			str += ' <span style="display: none; border: 1px black dashed; margin: 2px" id="shareProfileRel' + relId + '">';
 			str += ' <spring:message code="personalhr.shareEmailQuestion" javaScriptEscape="true"/>: <input type="text" id="share_email_' + relId + '"/>';
 			str += ' <input type="button" value="<spring:message code="personalhr.shareProfile" javaScriptEscape="true"/>" onClick="handleShareProfile(' + relId + ')"/>';
 			str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'share_profile_' + relId + '\'); hideDiv(\'shareProfileRel' + relId + '\')"/>';
-			str += '</span>'
+			str += '</span>';
 			str += '&nbsp;<a id="share_journal_' + relId + '" href="javascript:showDiv(\'shareJournalRel' + relId + '\'); hideDiv(\'share_journal_' + relId + '\');"><spring:message code="personalhr.shareJournalLink" javaScriptEscape="true" /></a>';
 			str += ' <span style="display: none; border: 1px black dashed; margin: 2px" id="shareJournalRel' + relId + '">';
 			str += ' <spring:message code="personalhr.shareEmailQuestion" javaScriptEscape="true"/>: <input type="text" id="share_email_' + relId + '"/>';

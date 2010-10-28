@@ -1,7 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<div id="resources">
- 
+<div id="communities_div">
 <h3>More information</h3>
 <ul>
 <li><a href="http://www.cancer.net/patient/Survivorship" onclick="popblank('');" target="blank">Survivorship</a> (Cancer.Net)</li>

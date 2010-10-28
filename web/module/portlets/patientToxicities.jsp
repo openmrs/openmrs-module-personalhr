@@ -1,18 +1,13 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<c:set var="anyExtension" value="false" />
-<openmrs:authentication>
-	<c:if test="${authenticatedUser != null}">
-		<openmrs:extensionPoint pointId="personalhr.portlets.toxicities" type="html" varStatus="status">
-			<c:set var="anyExtension" value="true" />
-			<openmrs:portlet url="${extension.portletUrl}" parameters="${extension.portletParameters}" moduleId="${extension.moduleId}" />
-		</openmrs:extensionPoint>
-	</c:if>
-</openmrs:authentication>
-
-<c:if test="${not anyExtension}">
-<center>
-	<openmrs:portlet url="../module/personalhr/portlets/blank"/>
-</center>
-</c:if>
-
-<br />
+<div id="toxicities_div">
+<dl>
+<dt><h3>Risk of second cancer</h3></dt>
+<dd>As a survivor, your chance of developing a second cancer is about twice that of a person of the same sex and age who has never had cancer. This may be a different type of cancer altogether, or a cancer in the same site as before, that is not related to the first cancer. While this sounds scary, it is important to be aware of this risk and be proactive in your own healthcare. It is not well understood why survivors have this risk, but having follow up care, cancer screening and a healthy lifestyle can decrease your risk. In some cases, a treatment (types of chemotherapy or radiation therapy) increases the risk of another cancer. These are called secondary cancers because they develop as a result of therapy. If you are at risk for a secondary cancer, it will be discussed further in your plan. <br/><br/>
+Because of this risk, survivors are encouraged to adapt a healthy lifestyle of exercise, avoidance of tobacco use and alcohol only in moderation ( less than two drinks a day for men and one for women ), maintaining a healthy weight and eating a health conscious diet, including lots of fruits and vegetables. The American Institute for Cancer Research has developed nutrition guidelines for cancer survivors to address questions related to diet. Practice safe sun habits by using sunscreen, wearing protective clothing and not using tanning booths. Survivors should follow recommended guidelines for cancer screening, with earlier screening if they are in a high risk category (i.e. radiation to an area, genetic syndrome).
+</dd>
+<dt><h3>Fatigue</h3></dt>
+<dd>Fatigue is the most common side effect of cancer treatment. What many people do not know is that this feeling of overwhelming physical, mental and emotional exhaustion can last for months to years after therapy ends. Soon after treatment is complete, friends, family and co-workers often expect the survivor to be back to doing the things they did before treatment, with the same vigor. Many survivors report significant fatigue years after completing therapy, which can be extremely frustrating for the survivor and those around them. There have been many studies examining fatigue and ways to combat it during treatment, but there is little to provide guidance for dealing with fatigue after therapy. It is important to remember that fatigue can be caused by many things and, particularly if fatigue is worsening or new, it should be discussed with your healthcare team to rule out treatable causes. <br/><br/>
+Research has shown that light exercise can aid in relieving fatigue during treatment, so it is possible that this could help post treatment. Talking with other survivors may help in finding ways to deal with fatigue. Most importantly, you should understand it is normal and you will need to give your body time to slowly return to your former energy levels. With a lack of available interventions proven to relieve fatigue, survivors may need to learn to work around it in a sense. A wise survivor once dubbed herself the "master of fatigue" because, she stated, "I had learned how to outsmart it". By thinking of her energy as a full bowl of candy each morning, and each task a certain number of candies. She only had so many candies each day, so tasks needed to be prioritized and balanced with the amount of candies left in her bowl. By learning to manage tasks, group errands, make lists, prioritize and delegate, you can, to an extent, outsmart your fatigue. 
+</dd>
+</dl> 
+</div>

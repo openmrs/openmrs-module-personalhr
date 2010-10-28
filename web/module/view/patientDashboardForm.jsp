@@ -122,6 +122,31 @@
 	<openmrs:hasPhrPrivilege privilege="PHR - View Overview Section">
 	</openmrs:hasPhrPrivilege>
 	--%>
+		<div id="patientDemographics" style="display:none;">
+			
+			<personalhr:portlet url="../module/personalhr/portlets/patientDemographics" id="patientDashboardFollowTests" patientId="${patient.patientId}"/>
+			
+		</div>
+		<div id="patientCommunities" style="display:none;">
+			
+			<personalhr:portlet url="../module/personalhr/portlets/patientCommunities" id="patientDashboardFollowTests" patientId="${patient.patientId}"/>
+			
+		</div>
+		<div id="patientMessaging" style="display:none;">
+			
+			<personalhr:portlet url="../module/personalhr/portlets/patientMessaging" id="patientDashboardFollowTests" patientId="${patient.patientId}"/>
+			
+		</div>
+		<div id="patientToxicities" style="display:none;">
+			
+			<personalhr:portlet url="../module/personalhr/portlets/patientToxicities" id="patientDashboardFollowTests" patientId="${patient.patientId}"/>
+			
+		</div>
+		<div id="patientJournal" style="display:none;">
+			
+			<personalhr:portlet url="../module/personalhr/portlets/patientJournal" id="patientDashboardFollowTests" patientId="${patient.patientId}"/>
+			
+		</div>
 		<div id="patientRelationships" style="display:none;">
 			
 			<personalhr:portlet url="../module/personalhr/portlets/patientRelationships" id="patientDashboardRelationships" patientId="${patient.patientId}"/>
@@ -136,27 +161,6 @@
 			
 			<personalhr:portlet url="../module/personalhr/portlets/patientTreatmentSummary" id="patientDashboardTreatmentSummary" patientId="${patient.patientId}"/>
 			
-		</div>
-		<div id="patientJournal" style="display:none;">
-			
-			<personalhr:portlet url="../module/personalhr/portlets/patientJournal" id="patientDashboardJournal" patientId="${patient.patientId}"/>
-			
-		</div>
-		<div id="patientToxicities" style="display:none;">
-			
-			<personalhr:portlet url="../module/personalhr/portlets/patientToxicities" id="patientDashboardToxicities" patientId="${patient.patientId}"/>
-			
-		</div>
-		<div id="patientMessaging" style="display:none;">
-			
-			<personalhr:portlet url="../module/personalhr/portlets/patientMessaging" id="patientDashboardMessaging" patientId="${patient.patientId}"/>
-			
-		</div>		
-		<div id="patientDemographics" style="display:none;">
-			<personalhr:portlet url="../module/personalhr/portlets/patientDemographics" id="patientDashboardDemographics" patientId="${patient.patientId}"/>
-		</div>
-		<div id="patientCommunities" style="display:none;">
-			<personalhr:portlet url="../module/personalhr/portlets/patientCommunities" id="patientDashboardCommunities" patientId="${patient.patientId}"/>
 		</div>
 	
 </div>

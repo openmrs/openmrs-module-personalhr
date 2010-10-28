@@ -8,7 +8,6 @@
 		</openmrs:extensionPoint>
 	</c:if>
 </openmrs:authentication>
-
 <c:if test="${not anyExtension}">
 <center>
 	<openmrs:portlet url="../module/personalhr/portlets/blank"/>

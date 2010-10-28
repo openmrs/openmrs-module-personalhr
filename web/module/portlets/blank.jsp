@@ -1,3 +1,3 @@
-<h3>
+<div id="blank_div">
 Please extend this module. <br>
-</h3>
+</div>
