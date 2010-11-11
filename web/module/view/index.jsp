@@ -15,7 +15,7 @@
 
 <c:if test="${not anyExtension}">
 <center>
-<img src="${pageContext.request.contextPath}<spring:theme code="personalhr.image_logo_large"/>" alt='<spring:message code="personalhr.title"/>' title='<spring:message code="personalhr.title"/>'/>
+<img src="${pageContext.request.contextPath}<spring:theme code="image.logo.large"/>" alt='<spring:message code="personalhr.title"/>' title='<spring:message code="personalhr.title"/>'/>
 	
 	<br/><br/><br/>
 	

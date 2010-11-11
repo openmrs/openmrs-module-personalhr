@@ -1,18 +1,12 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 <%-- 
 <openmrs:phrRequire privilege="PHR - View Patient" otherwise="/phr/login.htm" redirect="/module/personalhr/view/patientDashboard.form" />
+extensionPoint
+  org.openmrs.patientDashboard --> org.openmrs.module.personalhr.restrictedUserDashboard
+patientRelationshipsTab
+  patientRelationships --> restrictedUserRelationships
 --%>
 
-<c:set var="OPENMRS_VIEWING_PATIENT_ID" scope="request" value="${patient.patientId}"/>
-<openmrs:globalProperty var="enablePatientName" key="dashboard.showPatientName" defaultValue="false"/>
-
-<c:if test="${enablePatientName}">
-	<c:set var="patientName" value="${patient.personName.fullName} (${patient.patientIdentifier})"/>
-	<spring:message var="pageTitle" text="${patientName}" scope="page"/>
-</c:if>
-<c:if test="${!enablePatientName}">
-	<spring:message var="pageTitle" code="patientDashboard.title" scope="page"/>
-</c:if>
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 
 <script type="text/javascript">
@@ -71,42 +65,13 @@
     }
 </script>
 
-<c:if test="${patient.voided}">
-	<div id="patientDashboardVoided" class="retiredMessage">
-		<div><spring:message code="Patient.voidedMessage"/></div>
-	</div>
-</c:if>
-
-<c:if test="${patient.dead}">
-	<div id="patientDashboardDeceased" class="retiredMessage">
-		<div>
-			<spring:message code="Patient.patientDeceased"/>
-			<c:if test="${not empty patient.deathDate}">
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<spring:message code="Person.deathDate"/>: <openmrs:formatDate date="${patient.deathDate}"/>
-			</c:if>
-			<c:if test="${not empty patient.causeOfDeath}">
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<spring:message code="Person.causeOfDeath"/>: <openmrs:format concept="${patient.causeOfDeath}"/>
-				<c:if test="${not empty causeOfDeathOther}"> 
-					  &nbsp;:&nbsp;<c:out value="${causeOfDeathOther}"></c:out>
-				</c:if>
-			</c:if>
-		</div>
-	</div>
-</c:if>
-
-<personalhr:portlet url="../module/personalhr/portlets/patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
-
-<openmrs:globalProperty var="enableFormEntryTab" key="FormEntry.enableDashboardTab" defaultValue="true"/>
-
-<div id="patientTabs${patientVariation}">
+<div id="patientTabs">
 	<ul>
 		<%-- 
 		<openmrs:hasPhrPrivilege privilege="PHR - View Overview Section">
 		</openmrs:hasPhrPrivilege>
 		--%>
-		<li><a id="patientRelationshipsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.relationships"/></a></li>
+		<li><a id="restrictedUserRelationshipsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.relationships"/></a></li>
 
 		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.patientDashboardTab" type="html">
 			<%-- %>openmrs:hasPrivilege privilege="${extension.requiredPrivilege}"--%>
@@ -123,9 +88,9 @@
 	<openmrs:hasPhrPrivilege privilege="PHR - View Overview Section">
 	</openmrs:hasPhrPrivilege>
 	--%>
-		<div id="patientRelationships" style="display:none;">
+		<div id="restrictedUserRelationships" style="display:none;">
 			
-			<personalhr:portlet url="../module/personalhr/portlets/patientRelationships" id="patientDashboardRelationships" patientId="${patient.patientId}"/>
+			<personalhr:portlet url="../module/personalhr/portlets/restrictedUserRelationships" id="restrictedUserDashboardRelationships"/>
 			
 		</div>
 		
@@ -138,7 +103,7 @@
 						</c:when>
 						<c:otherwise>
 						
-							<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.${extension.tabId}TabHeader" type="html" parameters="patientId=${patient.patientId}" />
+							<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.restrictedUserDashboard.${extension.tabId}TabHeader" type="html" parameters="patientId=${patient.patientId}" />
 							<openmrs:portlet url="${extension.portletUrl}" id="${extension.tabId}" moduleId="${extension.moduleId}"/>
 							
 						</c:otherwise>

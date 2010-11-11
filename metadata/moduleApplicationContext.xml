@@ -8,10 +8,10 @@
 		<property name="order" value="1"/>
     	<property name="mappings">
             <props>
-	           <prop key="module/@MODULE_ID@/basicmoduleLink.form">basicmoduleFormController</prop>
 			   <prop key="phr/*.htm">phrSpringController</prop>
 			   <prop key="phr/patientDashboard.form">phrPatientDashboardForm</prop>
 			   <prop key="phr/personDashboard.form">phrPersonDashboardForm</prop>
+			   <prop key="phr/restrictedUserDashboard.form">phrRestrictedUserDashboardForm</prop>
 			   
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 			   <prop key="**/personalhr/portlets/patientTreatmentSummary.portlet">patientTreatmentSummaryPortletController</prop>
@@ -22,12 +22,6 @@
 	
     <!-- Controllers -->
 	
-    <bean id="basicmoduleFormController" class="@MODULE_PACKAGE@.web.controller.BasicModuleFormController">
-		<property name="commandName"><value>thePatientList</value></property>
-		<property name="formView"><value>/module/@MODULE_ID@/basicmoduleForm</value></property>
-		<property name="successView"><value>basicmoduleLink.form</value></property>
-    </bean>
-
 	<bean id="phrSpringController" class="@MODULE_PACKAGE@.web.controller.SpringController" />
 	<bean id="patientTreatmentSummaryPortletController" class="@MODULE_PACKAGE@.web.controller.PatientTreatmentSummaryPortletController" />
 	
@@ -40,10 +34,17 @@
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
 	<bean id="phrPersonDashboardForm"
-		class="org.openmrs.web.controller.person.PersonDashboardController">
+		class="org.openmrs.module.personalhr.web.controller.PersonDashboardController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>person</value></property>
 		<property name="formView"><value>/module/personalhr/view/personDashboardForm</value></property>
+		<property name="successView"><value>personDashboard.form</value></property>
+	</bean>
+	<bean id="phrRestrictedUserDashboardForm"
+		class="org.openmrs.module.personalhr.web.controller.PersonDashboardController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>person</value></property>
+		<property name="formView"><value>/module/personalhr/view/restrictedUserDashboardForm</value></property>
 		<property name="successView"><value>personDashboard.form</value></property>
 	</bean>
 
