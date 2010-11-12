@@ -44,7 +44,7 @@ import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.cancertoolkit.PersonalhrUtil;
+import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;

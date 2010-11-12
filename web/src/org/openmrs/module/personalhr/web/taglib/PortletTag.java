@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.taglibs.standard.tag.common.core.ImportSupport;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.module.cancertoolkit.PersonalhrUtil;
+import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 public class PortletTag extends ImportSupport {
