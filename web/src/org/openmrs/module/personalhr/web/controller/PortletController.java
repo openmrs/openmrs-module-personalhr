@@ -427,7 +427,7 @@ public class PortletController implements Controller {
 				log.debug(portletPath + " took " + (System.currentTimeMillis() - timeAtStart) + " ms");
 			}
 		} finally {
-			//PersonalhrUtil.removeTemporayPrivileges();			
+			PersonalhrUtil.removeTemporayPrivileges();			
 		}
 		return new ModelAndView(portletPath, "model", model);
 		

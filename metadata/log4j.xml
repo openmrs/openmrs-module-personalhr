@@ -15,10 +15,4 @@
 		<appender-ref ref="CONSOLE" />
  	</logger>
  	
- 	<!-- Hide unnecessary errors logged by Hibernate during unit testing -->
-	<logger name="org.hibernate.tool.hbm2ddl.SchemaExport">
-		<level value="FATAL" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-	
 </log4j:configuration>

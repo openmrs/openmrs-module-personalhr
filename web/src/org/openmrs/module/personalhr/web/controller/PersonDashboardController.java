@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
@@ -37,18 +38,17 @@ public class PersonDashboardController extends SimpleFormController {
 			return new Person();
 		}
 		else {
-			//Add temporary privilege
-			if(!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_PERSONS)) {
-				log.debug("Adding privilege: " + OpenmrsConstants.PRIV_ADD_PERSONS);
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_ADD_PERSONS);
-			}
+            //Add temporary privilege
+            PersonalhrUtil.addTemporayPrivileges();
 
-			Person person = Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("personId")));			
+			Person person = null;
+			String personId = request.getParameter("personId");
+			if(personId!= null && personId.trim().length()>0) {
+			    person = Context.getPersonService().getPerson(Integer.valueOf(personId));			
+			} else {
+			    person = Context.getAuthenticatedUser().getPerson();
+			}
 			
-			//Remove temporary privilege
-			log.debug("Removing privilege: " + OpenmrsConstants.PRIV_ADD_PATIENTS);
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
-		
 			return person;
 		}
 	}

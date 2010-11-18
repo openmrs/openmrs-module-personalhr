@@ -14,7 +14,6 @@
 			   <prop key="phr/restrictedUserDashboard.form">phrRestrictedUserDashboardForm</prop>
 			   
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
-			   <prop key="**/personalhr/portlets/patientTreatmentSummary.portlet">patientTreatmentSummaryPortletController</prop>
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
 			</props>
 		</property>
@@ -23,7 +22,6 @@
     <!-- Controllers -->
 	
 	<bean id="phrSpringController" class="@MODULE_PACKAGE@.web.controller.SpringController" />
-	<bean id="patientTreatmentSummaryPortletController" class="@MODULE_PACKAGE@.web.controller.PatientTreatmentSummaryPortletController" />
 	
     <!-- Form Controllers -->
 	<bean id="phrPatientDashboardForm"

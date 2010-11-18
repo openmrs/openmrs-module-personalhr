@@ -73,7 +73,7 @@ patientRelationshipsTab
 		--%>
 		<li><a id="restrictedUserRelationshipsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.relationships"/></a></li>
 
-		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.patientDashboardTab" type="html">
+		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.restrictedUserDashboardTab" type="html">
 			<%-- %>openmrs:hasPrivilege privilege="${extension.requiredPrivilege}"--%>
 				<li>
 					<a id="${extension.tabId}Tab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="${extension.tabName}"/></a>
@@ -94,7 +94,7 @@ patientRelationshipsTab
 			
 		</div>
 		
-		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.patientDashboardTab" type="html">
+		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.restrictedUserDashboardTab" type="html">
 			<%--openmrs:hasPrivilege privilege="${extension.requiredPrivilege}"--%>
 				<div id="${extension.tabId}" style="display:none;">
 					<c:choose>
