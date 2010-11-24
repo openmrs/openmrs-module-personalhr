@@ -110,5 +110,34 @@
 		<servlet-class>org.openmrs.module.personalhr.web.servlet.LogoutServlet</servlet-class>
 	</servlet>
 	
+	<!-- PHR Security Filter -->
+	<filter>
+		<filter-name>PhrSecurityFilter</filter-name> 
+		<filter-class>org.openmrs.module.personalhr.web.filter.PhrSecurityFilter</filter-class> 
+		<init-param>
+			<param-name>changePasswordForm</param-name>
+			<param-value>/admin/users/changePassword.form</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excludeURL</param-name>
+			<param-value>changePasswordForm,logout,login,.js,.css,.gif,.jpg,.jpeg,.png,/phr/,/personalhr/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>allowedURL</param-name>
+			<param-value>/module/htmlformentry/htmlFormEntry.form,/findPatient.htm</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>PhrSecurityFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+
+	
+	<!-- hibernate-mapping -->
+	<mappingFiles>
+		personalhr.hbm.xml
+	</mappingFiles>
+	
 </module>
 

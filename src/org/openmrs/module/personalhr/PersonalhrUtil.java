@@ -57,5 +57,32 @@ public class PersonalhrUtil {
 			//Context.removeProxyPrivilege(priv);
 		}
 	}	
+	
+	/**
+	 * Generate a random text token of a given length
+	 * 
+	 * @param n number of characters in this token
+	 * @return generated token
+	 */
+	public static String getRandomToken(int n) {
+	      if(n<=0) {
+	          return null;
+	      }
+	      
+	      char[] token = new char[n];
+	      int c  = 'A';
+	      int  r1 = 0;
+	      for (int i=0; i < n; i++)
+	      {
+	        r1 = (int)(Math.random() * 3);
+	        switch(r1) {
+	          case 0: c = '0' +  (int)(Math.random() * 10); break;
+	          case 1: c = 'a' +  (int)(Math.random() * 26); break;
+	          case 2: c = 'A' +  (int)(Math.random() * 26); break;
+	        }
+	        token[i] = (char)c;
+	      }
+	      return new String(token);
+	}
 				
 }
