@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.module.personalhr.PhrSharingToken;
 import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 import org.hibernate.Criteria;
@@ -62,6 +63,29 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
         if (list.size() >= 1)
             return list;
+        else
+            return null;
+    }
+
+    /**
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingToken(org.openmrs.Patient, org.openmrs.Person, org.openmrs.User)
+     */
+    @Override
+    public PhrSharingToken getSharingToken(Patient requestedPatient, Person requestedPerson, User requestingUser) {
+        Patient pat = requestedPatient;
+        if(pat == null && requestedPerson != null) {
+            //pat = requestedPerson.getPatient();
+        }
+        
+        Person per = requestingUser.getPerson();
+        
+        Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);        
+        crit.add(Restrictions.eq("relatedPerson", per));
+        crit.add(Restrictions.eq("patient", pat));
+        crit.addOrder(Order.desc("dateCreated"));
+        List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
+        if (list.size() >= 1)
+            return list.get(0);
         else
             return null;
     }

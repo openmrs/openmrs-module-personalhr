@@ -32,6 +32,8 @@ public class PhrSharingToken extends BaseOpenmrsMetadata {
     private Date activateDate;
         
     private Date expireDate;
+    
+    private String shareType;
 
     /**
      * @see org.openmrs.OpenmrsObject#getId()
@@ -139,6 +141,21 @@ public class PhrSharingToken extends BaseOpenmrsMetadata {
     
     public void setExpireDate(Date expireDate) {
         this.expireDate = expireDate;
+    }
+
+    /**
+     * Auto generated method comment
+     * 
+     * @return
+     */
+    public String getShareType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    
+    public void setShareType(String shareType) {
+        this.shareType = shareType;
     }
     
  

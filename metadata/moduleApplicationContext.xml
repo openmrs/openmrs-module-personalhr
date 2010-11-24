@@ -18,6 +18,44 @@
 			</props>
 		</property>
     </bean>
+    
+	<!-- Service -->
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.personalhr.PhrSecurityService</value>
+				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager"><ref bean="transactionManager"/></property>
+					<property name="target">
+						<bean class="org.openmrs.module.personalhr.PhrSecurityServiceImpl">
+							<property name="allowedUrlDao">
+								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrAllowedUrlDAO">
+									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+								</bean>
+							</property>	
+							<property name="sharingTokenDao">
+								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrSharingTokenDAO">
+									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+								</bean>
+							</property>	
+							<property name="securityRuleDao">
+								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrSecurityRuleDAO">
+									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+								</bean>
+							</property>	
+						</bean>
+					</property>
+					<property name="preInterceptors">
+						<ref bean="serviceInterceptors"/>  <!--  handles common metadata fields -->
+					</property>
+					<property name="transactionAttributeSource">
+						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+    
 	
     <!-- Controllers -->
 	

@@ -42,11 +42,11 @@ public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<String> getPrivilegeByRole(String role) {
+    public List<PhrSecurityRule> getByRole(String role) {
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSecurityRule.class);
         crit.add(Restrictions.eq("requiredRole", role));
         crit.addOrder(Order.desc("requiredRole"));
-        List<String> list = (List<String>) crit.list();
+        List<PhrSecurityRule> list = (List<PhrSecurityRule>) crit.list();
         if (list.size() >= 1)
             return list;
         else
@@ -54,25 +54,15 @@ public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<String> getRoleByPrivilege(String priv) {
+    public List<PhrSecurityRule> getByPrivilege(String priv) {
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSecurityRule.class);
         crit.add(Restrictions.eq("privilege", priv));
         crit.addOrder(Order.desc("privilege"));
-        List<String> list = (List<String>) crit.list();
+        List<PhrSecurityRule> list = (List<PhrSecurityRule>) crit.list();
         if (list.size() >= 1)
             return list;
         else
             return null;
     }
-
-    /**
-     * @see org.openmrs.module.personalhr.db.PhrSecurityRuleDAO#getRequiedRoleByPrivilege(java.lang.String)
-     */
-    @Override
-    public List<String> getRequiedRoleByPrivilege(String priv) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 
 }

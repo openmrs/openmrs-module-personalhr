@@ -37,7 +37,7 @@ public interface PhrAllowedUrlDAO {
 
     public List<PhrAllowedUrl> getAllPhrAllowedUrls() ;
 
-    public List<String> getRequiedPrivilegeByUrl(String url);
+    public List<PhrAllowedUrl> getByUrl(String url);
     
-    public List<String> getUrlByPrivilege(String priv) ;
+    public List<PhrAllowedUrl> getByPrivilege(String priv) ;
 }

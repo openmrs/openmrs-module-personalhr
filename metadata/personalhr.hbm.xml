@@ -13,6 +13,8 @@
 
 		<property name="sharingToken" type="java.lang.String" column="sharing_token"/>
 	
+		<property name="shareType" type="java.lang.String" column="share_type"/>
+		
 		<many-to-one name="patient" class="org.openmrs.Patient" not-null="true" column="patient_id" />
 		
 		<many-to-one name="relatedPerson" class="org.openmrs.Person" not-null="true" column="relationship_person_id" />

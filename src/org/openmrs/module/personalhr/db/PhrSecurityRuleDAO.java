@@ -37,7 +37,7 @@ public interface PhrSecurityRuleDAO {
 
     public List<PhrSecurityRule> getAllPhrSecurityRules() ;
 
-    public List<String> getRequiedRoleByPrivilege(String priv);
+    public List<PhrSecurityRule> getByPrivilege(String priv);
     
-    public List<String> getPrivilegeByRole(String role) ;
+    public List<PhrSecurityRule> getByRole(String role) ;
 }

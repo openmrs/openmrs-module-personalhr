@@ -17,6 +17,7 @@ import java.util.List;
 import org.hibernate.SessionFactory;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.module.personalhr.PhrSecurityRule;
 import org.openmrs.module.personalhr.PhrSharingToken;
 
@@ -39,4 +40,14 @@ public interface PhrSharingTokenDAO {
     public List<PhrSharingToken> getSharingTokenByPatient(Patient pat);
     
     public List<PhrSharingToken> getSharingTokenByPerson(Person per) ;
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param requestedPatient
+     * @param requestedPerson
+     * @param requestingUser
+     * @return
+     */
+    public PhrSharingToken getSharingToken(Patient requestedPatient, Person requestedPerson, User requestingUser);
 }

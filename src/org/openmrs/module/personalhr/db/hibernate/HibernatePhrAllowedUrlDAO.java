@@ -46,11 +46,11 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<String> getRequiedPrivilegeByUrl(String url) {
+    public List<PhrAllowedUrl> getByUrl(String url) {
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);
         crit.add(Restrictions.eq("allowedUrl", url));
         crit.addOrder(Order.desc("allowedUrl"));
-        List<String> list = (List<String>) crit.list();
+        List<PhrAllowedUrl> list = (List<PhrAllowedUrl>) crit.list();
         if (list.size() >= 1)
             return list;
         else
@@ -58,11 +58,11 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<String> getUrlByPrivilege(String priv) {
+    public List<PhrAllowedUrl> getByPrivilege(String priv) {
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);
         crit.add(Restrictions.eq("privilege", priv));
         crit.addOrder(Order.desc("privilege"));
-        List<String> list = (List<String>) crit.list();
+        List<PhrAllowedUrl> list = (List<PhrAllowedUrl>) crit.list();
         if (list.size() >= 1)
             return list;
         else
