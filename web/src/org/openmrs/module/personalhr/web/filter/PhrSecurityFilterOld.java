@@ -25,10 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Patient;
-import org.openmrs.Person;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.web.user.UserProperties;
 
 /**
@@ -36,17 +33,19 @@ import org.openmrs.web.user.UserProperties;
  * on first/subsequent login. It will intercept any requests made to a *.html or a *.form to force
  * the user to change his password.
  */
-public class PhrSecurityFilter implements Filter {
+public class PhrSecurityFilterOld implements Filter {
     
     protected final Log log = LogFactory.getLog(getClass());
     
     private String excludeURL;
+    private String allowedURL;
     
-    private String loginForm;
+    private String changePasswordForm;
     
     private FilterConfig config;
     
     private String[] excludedURLs;
+    private String[] allowedURLs;
     
     /**
      * @see javax.servlet.Filter#destroy()
@@ -62,22 +61,41 @@ public class PhrSecurityFilter implements Filter {
         String requestURI = ((HttpServletRequest) request).getRequestURI();
         log.debug("Entering PhrSecurityFilter.doFilter: " + requestURI);
         
-        if (Context.isAuthenticated() && shouldCheckAccessToUrl(requestURI)) {
-            Integer patId = PersonalhrUtil.getParamAsInteger("patientId", requestURI); 
-            
-            Patient pat = patId==null? null : Context.getPatientService().getPatient(patId);
-                        
-            Integer perId = PersonalhrUtil.getParamAsInteger("personId", requestURI);
-            Person per = perId==null? null : Context.getPersonService().getPerson(perId);           
-            
-            if(!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
-                config.getServletContext().getRequestDispatcher(loginForm).forward(request, response);
-            }
+        if (Context.isAuthenticated()                
+                && shouldNotAllowAccessToUrl(requestURI)
+                && isPhrUserForNotAllowedUrl(requestURI)) {
+            config.getServletContext().getRequestDispatcher(changePasswordForm).forward(request, response);
         } else {
             chain.doFilter(request, response);
         }
     }
     
+    /**
+     * Auto generated method comment
+     * 
+     * @return
+     */
+    private boolean isPhrUserForNotAllowedUrl(String requestURI) {
+        boolean notAllowed = false;
+        log.debug("Entering PhrSecurityFilter.isPhrUserForNotAllowedUrl: " + requestURI);
+        
+        //is a PHR User or not?
+        if(Context.getAuthenticatedUser().hasRole("PHR Administrator") ||
+           Context.getAuthenticatedUser().hasRole("PHR Patient") ||
+           Context.getAuthenticatedUser().hasRole("PHR Restricted User")) {
+            notAllowed = true;
+            for (String url : allowedURLs) {
+                if (requestURI.contains(url)) {
+                    notAllowed = false;
+                    break;
+                }
+            }
+       }
+        
+        log.debug("Exiting PhrSecurityFilter.isPhrUserForNotAllowedUrl: " + notAllowed);
+                
+        return notAllowed;
+    }
 
     /**
      * Method to check if the request url is an excluded url.
@@ -86,15 +104,16 @@ public class PhrSecurityFilter implements Filter {
      * @param excludeURL
      * @return
      */
-    private boolean shouldCheckAccessToUrl(String requestURI) {        
+    private boolean shouldNotAllowAccessToUrl(String requestURI) {
+        
         for (String url : excludedURLs) {
             if (requestURI.contains(url)) {
-                log.debug("shouldCheckAccessToUrl: " + false + " for " + requestURI + " due to " + url);
+                log.debug("shouldNotAllowAccessToUrl: " + false + " due to " + url);
                 return false;
             }
         }
         
-        log.debug("shouldCheckAccessToUrl: " + true + " for " + requestURI);
+        log.debug("shouldNotAllowAccessToUrl: " + true);
         return true;
     }
     
@@ -105,7 +124,9 @@ public class PhrSecurityFilter implements Filter {
         this.config = config;
         excludeURL = config.getInitParameter("excludeURL");
         excludedURLs = excludeURL.split(",");
-        loginForm = config.getInitParameter("loginForm");
+        allowedURL = config.getInitParameter("allowedURL");
+        allowedURLs = allowedURL.split(",");
+        changePasswordForm = config.getInitParameter("changePasswordForm");
     }
     
 }

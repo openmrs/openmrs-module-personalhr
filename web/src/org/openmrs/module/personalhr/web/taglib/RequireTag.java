@@ -24,10 +24,14 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrSecurityService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
@@ -80,6 +84,7 @@ public class RequireTag extends TagSupport {
 	 * @should reject user without all of the privileges
 	 */
 	public int doStartTag() {
+        log.debug("PHR RequireTag started...");
 		
 		errorOccurred = false;
 		HttpServletResponse httpResponse = (HttpServletResponse) pageContext.getResponse();
@@ -97,11 +102,35 @@ public class RequireTag extends TagSupport {
 			throw new APIException("The context is currently null.  Please try reloading the site.");
 		}
 		
+        if(!userContext.isAuthenticated()) {
+            return SKIP_BODY; 
+        } 
+        
+        User user = userContext.getAuthenticatedUser();
+        
+        Integer patientId = (Integer) pageContext.getAttribute("org.openmrs.portlet.patientId");
+        Patient pat = Context.getPatientService().getPatient(patientId);
+        
+        Integer personId = (Integer) pageContext.getAttribute("org.openmrs.portlet.personId");
+        Person per = Context.getPersonService().getPerson(personId);        
+        if(per != null) {
+            log.debug("Checking user " + user + " for privs " + privilege + " on person " + per);
+        } 
+        
+        if (pat != null){
+            log.debug("Checking user " + user + " for privs " + privilege + " on patient " + pat);            
+        }
+        
+        if(per==null && pat==null) {
+            log.debug("Checking user " + user + " for privs " + privilege);           
+        }
+		
+		
 		// Parse comma-separated list of privileges in allPrivileges and anyPrivileges attributes
 		String[] allPrivilegesArray = StringUtils.commaDelimitedListToStringArray(allPrivileges);
 		String[] anyPrivilegeArray = StringUtils.commaDelimitedListToStringArray(anyPrivilege);
 		
-		boolean hasPrivilege = hasPrivileges(userContext, privilege, allPrivilegesArray, anyPrivilegeArray);
+		boolean hasPrivilege = hasPrivileges(user, per, pat, privilege, allPrivilegesArray, anyPrivilegeArray);
 		if (!hasPrivilege) {
 			errorOccurred = true;
 			if (userContext.isAuthenticated()) {
@@ -113,7 +142,6 @@ public class RequireTag extends TagSupport {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
 		} else if (hasPrivilege && userContext.isAuthenticated()) {
 			// redirect users to password change form
-			User user = userContext.getAuthenticatedUser();
 			log.debug("Login redirect: " + redirect);
 			if (new UserProperties(user.getUserProperties()).isSupposedToChangePassword()
 			        && !redirect.contains("options.form")) {
@@ -212,13 +240,15 @@ public class RequireTag extends TagSupport {
 	 * @param anyPrivilegeArray an array of privileges, at least one of which is required
 	 * @return true if privilege conditions are met
 	 */
-	private boolean hasPrivileges(UserContext userContext, String privilege, String[] allPrivilegesArray,
+	private boolean hasPrivileges(User user, Person per, Patient pat, String privilege, String[] allPrivilegesArray,
 	                              String[] anyPrivilegeArray) {
-		if (privilege != null && !userContext.hasPrivilege(privilege.trim()))
+        PhrSecurityService serv = PersonalhrUtil.getService();
+
+		if (privilege != null && !serv.hasPrivilege(privilege.trim(), pat, per, user))
 			return false;
-		if (allPrivilegesArray.length > 0 && !hasAllPrivileges(userContext, allPrivilegesArray))
+		if (allPrivilegesArray.length > 0 && !hasAllPrivileges(user, per, pat, allPrivilegesArray))
 			return false;
-		if (anyPrivilegeArray.length > 0 && !hasAnyPrivilege(userContext, anyPrivilegeArray))
+		if (anyPrivilegeArray.length > 0 && !hasAnyPrivilege(user, per, pat, anyPrivilegeArray))
 			return false;
 		return true;
 	}
@@ -230,9 +260,10 @@ public class RequireTag extends TagSupport {
 	 * @param allPrivilegesArray list of privileges
 	 * @return true if user has all of the privileges
 	 */
-	private boolean hasAllPrivileges(UserContext userContext, String[] allPrivilegesArray) {
+	private boolean hasAllPrivileges(User user, Person per, Patient pat, String[] allPrivilegesArray) {
+        PhrSecurityService serv = PersonalhrUtil.getService();
 		for (String p : allPrivilegesArray)
-			if (!userContext.hasPrivilege(p.trim()))
+			if (!serv.hasPrivilege(p.trim(), pat, per, user))
 				return false;
 		return true;
 	}
@@ -244,9 +275,10 @@ public class RequireTag extends TagSupport {
 	 * @param anyPriviegeArray list of privileges
 	 * @return true if user has at least one of the privileges
 	 */
-	private boolean hasAnyPrivilege(UserContext userContext, String[] anyPriviegeArray) {
+	private boolean hasAnyPrivilege(User user, Person per, Patient pat, String[] anyPriviegeArray) {
+        PhrSecurityService serv = PersonalhrUtil.getService();
 		for (String p : anyPriviegeArray)
-			if (userContext.hasPrivilege(p.trim()))
+			if (serv.hasPrivilege(p.trim(), pat, per, user))
 				return true;
 		return false;
 	}

@@ -17,6 +17,9 @@ import java.util.List;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
+import org.openmrs.module.personalhr.db.PhrAllowedUrlDAO;
+import org.openmrs.module.personalhr.db.PhrSecurityRuleDAO;
+import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
 
 /**
@@ -24,10 +27,10 @@ import org.openmrs.User;
  */
 public interface PhrSecurityService {
     public enum PhrDynamicRole {
-        ADMINISTRATOR ("ADMINISTRATOR"),
-        OWNER ("OWNER"),
-        SHARE_JOURNAL ("SHARE_JOURNAL"),
-        SHARE_MEDICAL ("SHARE_MEDICAL");
+        ADMINISTRATOR ("Administrator"),
+        OWNER ("Owner"),
+        SHARE_JOURNAL ("Share Journal"),
+        SHARE_MEDICAL ("Share Medical");
         
         private String value;
         
@@ -40,6 +43,21 @@ public interface PhrSecurityService {
         }
     };
     
+    public enum PhrBasicRole {
+        PHR_ADMINISTRATOR ("PHR Administrator"),
+        PHR_PATIENT ("PHR Patient"),
+        PHR_RESTRICTED_USER ("PHR Restricted User");
+         
+        private String value;
+        
+        PhrBasicRole(String role) {
+            this.value = role;
+        }
+        
+        public String getValue() {
+            return value;
+        }
+    };    
     public boolean isUrlAllowed(String requestedUrl, 
                                 Patient requestedPatient, 
                                 Person requestedPerson, 
@@ -53,5 +71,21 @@ public interface PhrSecurityService {
     public List<PhrDynamicRole> getDynamicRoles(Patient requestedPatient, 
                                                 Person requestedPerson, 
                                                 User requestingUser);
+    
+    public PhrSecurityRuleDAO getSecurityRuleDao();
+
+    
+    public void setSecurityRuleDao(PhrSecurityRuleDAO securityRuleDao);
+    
+    public PhrAllowedUrlDAO getAllowedUrlDao();
+
+    
+    public void setAllowedUrlDao(PhrAllowedUrlDAO allowedUrlDao);
+
+    
+    public PhrSharingTokenDAO getSharingTokenDao();
+
+    
+    public void setSharingTokenDao(PhrSharingTokenDAO sharingTokenDao);
 
 }

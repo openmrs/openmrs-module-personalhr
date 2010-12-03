@@ -5,8 +5,11 @@ import java.util.List;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PhrSharingToken;
 import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
@@ -17,6 +20,8 @@ import org.hibernate.criterion.Restrictions;
  */
 public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
 
+    protected final Log log = LogFactory.getLog(getClass());
+    
     private SessionFactory sessionFactory;
     
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -72,13 +77,17 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
      */
     @Override
     public PhrSharingToken getSharingToken(Patient requestedPatient, Person requestedPerson, User requestingUser) {
+        log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + requestedPatient+"|"+requestedPerson+"|"+requestingUser);
         Patient pat = requestedPatient;
         if(pat == null && requestedPerson != null) {
-            //pat = requestedPerson.getPatient();
+            //pat = requestedPerson.getPatient();            
+            pat = Context.getPatientService().getPatient(requestedPerson.getPersonId()); //patient_id=person_id
+            log.debug("getSharingToken for person|patient->"+requestedPerson+"|"+pat);
         }
         
         Person per = requestingUser.getPerson();
         
+        //sessionFactory.getCurrentSession().createQuery("from PhrSharingToken").list();
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);        
         crit.add(Restrictions.eq("relatedPerson", per));
         crit.add(Restrictions.eq("patient", pat));

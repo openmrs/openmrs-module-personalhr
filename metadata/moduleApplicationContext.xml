@@ -59,7 +59,7 @@
 	
     <!-- Controllers -->
 	
-	<bean id="phrSpringController" class="@MODULE_PACKAGE@.web.controller.SpringController" />
+	<bean id="phrSpringController" class="org.openmrs.module.personalhr.web.controller.SpringController" />
 	
     <!-- Form Controllers -->
 	<bean id="phrPatientDashboardForm"

@@ -56,6 +56,9 @@
               CONSTRAINT `User who retired phr_sharing_token` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`),			  
 			  UNIQUE (`sharing_token`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
+			insert into phr_sharing_token(sharing_token,patient_id,relationship_person_id,relationship_person_name,relationship_person_email,relationship_type,share_start_date,share_type,creator) values ('larmstrongtomsmith',4,5,'Mike Smith','hxiao@regenstrief.org','Doctor','2010-10-01 00:00:00','Share Medical,Share Journal',1);
+			insert into phr_sharing_token(sharing_token,patient_id,relationship_person_id,relationship_person_name,relationship_person_email,relationship_type,share_start_date,share_type,creator) values ('larmstrongtohxiao',4,7,'Hui Xiao','hxiao@regenstrief.org','Caregiver','2010-10-01 00:00:00','Share Medical',1);
 		</sql>
 	</diff>
 	
@@ -67,6 +70,7 @@
 			Create phr_security_rule  table, for storing dynamic role based security configuration (PHR privilege *--* PHR dynamic role)
 		</description>
 		<sql>	
+			drop table phr_security_rule;	
 			CREATE TABLE IF NOT EXISTS `phr_security_rule` (
 			  `id` int(11) NOT NULL auto_increment,
 			  `privilege` varchar(100),
@@ -90,6 +94,18 @@
               CONSTRAINT `User who retired phr_security_rule` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`)              			  
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 			
+			insert into phr_security_rule (privilege, required_role, creator) values ('Create/Delete Treatment Summary','Administrator',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('Edit Treatment Summary','Administrator, Owner',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('View Treatment Summary','Administrator, Owner, Share Medical',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('View Side Effects','Administrator, Owner, Share Medical',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('Update Follow-up Care','Administrator, Owner',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('View Follow-up Care','Administrator, Owner, Share Medical',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('Create Relationships','Administrator, Owner',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('View Relationships','Administrator, Owner',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('Edit Journal','Administrator, Owner, Share Journal',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('View Journal','Administrator, Owner, Share Medical',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('Create Message','Administrator, Owner',1);
+			insert into phr_security_rule (privilege, required_role, creator) values ('View Message','Administrator, Owner',1);			
 		</sql>
 	</diff>
 	
@@ -101,6 +117,7 @@
 			Create phr_allowed_url  table, for storing dynamic role based security configuration (PHR allowed URL *--* PHR privilege)
 		</description>
 		<sql>	
+		    drop table 	phr_allowed_url;	
 			CREATE TABLE IF NOT EXISTS `phr_allowed_url` (
 			  `id` int(11) NOT NULL auto_increment,
 			  `allowed_url` varchar(200),
@@ -122,7 +139,10 @@
 			  CONSTRAINT `User who created phr_allowed_url` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
 			  CONSTRAINT `User who changed phr_allowed_url` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
               CONSTRAINT `User who retired phr_allowed_url` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`)			  
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8;			
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
+			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('module/htmlformentry/htmlFormEntry.form','View Treatment Summary',1);
+			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('module/journal/journal.portlet','View Journal',1);
 		</sql>
 	</diff>
 	

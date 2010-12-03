@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.openmrs.module.personalhr.PhrSecurityRule;
 import org.openmrs.module.personalhr.db.PhrSecurityRuleDAO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
@@ -14,6 +16,7 @@ import org.hibernate.criterion.Restrictions;
  * Hibernate implementation of the Data Access Object
  */
 public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
+    protected final Log log = LogFactory.getLog(getClass());
 
     private SessionFactory sessionFactory;
     
@@ -44,7 +47,7 @@ public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
     @SuppressWarnings("unchecked")
     public List<PhrSecurityRule> getByRole(String role) {
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSecurityRule.class);
-        crit.add(Restrictions.eq("requiredRole", role));
+        crit.add(Restrictions.like("requiredRole", "%"+role+"%"));
         crit.addOrder(Order.desc("requiredRole"));
         List<PhrSecurityRule> list = (List<PhrSecurityRule>) crit.list();
         if (list.size() >= 1)
@@ -55,6 +58,11 @@ public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
 
     @SuppressWarnings("unchecked")
     public List<PhrSecurityRule> getByPrivilege(String priv) {
+        log.debug("PhrSecurityServiceImpl:isUrlAllowed->" + priv);
+        //sessionFactory.getCurrentSession().createQuery("from PhrSecurityRule where privilege = 'View Treatment Summary' ").list();
+        //Query query = sessionFactory.getCurrentSession().createQuery("from PhrSecurityRule where privilege = :url ");
+        //query.setParameter("url", url);
+        //List list0 = query.list();
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSecurityRule.class);
         crit.add(Restrictions.eq("privilege", priv));
         crit.addOrder(Order.desc("privilege"));

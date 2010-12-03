@@ -53,7 +53,7 @@ public class PhrAllowedUrl extends BaseOpenmrsMetadata {
     }
 
     
-    public void setAlowedUrl(String allowedUrl) {
+    public void setAllowedUrl(String allowedUrl) {
         this.allowedUrl = allowedUrl;
     }
   

@@ -25,7 +25,7 @@
 		
 		<property name="relationType" type="java.lang.String" column="relationship_type"/>
 		
-		<property name="startDate" type="java.util.Date" column="share_start_date" not-null="ture"
+		<property name="startDate" type="java.util.Date" column="share_start_date" not-null="true"
 			length="19" />
 			
 		<property name="activateDate" type="java.util.Date" column="share_activate_date" not-null="false"
@@ -48,7 +48,7 @@
 
 		<property name="retired" type="boolean" not-null="true" />
 						
-		<property name="uuid" type="string" length="38" not-null="true" />
+		<property name="uuid" type="string" length="38" not-null="false" />
 				
 		<many-to-one name="retiredBy" class="org.openmrs.User" column="retired_by" />
 	
@@ -64,11 +64,11 @@
 			<generator class="native" />
 		</id>
 
-		<property name="privilege" type="java.lang.String" column="sharing_token"/>
+		<property name="privilege" type="java.lang.String" column="privilege"/>
 	
-		<property name="requiredRole" class="java.lang.String" not-null="true" column="required_role" />
+		<property name="requiredRole" type="java.lang.String" not-null="true" column="required_role" />
 
-		<property name="description" class="java.lang.String" not-null="false" column="description" />
+		<property name="description" type="java.lang.String" not-null="false" column="description" />
 		
 		<!--  Standard Openmrs MetaData -->
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
@@ -99,11 +99,11 @@
 			<generator class="native" />
 		</id>
 
-		<property name="allowedUrl" class="java.lang.String" not-null="true" column="allowed_url" />
+		<property name="allowedUrl" type="java.lang.String" not-null="true" column="allowed_url" />
 
-		<property name="privilege" type="java.lang.String" column="sharing_token"/>
+		<property name="privilege" type="java.lang.String" column="required_privilege"/>
 	
-		<property name="description" class="java.lang.String" not-null="false" column="description" />
+		<property name="description" type="java.lang.String" not-null="false" column="description" />
 		
 		<!--  Standard Openmrs MetaData -->
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />

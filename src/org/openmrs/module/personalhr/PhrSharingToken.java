@@ -150,7 +150,7 @@ public class PhrSharingToken extends BaseOpenmrsMetadata {
      */
     public String getShareType() {
         // TODO Auto-generated method stub
-        return null;
+        return shareType;
     }
 
     

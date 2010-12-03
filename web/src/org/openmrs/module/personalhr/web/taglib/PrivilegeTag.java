@@ -17,8 +17,13 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrSecurityService;
 
 public class PrivilegeTag extends TagSupport {
 	
@@ -31,22 +36,46 @@ public class PrivilegeTag extends TagSupport {
 	private String inverse;
 	
 	public int doStartTag() {
+        log.debug("PHR PrivilegeTag started...");
 		
 		UserContext userContext = Context.getUserContext();
 		
-		log.debug("Checking user " + userContext.getAuthenticatedUser() + " for privs " + privilege);
+		if(!userContext.isAuthenticated()) {
+		    return SKIP_BODY; 
+		} 
+		
+		User user = userContext.getAuthenticatedUser();
+		
+        Integer patientId = (Integer) pageContext.getAttribute("org.openmrs.portlet.patientId");
+        Patient pat = Context.getPatientService().getPatient(patientId);
+        
+        Integer personId = (Integer) pageContext.getAttribute("org.openmrs.portlet.personId");
+        Person per = Context.getPersonService().getPerson(personId);		
+        if(per != null) {
+            log.debug("Checking user " + user + " for privs " + privilege + " on person " + per);
+        } 
+        
+        if (pat != null){
+            log.debug("Checking user " + user + " for privs " + privilege + " on patient " + pat);            
+        }
+        
+        if(per==null && pat==null) {
+            log.debug("Checking user " + user + " for privs " + privilege);           
+        }
+		
 		
 		boolean hasPrivilege = false;
+		PhrSecurityService serv = PersonalhrUtil.getService();
 		if (privilege.contains(",")) {
 			String[] privs = privilege.split(",");
 			for (String p : privs) {
-				if (userContext.hasPrivilege(p)) {
+				if (serv.hasPrivilege(p, pat, per, user)) {
 					hasPrivilege = true;
 					break;
 				}
 			}
 		} else {
-			hasPrivilege = userContext.hasPrivilege(privilege);
+			hasPrivilege = serv.hasPrivilege(privilege, pat, per, user);
 		}
 		
 		// allow inversing

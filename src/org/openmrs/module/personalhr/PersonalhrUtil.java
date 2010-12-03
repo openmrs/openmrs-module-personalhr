@@ -84,5 +84,43 @@ public class PersonalhrUtil {
 	      }
 	      return new String(token);
 	}
-				
+		
+    public static PhrSecurityService getService() {
+        return Context.getService(PhrSecurityService.class);
+    }
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param string
+     * @param requestURI
+     * @return
+     */
+    public static Integer getParamAsInteger(String paramName, String urlString) {
+        // TODO Auto-generated method stub
+        int jj = urlString.indexOf(paramName + "=");
+        
+        String paramValue = null;
+        if(jj>=0) {
+            int ii = 0;
+            for(ii = jj+paramName.length()+1; ii<urlString.length(); ii++) {
+               if(!Character.isDigit(urlString.charAt(ii))) {
+                   break;
+               }
+            }
+            
+            paramValue = urlString.substring(0, ii);
+        }
+        
+        Integer retValue = null;
+        
+        try {
+            retValue = Integer.valueOf(paramValue);
+        } catch (NumberFormatException e) {
+            retValue = null;
+        }
+        
+        return retValue;
+    }
+	
 }

@@ -9,7 +9,10 @@ import org.openmrs.module.personalhr.PhrSharingToken;
 import org.openmrs.module.personalhr.db.PhrAllowedUrlDAO;
 import org.openmrs.module.personalhr.db.PhrAllowedUrlDAO;
 import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -18,6 +21,7 @@ import org.hibernate.criterion.Restrictions;
  * Hibernate implementation of the Data Access Object
  */
 public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
+    protected final Log log = LogFactory.getLog(getClass());
 
     private SessionFactory sessionFactory;
     
@@ -41,12 +45,18 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     @SuppressWarnings("unchecked")
     public List<PhrAllowedUrl> getAllPhrAllowedUrls() {
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);
-        crit.addOrder(Order.asc("privilege"));
+        //crit.addOrder(Order.asc("privilege"));
         return (List<PhrAllowedUrl>) crit.list();
     }
 
     @SuppressWarnings("unchecked")
     public List<PhrAllowedUrl> getByUrl(String url) {
+        log.debug("PhrSecurityServiceImpl:isUrlAllowed->" + url);
+        
+        //Query query = sessionFactory.getCurrentSession().createQuery("from PhrAllowedUrl where allowedUrl = :url ");
+        //query.setParameter("url", url);
+        //List list0 = query.list();
+        
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);
         crit.add(Restrictions.eq("allowedUrl", url));
         crit.addOrder(Order.desc("allowedUrl"));
@@ -60,7 +70,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     @SuppressWarnings("unchecked")
     public List<PhrAllowedUrl> getByPrivilege(String priv) {
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);
-        crit.add(Restrictions.eq("privilege", priv));
+        crit.add(Restrictions.like("privilege", "%"+priv+"%"));
         crit.addOrder(Order.desc("privilege"));
         List<PhrAllowedUrl> list = (List<PhrAllowedUrl>) crit.list();
         if (list.size() >= 1)
