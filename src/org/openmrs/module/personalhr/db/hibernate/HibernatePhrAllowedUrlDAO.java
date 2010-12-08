@@ -56,6 +56,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
         //Query query = sessionFactory.getCurrentSession().createQuery("from PhrAllowedUrl where allowedUrl = :url ");
         //query.setParameter("url", url);
         //List list0 = query.list();
+        url = url.replace("/openmrs", ""); //remove the context root from the url string
         
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);
         crit.add(Restrictions.eq("allowedUrl", url));

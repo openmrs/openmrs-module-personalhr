@@ -12,7 +12,10 @@
  */
 package org.openmrs.module.personalhr;
 
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -33,6 +36,14 @@ public interface PhrSecurityService {
         SHARE_MEDICAL ("Share Medical");
         
         private String value;
+
+        private static final Map<String,PhrDynamicRole> lookup 
+        = new HashMap<String,PhrDynamicRole>();
+
+        static {
+            for(PhrDynamicRole s : EnumSet.allOf(PhrDynamicRole.class))
+                 lookup.put(s.getValue(), s);
+        }
         
         PhrDynamicRole(String role) {
             this.value = role;
@@ -41,6 +52,10 @@ public interface PhrSecurityService {
         public String getValue() {
             return value;
         }
+        
+        public static PhrDynamicRole getRole(String value) { 
+            return lookup.get(value); 
+       }        
     };
     
     public enum PhrBasicRole {

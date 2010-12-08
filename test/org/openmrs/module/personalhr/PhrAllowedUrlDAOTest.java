@@ -36,7 +36,7 @@ public class PhrAllowedUrlDAOTest extends BaseModuleContextSensitiveTest {
 	@Test
 	@Verifies(value = "should escape sql wildcards in searchPhrase", method = "getUsers(String, List, Boolean)")
 	public void testGetByUrl() throws Exception {
-	    List<PhrAllowedUrl> urls = dao.getByUrl("module/htmlformentry/htmlFormEntry.form");
+	    List<PhrAllowedUrl> urls = dao.getByUrl("/openmrs/module/htmlformentry/htmlFormEntry.form");
 	    Assert.assertNotNull(urls);
 	    Assert.assertEquals(1, urls.size());
 	    Assert.assertEquals("module/htmlformentry/htmlFormEntry.form|View Treatment Summary",urls.get(0).getAllowedUrl()+"|"+urls.get(0).getPrivilege());		

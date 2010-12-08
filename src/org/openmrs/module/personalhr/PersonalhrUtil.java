@@ -122,5 +122,17 @@ public class PersonalhrUtil {
         
         return retValue;
     }
+    
+    public static Integer getParamAsInteger(String paramValue) {
+        Integer retValue = null;
+        
+        try {
+            retValue = Integer.valueOf(paramValue);
+        } catch (NumberFormatException e) {
+            retValue = null;
+        }
+        
+        return retValue;
+    }    
 	
 }

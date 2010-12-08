@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
@@ -60,22 +61,32 @@ public class PhrSecurityFilter implements Filter {
      */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,                                                                                       ServletException {
         String requestURI = ((HttpServletRequest) request).getRequestURI();
-        log.debug("Entering PhrSecurityFilter.doFilter: " + requestURI);
+        String patientId = ((HttpServletRequest) request).getParameter("patientId");
+        String personId = ((HttpServletRequest) request).getParameter("personId");
+        String encounterId = ((HttpServletRequest) request).getParameter("encounterId");
+
+        log.debug("Entering PhrSecurityFilter.doFilter: " + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
         
         if (Context.isAuthenticated() && shouldCheckAccessToUrl(requestURI)) {
-            Integer patId = PersonalhrUtil.getParamAsInteger("patientId", requestURI); 
+            Integer patId = PersonalhrUtil.getParamAsInteger(patientId); 
             
             Patient pat = patId==null? null : Context.getPatientService().getPatient(patId);
                         
-            Integer perId = PersonalhrUtil.getParamAsInteger("personId", requestURI);
-            Person per = perId==null? null : Context.getPersonService().getPerson(perId);           
+            Integer perId = PersonalhrUtil.getParamAsInteger(personId);
+            Person per = perId==null? null : Context.getPersonService().getPerson(perId); 
             
+            Integer encId = PersonalhrUtil.getParamAsInteger(encounterId);
+            Encounter enc = encId==null? null : Context.getEncounterService().getEncounter(encId);
+            if(enc != null) {
+                pat = enc.getPatient();
+            }
+                       
             if(!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
                 config.getServletContext().getRequestDispatcher(loginForm).forward(request, response);
-            }
-        } else {
-            chain.doFilter(request, response);
+            } 
         }
+        
+        chain.doFilter(request, response);       
     }
     
 

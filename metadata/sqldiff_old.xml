@@ -141,9 +141,11 @@
               CONSTRAINT `User who retired phr_allowed_url` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`)			  
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 			
-			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('module/htmlformentry/htmlFormEntry.form','View Treatment Summary',1);
-			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('module/journal/journal.portlet','View Journal',1);
-		</sql>
+			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/htmlformentry/htmlFormEntry.form','View Treatment Summary',1);
+			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/htmlformflowsheet/patientWidgetChart.list','View Treatment Summary',1);
+			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/htmlformflowsheet/encounterChartContent.list','View Journal',1);		
+			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/journal/journal.portlet','View Journal',1);		
+        </sql>
 	</diff>
 	
 </sqldiff>

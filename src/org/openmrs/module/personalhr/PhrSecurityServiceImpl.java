@@ -48,26 +48,38 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
             log.warn("Allowed -> User not authenticated yet: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
             return true;
         }
+
         
-        //Check access to /phr/ domain
-        if(requestedUrl.startsWith("/phr/")) {
-            if(getPhrRole(requestingUser) != null) {
-                log.debug("Allowed -> PHR User accessing /phr/ domain: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+        //Check access to /phr/ or /personalhr/ domain
+        String phrRole = getPhrRole(requestingUser);
+        if(requestedUrl.contains("/phr") || requestedUrl.contains("/personalhr")) {
+            if(phrRole != null) {
+                log.debug("Allowed -> PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
                 return true;
             } else {
-                log.warn("Not allowed - > Non PHR User accessing /phr/ domain: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+                log.warn("Not allowed - > Non PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
                 return false;
             }
+        } else {
+            //Always allow non PHR user accessing non /phr/ domain
+            if(phrRole == null) {
+                log.debug("Allowed -> non PHR user accessing non /phr domain or /personalhr: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+                return true;
+            }            
         }
         
         //Check access to non /phr/ domain
         List<PhrAllowedUrl> urls  = allowedUrlDao.getByUrl(requestedUrl);
-        for(PhrAllowedUrl url : urls) {
-            if(url != null) {
-                return hasPrivilege(url.getPrivilege(), requestedPatient, requestedPerson, requestingUser);
-            }
-        } 
+        if(urls != null) {
+            for(PhrAllowedUrl url : urls) {
+                if(url != null) {
+                    log.debug("Allowed - > Accessing allowed non /phr or /personalhr domain -> Checking privileges ... " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser+"|"+url.getPrivilege());
+                    return hasPrivilege(url.getPrivilege(), requestedPatient, requestedPerson, requestingUser);
+                }
+            } 
+        }
         
+        log.warn("Not allowed - > Accessing non /phr or /personalhr domain by non-authorized PHR user: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
         return false;
     }
     
@@ -100,19 +112,22 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
         
         List<PhrSecurityRule> rules  = securityRuleDao.getByPrivilege(privilege);
         List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
-        
-        for(PhrSecurityRule rule : rules) {
-            if(rule != null) {
-                String reqRole = rule.getRequiredRole();
-                
-                for(PhrDynamicRole role : roles) {
-                  if(role.getValue().equalsIgnoreCase(reqRole)) {
-                    log.debug("hasPrivilege returns true ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
-                    return  true;                  
-                  }
+        if(rules != null) {
+            for(PhrSecurityRule rule : rules) {
+                if(rule != null) {
+                    String reqRole = rule.getRequiredRole().toLowerCase();
+                    
+                    if(roles != null) {
+                        for(PhrDynamicRole role : roles) {
+                          if(reqRole.contains(role.getValue().toLowerCase())) {
+                            log.debug("hasPrivilege returns true ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
+                            return  true;                  
+                          }
+                        }
+                    }
                 }
-            }
-        } 
+            } 
+        }
         
         log.debug("hasPrivilege returns false ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
         return false;
@@ -134,16 +149,16 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
         if(isSamePerson(user, requestedPatient) || isSamePerson(user, requestedPerson)) {
             roles.add(PhrSecurityService.PhrDynamicRole.OWNER);
             log.debug("getDynamicRoles->OWNER");
-        } 
-                
-        //check for sharing authorization
-        PhrSharingToken token = sharingTokenDao.getSharingToken(requestedPatient, requestedPerson, user);
-        
-        if(token != null) {
-            String shareType = token.getShareType();
-            if(shareType != null && !shareType.trim().isEmpty()) {
-               roles.add(PhrSecurityService.PhrDynamicRole.valueOf(shareType));
-               log.debug("getDynamicRoles->shareType");
+        } else {               
+            //check for sharing authorization
+            PhrSharingToken token = sharingTokenDao.getSharingToken(requestedPatient, requestedPerson, user);
+            
+            if(token != null) {
+                String shareType = token.getShareType();
+                if(shareType != null && !shareType.trim().isEmpty()) {
+                   roles.add(PhrSecurityService.PhrDynamicRole.getRole(shareType));
+                   log.debug("getDynamicRoles for shareType: " + shareType);
+                }
             }
         }
         
@@ -172,7 +187,7 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
             return false;
         }
         
-        return user.getPerson().getPersonId() == requestedPerson.getPersonId();
+        return user.getPerson().getPersonId().equals(requestedPerson.getPersonId());
     }
 
     /**
@@ -190,7 +205,7 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
             return false;
         }
         
-        return user.getPerson().getPersonId() == requestedPatient.getPersonId();
+        return user.getPerson().getPersonId().equals(requestedPatient.getPersonId());
     }
 
     public PhrSecurityRuleDAO getSecurityRuleDao() {

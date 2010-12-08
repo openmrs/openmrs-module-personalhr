@@ -74,4 +74,118 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>	
+
+<tag>
+	<description>
+		Includes the portlet from the given /WEB-INF/portlets/{url}
+	</description>
+	<name>portlet</name>
+	<tag-class>org.openmrs.module.personalhr.web.taglib.PortletTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>url</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>id</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>size</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>
+			A string in the form of "key=value|key2=value2".   
+			e.g. "size=compact|order=date"
+		</description>
+		<name>parameters</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>
+			A Map(String,Object) of extra parameter values
+		</description>
+		<name>parameterMap</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Map</type>
+	</attribute>
+	<attribute>
+		<name>moduleId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>patientId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>personId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>encounterId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>userId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>patientIds</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+<tag>
+	<description>
+		Gets the value of the given global property.
+		If the var attribute is specified, then the value of the global property is 
+		placed into that in the pageContext. Otherwise, value is printed
+	</description>
+	<name>globalProperty</name>
+	<tag-class>org.openmrs.module.personalhr.web.taglib.GlobalPropertyTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>key</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>defaultValue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>If specified, then the property will be returned as a List of Strings. This property should be given as a Java regular expression, as would be passed to String.split(String)</description>
+		<name>listSeparator</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+
 </taglib>

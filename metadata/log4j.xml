@@ -9,10 +9,26 @@
 				value="%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n" />
 		</layout>
 	</appender>
+	
+    <appender name="logfile" class="org.apache.log4j.RollingFileAppender">
+
+          <param name="Threshold" value="DEBUG"/>
+          <param name="Append" value="true"/>
+          <param name="MaxFileSize" value="512KB"/>
+          <param name="MaxBackupIndex" value="5"/>
+          <param name="ImmediateFlush" value="true"/>
+
+          <!-- file parameter is taken from the XML fragment, which is environment-specific -->
+          <param name="File" value="E:/apache/apache-tomcat-6.0.14/logs/personalhr.log"/> 
+
+          <layout class="org.apache.log4j.PatternLayout">
+                <param name="ConversionPattern" value="%d %p [%c] - %m%n"/>
+          </layout>
+    </appender>
  
  	<logger name="org.openmrs.module.personalhr">
 		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="logfile" />
  	</logger>
 
 	<root>
