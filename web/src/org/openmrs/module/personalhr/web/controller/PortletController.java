@@ -45,6 +45,8 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrSecurityService;
+import org.openmrs.module.personalhr.PhrSharingToken;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
@@ -360,7 +362,7 @@ public class PortletController implements Controller {
 							}
 							
 							model.put("personRelationships", relationships);
-							model.put("personRelationshipsByType", relationshipsByType);
+							model.put("personRelationshipsByType", relationshipsByType);							
 						}
 					}
 				}

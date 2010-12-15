@@ -82,7 +82,8 @@ public class PhrSecurityFilter implements Filter {
             }
                        
             if(!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
-                config.getServletContext().getRequestDispatcher(loginForm).forward(request, response);
+               log.debug("***URL access not allowed!!! " + requestURI + "|" + pat + "|" + per + "|" + Context.getAuthenticatedUser());
+               config.getServletContext().getRequestDispatcher(loginForm).forward(request, response);
             } 
         }
         

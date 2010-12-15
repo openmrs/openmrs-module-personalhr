@@ -39,7 +39,11 @@ public class PersonalhrUtil {
 	    OpenmrsConstants.PRIV_VIEW_PATIENTS,
 	    OpenmrsConstants.PRIV_VIEW_USERS,
 	    OpenmrsConstants.PRIV_ADD_ENCOUNTERS,
-	    OpenmrsConstants.PRIV_EDIT_ENCOUNTERS
+        OpenmrsConstants.PRIV_ADD_OBS,
+	    OpenmrsConstants.PRIV_EDIT_ENCOUNTERS,
+        OpenmrsConstants.PRIV_EDIT_OBS,
+	    OpenmrsConstants.PRIV_DELETE_ENCOUNTERS,
+	    OpenmrsConstants.PRIV_DELETE_OBS
 	};
 	
 	public static void addTemporayPrivileges() {
@@ -133,6 +137,16 @@ public class PersonalhrUtil {
         }
         
         return retValue;
+    }
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param relatedPersonEmail
+     * @return
+     */
+    public static boolean isNullOrEmpty(String value) {
+       return (value==null || value.trim().isEmpty());
     }    
 	
 }

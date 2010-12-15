@@ -120,7 +120,7 @@
 		</init-param>
 		<init-param>
 			<param-name>excludeURL</param-name>
-			<param-value>changePasswordForm,logout,login,.js,.css,.gif,.jpg,.jpeg,.png,/phr/,/personalhr/</param-value>
+			<param-value>changePasswordForm,logout,login,.js,.css,.gif,.jpg,.jpeg,.png</param-value>
 		</init-param>
 	</filter>
 	

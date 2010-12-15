@@ -45,6 +45,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     public List<PhrSharingToken> getAllPhrSharingTokens() {
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
         crit.addOrder(Order.asc("patient_id"));
+        log.debug("HibernatePhrSharingTokenDAO:getAllPhrSharingTokens->" + " | token count=" + crit.list().size());
         return (List<PhrSharingToken>) crit.list();
     }
 
@@ -54,6 +55,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         crit.add(Restrictions.eq("patient", pat));
         crit.addOrder(Order.desc("dateCreated"));
         List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
+        log.debug("HibernatePhrSharingTokenDAO:getSharingTokenByPatient->" + pat + " | token count=" + list.size());
         if (list.size() >= 1)
             return list;
         else
@@ -62,10 +64,15 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
 
     @SuppressWarnings("unchecked")
     public List<PhrSharingToken> getSharingTokenByPerson(Person per) {
+        if(per instanceof Patient) {
+            return getSharingTokenByPatient((Patient) per);
+        }
+        
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
         crit.add(Restrictions.eq("relatedPerson", per));
         crit.addOrder(Order.desc("dateCreated"));
         List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
+        log.debug("HibernatePhrSharingTokenDAO:getSharingTokenByPerson->" + per + " | token count=" + list.size());
         if (list.size() >= 1)
             return list;
         else
@@ -77,7 +84,6 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
      */
     @Override
     public PhrSharingToken getSharingToken(Patient requestedPatient, Person requestedPerson, User requestingUser) {
-        log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + requestedPatient+"|"+requestedPerson+"|"+requestingUser);
         Patient pat = requestedPatient;
         if(pat == null && requestedPerson != null) {
             //pat = requestedPerson.getPatient();            
@@ -93,6 +99,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         crit.add(Restrictions.eq("patient", pat));
         crit.addOrder(Order.desc("dateCreated"));
         List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
+        log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + requestedPatient+"|"+requestedPerson+"|"+requestingUser + "|token count=" + list.size());
         if (list.size() >= 1)
             return list.get(0);
         else

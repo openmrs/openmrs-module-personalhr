@@ -24,7 +24,6 @@ import org.openmrs.User;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.personalhr.db.*;
 
-
 /**
  *
  */
@@ -48,7 +47,12 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
             log.warn("Allowed -> User not authenticated yet: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
             return true;
         }
-
+        
+        //always allowed if requestedPatient==null && requestedPerson==null
+        if(requestedPatient==null && requestedPerson==null) {
+            log.debug("Allowed -> accessing common URL: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+            return true;
+        }
         
         //Check access to /phr/ or /personalhr/ domain
         String phrRole = getPhrRole(requestingUser);

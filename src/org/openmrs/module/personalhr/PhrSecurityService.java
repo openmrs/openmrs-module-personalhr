@@ -29,6 +29,42 @@ import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
  *
  */
 public interface PhrSecurityService {
+    public enum PhrSharingType {
+        SHARE_NOTHING ("Share Nothing"),
+        SHARE_JOURNAL ("Share Journal"),
+        SHARE_MEDICAL ("Share Medical"),
+        SHARE_ALL ("Share All");
+        
+        private String value;
+        
+        PhrSharingType(String type) {
+            this.value = type;
+        }
+        
+        public String getValue() {
+            return value;
+        }
+    };
+    
+    public enum PhrRelationType {
+        DOCTOR ("Doctor"),
+        CAREGIVER("Caregiver"),        
+        SIBLING ("Sibling"),
+        CHILD ("Child"),
+        OTHER("Other");
+        
+        private String value;
+        
+        PhrRelationType(String type) {
+            this.value = type;
+        }
+        
+        public String getValue() {
+            return value;
+        }
+    };
+        
+    
     public enum PhrDynamicRole {
         ADMINISTRATOR ("Administrator"),
         OWNER ("Owner"),

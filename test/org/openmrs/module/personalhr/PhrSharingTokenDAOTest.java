@@ -62,7 +62,11 @@ public class PhrSharingTokenDAOTest extends BaseModuleContextSensitiveTest {
 	    PhrSharingToken token = (PhrSharingToken) dao.getSharingToken(patientDao.getPatient(4), personDao.getPerson(5), userDao.getUser(3)); //larmstrong2-4, msmith3-5, hxiao4-7
 	    Assert.assertNotNull(token);
 	    log.debug("Sharing token: " + token.getSharingToken()+"|"+token.getPatient()+"|"+token.getShareType()+"|"+token.getRelatedPersonName());	    
-	    log.debug(token);		
+	    log.debug(token);
+	    
+	    List<PhrSharingToken> tokens = dao.getSharingTokenByPerson(patientDao.getPatient(4)); //larmstrong2-4, msmith3-5, hxiao4-7
+        Assert.assertNotNull(tokens);	   
+        Assert.assertTrue(tokens.size()>0); 
 	}
 	
 	@Override

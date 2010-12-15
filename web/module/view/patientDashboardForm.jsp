@@ -124,9 +124,10 @@
 	</openmrs:hasPhrPrivilege>
 	--%>
 		<div id="patientRelationships" style="display:none;">
-			
-			<personalhr:portlet url="../module/personalhr/portlets/patientRelationships" id="patientDashboardRelationships" patientId="${patient.patientId}"/>
-			
+			<div class="boxHeader"><spring:message code="Relationship.relationships" /></div>
+			<div class="box">
+					<personalhr:portlet url="../module/personalhr/portlets/patientRelationships" id="patientDashboardRelationships" patientId="${patient.patientId}"/>
+			</div>						
 		</div>
 		
 		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.patientDashboardTab" type="html">
