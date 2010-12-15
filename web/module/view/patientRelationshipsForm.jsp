@@ -15,7 +15,7 @@
 --%>
 
 <div id="addNewRelationshipPopup">
-	<iframe id="addNewRelationshipPopupIframe" width="50%" height="50%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
+	<iframe id="addNewRelationshipPopupIframe" width="90%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
 </div>
 
 <script type="text/javascript">

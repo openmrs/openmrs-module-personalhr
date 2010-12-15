@@ -126,7 +126,9 @@
 		<div id="patientRelationships" style="display:none;">
 			<div class="boxHeader"><spring:message code="Relationship.relationships" /></div>
 			<div class="box">
-					<personalhr:portlet url="../module/personalhr/portlets/patientRelationships" id="patientDashboardRelationships" patientId="${patient.patientId}"/>
+				<iframe src ="${pageContext.request.contextPath}/phr/patientRelationshipsForm.form?patientId=${patient.patientId}" width="100%" height="300">
+				Loading relationships ...
+				</iframe>
 			</div>						
 		</div>
 		
