@@ -32,6 +32,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrSecurityService.PhrBasicRole;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OpenmrsCookieLocaleResolver;
@@ -162,6 +164,28 @@ public class LoginServlet extends HttpServlet {
 						log.debug("Redirecting after login to: " + redirect);
 						log.debug("Locale address: " + request.getLocalAddr());
 					}
+
+					
+					String phrRole = PersonalhrUtil.getService().getPhrRole(user);
+					Integer personId = user.getPerson().getPersonId(); //same as patient id
+					if(PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
+     		            if(personId != null) {
+    		                redirect += "/phr/patientDashboard.form?patientId=" + personId;
+    		                PersonalhrUtil.addTemporayPrivileges();
+    		            } else {
+    		                log.error("Error: PHR Patient's person id is null!");
+    		            }
+					} else if(PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
+                        if(personId != null) {
+                            redirect += "/phr/restrictedUserDashboard.form?personId=" + personId;  
+                            PersonalhrUtil.addTemporayPrivileges();
+                       } else {
+                            log.error("Error: PHR Restricted user's person id is null!");
+                        }
+                    } else if(PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)){
+                        redirect += "/findPatient.htm";
+                        PersonalhrUtil.addTemporayPrivileges();
+                    }
 					
 					response.sendRedirect(redirect);
 					
@@ -241,9 +265,7 @@ public class LoginServlet extends HttpServlet {
 			        .debug("The user was on a page for setting/changing passwords. Send them to the homepage to reduce confusion");
 			redirect = request.getContextPath();
 		}
-		
-		redirect = redirect + "/phr/index.htm";
-		
+				
 		log.debug("Going to use redirect: '" + redirect + "'");
 		
 		return redirect;

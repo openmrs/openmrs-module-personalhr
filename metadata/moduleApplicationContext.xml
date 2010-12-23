@@ -13,7 +13,6 @@
 			   <prop key="phr/personDashboard.form">phrPersonDashboardForm</prop>
 			   <prop key="phr/restrictedUserDashboard.form">phrRestrictedUserDashboardForm</prop>
 			   <prop key="phr/patientRelationshipsForm.form">phrPatientRelationshipsForm</prop>
-			   <prop key="phr/addNewRelationship.form">phrAddNewRelationshipForm</prop>
 			   
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
@@ -91,13 +90,6 @@
 		<property name="commandName"><value>patient</value></property>
 		<property name="formView"><value>/module/personalhr/view/patientRelationshipsForm</value></property>
 		<property name="successView"><value>patientRelationshipsForm.form</value></property>
-	</bean>
-	<bean id="phrAddNewRelationshipForm"
-		class="org.openmrs.module.personalhr.web.controller.AddNewRelationshipFormController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>patient</value></property>
-		<property name="formView"><value>/module/personalhr/view/addNewRelationshipForm</value></property>
-		<property name="successView"><value>addNewRelationship.form</value></property>
 	</bean>
 
 	

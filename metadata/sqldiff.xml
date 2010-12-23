@@ -26,7 +26,7 @@
 			  `id` int(11) NOT NULL auto_increment,
 			  `sharing_token` varchar(30),
 			  `patient_id` int(11) NOT NULL default '0',
-			  `relationship_person_id` int(11) NOT NULL default '0',
+			  `relationship_person_id` int(11) NULL,
 			  `relationship_person_name` varchar(100),
 			  `relationship_person_email` varchar(100),
 			  `relationship_type` varchar(50),

@@ -139,4 +139,12 @@ public interface PhrSecurityService {
     
     public void setSharingTokenDao(PhrSharingTokenDAO sharingTokenDao);
 
+    /**
+     * Auto generated method comment
+     * 
+     * @param user
+     * @return
+     */
+    public String getPhrRole(User user);
+
 }

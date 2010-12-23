@@ -13,6 +13,9 @@
  */
 package org.openmrs.module.personalhr;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -43,7 +46,12 @@ public class PersonalhrUtil {
 	    OpenmrsConstants.PRIV_EDIT_ENCOUNTERS,
         OpenmrsConstants.PRIV_EDIT_OBS,
 	    OpenmrsConstants.PRIV_DELETE_ENCOUNTERS,
-	    OpenmrsConstants.PRIV_DELETE_OBS
+	    OpenmrsConstants.PRIV_DELETE_OBS,
+	    OpenmrsConstants.PRIV_VIEW_PERSONS,
+	    OpenmrsConstants.PRIV_ADD_PERSONS,
+	    OpenmrsConstants.PRIV_EDIT_PERSONS,
+	    OpenmrsConstants.PRIV_ADD_PATIENTS,
+	    OpenmrsConstants.PRIV_EDIT_PATIENTS
 	};
 	
 	public static void addTemporayPrivileges() {
@@ -68,7 +76,9 @@ public class PersonalhrUtil {
 	 * @param n number of characters in this token
 	 * @return generated token
 	 */
-	public static String getRandomToken(int n) {
+	public static String getRandomToken() {
+	      int n = 30;
+	      
 	      if(n<=0) {
 	          return null;
 	      }
@@ -148,5 +158,12 @@ public class PersonalhrUtil {
     public static boolean isNullOrEmpty(String value) {
        return (value==null || value.trim().isEmpty());
     }    
-	
+
+    public static Date getExpireDate(final Date date) {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, 14); //expire after 14 days
+        
+        return cal.getTime();
+    }    
 }

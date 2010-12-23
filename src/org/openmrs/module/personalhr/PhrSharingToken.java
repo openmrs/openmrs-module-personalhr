@@ -10,7 +10,7 @@ import org.openmrs.Person;
  * The basic Sharing Token data object
  */
 
-public class PhrSharingToken extends BaseOpenmrsMetadata {
+public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<PhrSharingToken> {
     
     /** Unique identifying id */
     private Integer id;
@@ -156,6 +156,15 @@ public class PhrSharingToken extends BaseOpenmrsMetadata {
     
     public void setShareType(String shareType) {
         this.shareType = shareType;
+    }
+
+    /**
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(PhrSharingToken newToken) {
+        // TODO Auto-generated method stub
+        return newToken.getId().compareTo(this.id);
     }
     
  

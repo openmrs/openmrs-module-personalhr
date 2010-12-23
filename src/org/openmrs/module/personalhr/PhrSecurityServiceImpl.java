@@ -59,7 +59,8 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
         if(requestedUrl.contains("/phr") || requestedUrl.contains("/personalhr")) {
             if(phrRole != null) {
                 log.debug("Allowed -> PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
-                return true;
+                return hasPrivilege("", requestedPatient, requestedPerson, requestingUser);
+
             } else {
                 log.warn("Not allowed - > Non PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
                 return false;
@@ -93,7 +94,8 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
      * @param requestingUser
      * @return
      */
-    private String getPhrRole(User user) {
+    @Override
+    public String getPhrRole(User user) {
         log.debug("PhrSecurityServiceImpl:igetPhrRole->" + user);
         // TODO Auto-generated method stub
         if(user.hasRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue(), true)) {
@@ -114,6 +116,28 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
                                 User user) {
         log.debug("PhrSecurityServiceImpl:hasPrivilege->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
         
+        //When url privilege is not specified, allow only owner, admin, and shareee to access
+        if(privilege==null || privilege.trim().isEmpty()) {
+            if(requestedPatient!=null || requestedPerson!=null) {
+                String reqRole="Owner,Administrator,Share Medical,Share Journal".toLowerCase(); 
+                List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
+                if(roles != null) {
+                    for(PhrDynamicRole role : roles) {
+                        if(reqRole.contains(role.getValue().toLowerCase())) {
+                          log.debug("hasPrivilege returns true ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
+                          return  true;                  
+                        }
+                    }
+                }
+                log.debug("PhrSecurityServiceImpl:hasPrivilege returns false ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
+                return false;
+            }  else {
+               log.debug("PhrSecurityServiceImpl:hasPrivilege returns true ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
+               return true; 
+            } 
+        }
+        
+        //When url privilege is specified, check the database for authorized roles
         List<PhrSecurityRule> rules  = securityRuleDao.getByPrivilege(privilege);
         List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
         if(rules != null) {

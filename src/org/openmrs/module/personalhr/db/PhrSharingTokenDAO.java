@@ -50,4 +50,19 @@ public interface PhrSharingTokenDAO {
      * @return
      */
     public PhrSharingToken getSharingToken(Patient requestedPatient, Person requestedPerson, User requestingUser);
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param id
+     */
+    public void deletePhrSharingToken(Integer id);
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param tokenString
+     * @return
+     */
+    public PhrSharingToken getSharingToken(String tokenString);
 }

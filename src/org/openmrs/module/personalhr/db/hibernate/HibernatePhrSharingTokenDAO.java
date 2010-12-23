@@ -105,4 +105,29 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         else
             return null;
     }
+    
+
+    /**
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#deletePhrSharingToken(java.lang.Integer)
+     */
+    @Override
+    public void deletePhrSharingToken(Integer id) {
+        sessionFactory.getCurrentSession().delete(getPhrSharingToken(id));        
+    }
+
+    /**
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingToken(java.lang.String)
+     */
+    @Override
+    public PhrSharingToken getSharingToken(String tokenString) {
+        //sessionFactory.getCurrentSession().createQuery("from PhrSharingToken").list();
+        Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);        
+        crit.add(Restrictions.eq("sharingToken", tokenString));
+        List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
+        log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + tokenString + "|token count=" + list.size());
+        if (list.size() >= 1)
+            return list.get(0);
+        else
+            return null;
+    }    
 }
