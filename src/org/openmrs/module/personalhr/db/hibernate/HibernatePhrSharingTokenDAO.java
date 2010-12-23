@@ -11,7 +11,10 @@ import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
@@ -31,14 +34,29 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     public PhrSharingToken getPhrSharingToken(Integer id) {
         return (PhrSharingToken) sessionFactory.getCurrentSession().get(PhrSharingToken.class, id);
     }
-    
+       
     public PhrSharingToken savePhrSharingToken(PhrSharingToken token) {
-        sessionFactory.getCurrentSession().saveOrUpdate(token);
+        //sessionFactory.getCurrentSession().close();
+        Session sess = sessionFactory.openSession();
+        Transaction tx = sess.beginTransaction();
+        sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
+        sess.saveOrUpdate(token);
+        tx.commit();
+        //sess.flush();
+        sess.close();
+        //sessionFactory.getCurrentSession().saveOrUpdate(token);
         return token;
-    }
+    }    
     
     public void deletePhrSharingToken(PhrSharingToken token) {
-        sessionFactory.getCurrentSession().delete(token);
+        //sessionFactory.getCurrentSession().delete(token);
+        //sessionFactory.getCurrentSession().close();
+        Session sess = sessionFactory.openSession();
+        Transaction tx = sess.beginTransaction();
+        sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
+        sess.delete(token);
+        tx.commit();
+        sess.close();
     }
 
     @SuppressWarnings("unchecked")
@@ -105,14 +123,20 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         else
             return null;
     }
-    
 
     /**
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#deletePhrSharingToken(java.lang.Integer)
      */
     @Override
     public void deletePhrSharingToken(Integer id) {
-        sessionFactory.getCurrentSession().delete(getPhrSharingToken(id));        
+        //sessionFactory.getCurrentSession().close();
+        Session sess = sessionFactory.openSession();
+        Transaction tx = sess.beginTransaction();
+        sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
+        sess.delete(getPhrSharingToken(id));
+        tx.commit();
+        sess.close();
+        //sessionFactory.getCurrentSession().delete(getPhrSharingToken(id));        
     }
 
     /**
@@ -121,13 +145,14 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     @Override
     public PhrSharingToken getSharingToken(String tokenString) {
         //sessionFactory.getCurrentSession().createQuery("from PhrSharingToken").list();
-        Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);        
+        Session sess = sessionFactory.getCurrentSession();
+        Criteria crit = sess.createCriteria(PhrSharingToken.class);        
         crit.add(Restrictions.eq("sharingToken", tokenString));
-        List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
+        List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();        
         log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + tokenString + "|token count=" + list.size());
         if (list.size() >= 1)
             return list.get(0);
         else
             return null;
-    }    
+    }
 }

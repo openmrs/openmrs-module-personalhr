@@ -58,7 +58,9 @@ public class PhrPatient {
         
         this.newSharingToken = new PhrSharingToken();
         this.newSharingToken.setPatient(this.patient);
-        this.newSharingToken.setId(0);
+        this.newSharingToken.setId(null);
+        this.newSharingToken.setRelatedPersonName(null);
+        this.newSharingToken.setRelatedPersonEmail(null);
         
         this.numberChanged = 0;
         this.numberAdded = 0;
@@ -178,10 +180,28 @@ public class PhrPatient {
         } 
         
         //check newly added relationship
-        if(this.newSharingToken != null) {
-//            this.numberAdded ++;
-//            PhrSharingToken addedToken = dao.savePhrSharingToken(this.newSharingToken);
-//            log.debug("Newly added token id: " + addedToken.getId());                           
+        if(this.newSharingToken != null && this.newSharingToken.getRelatedPersonName() != null) {
+            PhrSharingToken token = this.newSharingToken;
+
+            String tokenString = PersonalhrUtil.getRandomToken();
+            token.setSharingToken(tokenString);
+            token.setRelatedPersonEmail(token.getRelatedPersonEmail());
+            token.setRelatedPersonName(token.getRelatedPersonName());
+            token.setShareType(token.getShareType());
+            token.setRelationType(token.getRelationType());
+            Date startDate = new Date();
+            token.setStartDate(startDate);
+            token.setDateCreated(startDate);
+            token.setExpireDate(PersonalhrUtil.getExpireDate(startDate));
+            token.setCreator(Context.getAuthenticatedUser());
+            
+            dao.savePhrSharingToken(token);
+            
+            this.numberAdded ++;
+            
+            if(log.isDebugEnabled()) {
+                log.debug("Newly added token id: " + dao.getSharingToken(tokenString).getId());
+            }
         }
         
     }

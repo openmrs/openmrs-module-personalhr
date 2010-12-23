@@ -99,6 +99,11 @@
 			.dialog('option', 'height', $j(window).height() - 50) 
 			.dialog('open');
 	}
+
+	function onDelete(id) {
+		$j('#deletedId').val("Delete "+id);
+	}
+	
 </script>
 
 <div id="patientRelationshipsBox" class="box${model.patientVariation}">
@@ -116,6 +121,7 @@
 <form method="post">  
 	<input type="button" name="command" value="Add New Relationship" onClick="loadUrlIntoRelationshipPopup('Add new relationship'); return false;" />
 	<input type="submit" name="command" value="Save Changes"/>
+	<input type="hidden" name="command" value="Unknown" id="deletedId"/>
 
 	<table cellspacing="0" cellpadding="2" id="patientRelationshipsTable">
 	  <thead>
@@ -160,7 +166,7 @@
 		    </spring:bind>		    
 		    </td>
 		    <td align="center">
- 				<input type="image" src="${pageContext.request.contextPath}/images/delete.gif" name="command" value="Delete ${token.id}"/>
+ 				<input type="image" src="${pageContext.request.contextPath}/images/delete.gif" name="command" value="Delete ${token.id}" onClick="onDelete('${token.id}');return true;"/>
 		    </td>
 		  </tr> 
  	  </c:forEach>  
