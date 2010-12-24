@@ -15,8 +15,8 @@
 --%>
 
 <div id="addNewRelationshipPopup">
-  <form method="post">
-	<input type="submit" name="command" value="Add" onClick="return confirm('An email notification will be sent to this person. Click OK to proceed, or Cancel to revise.');"/>
+  <form method="post" id="addRelationForm" onsubmit="return false;">
+	<input type="button" name="command" value="Add" onClick="return confirmSubmit('addRelationForm','An email notification will be sent to this person. Click OK to proceed, or Cancel to revise.');"/>
 	<input type="submit" name="command" value="Cancel" onClick="$j('#addNewRelationshipPopup').dialog('close');"/>
 	
 	<table cellspacing="0" cellpadding="2" id="patientRelationshipsTable">
@@ -103,6 +103,15 @@
 	function onDelete(id) {
 		$j('#deletedId').val("Delete "+id);
 	}
+
+	function confirmSubmit(formId,prompt) {
+		if(confirm(prompt)) {
+		  $j('#'+formId).submit();
+		  return true;
+		} else {
+			return false;
+		}
+	}	
 	
 </script>
 
@@ -118,7 +127,7 @@
 </spring:hasBindErrors>
 
 	<c:set var="addNewRelationshipUrl" value="${pageContext.request.contextPath}/phr/addNewRelationship.form?patientId=${patient.patientId}"/>
-<form method="post">  
+<form method="post" id="relationsForm">  
 	<input type="button" name="command" value="Add New Relationship" onClick="loadUrlIntoRelationshipPopup('Add new relationship'); return false;" />
 	<input type="submit" name="command" value="Save Changes"/>
 	<input type="hidden" name="command" value="Unknown" id="deletedId"/>

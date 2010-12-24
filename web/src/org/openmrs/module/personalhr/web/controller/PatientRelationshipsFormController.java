@@ -102,7 +102,7 @@ public class PatientRelationshipsFormController extends SimpleFormController {
         
         log.debug("onSubmit: tokens.size="+tokens.size() + "; new relationship with " + newToken.getRelatedPersonName() + ";" + phrPat.getPersonName());
         try {
-            if(command.startsWith("Delete")) {
+            if(command != null && command.startsWith("Delete")) {
                 Integer id = PersonalhrUtil.getParamAsInteger(command.substring(7));
                 if(id!=null && id>0) {
                     phrPat.delete(id);
