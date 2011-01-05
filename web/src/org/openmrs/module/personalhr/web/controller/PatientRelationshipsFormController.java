@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrPatient;
+import org.openmrs.module.personalhr.PhrSecurityService;
 import org.openmrs.module.personalhr.PhrSharingToken;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -30,6 +31,8 @@ import org.springframework.web.servlet.view.RedirectView;
 public class PatientRelationshipsFormController extends SimpleFormController {
     
     protected final Log log = LogFactory.getLog(getClass());
+    
+    private static final String EMAIL_TEMPLATE="I've shared my health profile with you. \nOPENMRS_PHR_SHARING_LINK\nThe profile is not an attachment -- it's stored securely online. \n\nTo view the profile, accept the sharing request by clicking the link above and then sign in with your username and password. If you do not have a account yet, you will be asked to create one using the e-mail address this sharing request e-mail was sent to. After you create the account, you must click the link above to accept the sharing request. This offer to share expires 30 days from the day it was sent. If you accept the sharing request, you will have ongoing access to view the profile unless the sharer decides to stop sharing it."; 
     
     /**
      * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
@@ -65,23 +68,48 @@ public class PatientRelationshipsFormController extends SimpleFormController {
         
         log.debug("tokens.size="+tokens.size() + "; new relationship with " + newToken.getRelatedPersonName() + ";" + phrPatient.getPersonName());
         try {
-            //validate email address
             if("Save Changes".equals(command)) {
                 for(PhrSharingToken token : tokens) {
+                  //validate email address
                   if(PersonalhrUtil.isNullOrEmpty(token.getRelatedPersonEmail())) {
-                    errors.reject("Modified email can not be empty");  
+                    errors.reject("Email can not be empty!");  
+                  } else if(!PersonalhrUtil.isValidEmail(token.getRelatedPersonEmail())) {
+                    errors.reject("Invalid email address: " + token.getRelatedPersonEmail());  
                   } else {
                     log.debug("token.getRelatedPersonEmail()="+token.getRelatedPersonEmail()); 
-                  }
-                  //save the changes to database by calling PersonalhrUtil.getService()
+                  }  
+                  //validate sharing type
+                  if(PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue().equals(token.getShareType())) {
+                      errors.reject("Please select the type of information you want to share with the specified person: " + token.getRelatedPersonName());                      
+                  } else {
+                    log.debug("token.getShareType()="+token.getShareType()+"; PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue()="+PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue()); 
+                  } 
+                  
                 }
             } else if("Add".equals(command)) {
                 PhrSharingToken token = newToken;
+
+                //validate person name
+                if(PersonalhrUtil.isNullOrEmpty(token.getRelatedPersonName())) {
+                  errors.reject("Person name can not be empty!");  
+                } else {
+                  log.debug("token.getRelatedPersonName()="+token.getRelatedPersonName()); 
+                }                                
+                
+                //validate email address
                 if(PersonalhrUtil.isNullOrEmpty(token.getRelatedPersonEmail())) {
-                  errors.reject("Email can not be empty for added relationship");  
+                  errors.reject("Email can not be empty for added relationship!");  
+                } else if(!PersonalhrUtil.isValidEmail(token.getRelatedPersonEmail())) {
+                    errors.reject("Invalid email address: "+token.getRelatedPersonEmail());  
                 } else {
                   log.debug("token.getRelatedPersonEmail()="+token.getRelatedPersonEmail()); 
-                }
+                } 
+                //validate sharing type
+                if(PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue().equals(token.getShareType())) {
+                    errors.reject("Please select the type of information you want to share with the specified person: " + token.getRelatedPersonName());                      
+                } else {
+                  log.debug("token.getShareType()="+token.getShareType()+"; PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue()="+PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue()); 
+                }                 
             }                       
         } catch (Exception ex) {
             log.error("Exception during form validation", ex);
@@ -107,9 +135,24 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                 if(id!=null && id>0) {
                     phrPat.delete(id);
                 }                
-            } else {
+            } else if(command != null && (command.startsWith("Save") || command.startsWith("Add"))) {
                 phrPat.save();
-            }
+                
+                if(command.startsWith("Add")) {
+                    //send email notification to the specified person
+                    String email = EMAIL_TEMPLATE;
+                    String emailAddress = phrPat.getNewSharingToken().getRelatedPersonEmail();
+                    String ip = "172.30.201.24";
+                    String token = phrPat.getNewSharingToken().getSharingToken();
+                    String url = "https://" + ip + ":8443/" + "openmrs/phr/signUp.form?sharingToken=" + token;
+                    email = email.replaceAll("OPENMRS_PHR_SHARING_LINK", url);
+                    
+                    //MessagingApi.send(emailAddress, email);
+                    
+                    log.debug("\n\nThe following email has been sent to " + emailAddress + ":\n" + email + "\n\n");
+                }
+            } 
+            
             String results = "Number of relationships changed: " + phrPat.getNumberChanged() + 
             "; Number of relationships added: " + phrPat.getNumberAdded() +
             "; Number of relationships deleted: " + phrPat.getNumberDeleted();

@@ -15,6 +15,8 @@ package org.openmrs.module.personalhr;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,6 +55,10 @@ public class PersonalhrUtil {
 	    OpenmrsConstants.PRIV_ADD_PATIENTS,
 	    OpenmrsConstants.PRIV_EDIT_PATIENTS
 	};
+	
+  
+    //Make the comparison case-insensitive.   
+    static Pattern pattern = Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",Pattern.CASE_INSENSITIVE);   
 	
 	public static void addTemporayPrivileges() {
 		//Add temporary privilege
@@ -165,5 +171,21 @@ public class PersonalhrUtil {
         cal.add(Calendar.DATE, 14); //expire after 14 days
         
         return cal.getTime();
-    }    
+    }
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param email
+     * @return
+     */
+    public static boolean isValidEmail(String email) {
+        Matcher matcher = pattern.matcher(email);   
+        return matcher.matches();   
+    }   
+    
+    public static void main(final String[] args) {
+        String email = "hxiao@regenstrief.org";
+        System.out.print(email + " is valid? " + isValidEmail("hxiao@regenstrief.org"));
+    }
 }

@@ -30,7 +30,7 @@ import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
  */
 public interface PhrSecurityService {
     public enum PhrSharingType {
-        SHARE_NOTHING ("Share Nothing"),
+        SHARE_NOTHING ("Select One"),
         SHARE_JOURNAL ("Share Journal"),
         SHARE_MEDICAL ("Share Medical"),
         SHARE_ALL ("Share All");
