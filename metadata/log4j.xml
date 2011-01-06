@@ -30,6 +30,12 @@
 		<level value="DEBUG" />
 		<appender-ref ref="logfile" />
  	</logger>
+ 	
+ 	<logger name="org.hibernate.SQL">
+		<level value="INFO" />
+		<appender-ref ref="logfile" />
+ 	</logger>
+
 
 	<root>
 		<level value="INFO" />

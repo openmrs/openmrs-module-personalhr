@@ -107,6 +107,7 @@
 		</openmrs:hasPhrPrivilege>
 		--%>
 		<li><a id="patientRelationshipsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.relationships"/></a></li>
+		<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.demographics"/></a></li>
 
 		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.patientDashboardTab" type="html">
 			<%-- %>openmrs:hasPrivilege privilege="${extension.requiredPrivilege}"--%>
@@ -133,6 +134,17 @@
 				</div>
 				<iframe src ="${pageContext.request.contextPath}/phr/patientRelationshipsForm.form?patientId=${patient.patientId}" width="100%" height="300">
 				Loading relationships ...
+				</iframe>
+			</div>						
+		</div>
+		<div id="patientDemographics" style="display:none;">
+			<div class="boxHeader"><spring:message code="patientDashboard.demographics" /></div>
+			<div class="box">
+				<div class="tooltip">
+				Below is a list of your personal information. Please update this information if anything has changed.  
+				</div>
+				<iframe src ="${pageContext.request.contextPath}/phr/newPatient.form?patientId=${patient.patientId}" width="100%" height="800">
+				Loading personal information for patient ...
 				</iframe>
 			</div>						
 		</div>
