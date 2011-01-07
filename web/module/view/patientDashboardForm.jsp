@@ -14,12 +14,21 @@
 	<spring:message var="pageTitle" code="patientDashboard.title" scope="page"/>
 </c:if>
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
+<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 
 <script type="text/javascript">
 	var timeOut = null;
 	addEvent(window, 'load', initTabs);
 
 	<openmrs:authentication>var userId = "${authenticatedUser.userId}";</openmrs:authentication>
+
+	$j(document).ready(function() {
+		$j('#personalInfo').reload(true);
+	});
 
 	function initTabs() {
 		var c = getTabCookie();
@@ -28,7 +37,9 @@
 			if (tabs.length && tabs[0].id)
 				c = tabs[0].id;
 		}
+		
 		changeTab(c);
+
 	}
 	
 	function setTabCookie(tabType) {
@@ -143,7 +154,7 @@
 				<div class="tooltip">
 				Below is a list of your personal information. Please update this information if anything has changed.  
 				</div>
-				<iframe src ="${pageContext.request.contextPath}/phr/newPatient.form?patientId=${patient.patientId}" width="100%" height="800">
+				<iframe src ="${pageContext.request.contextPath}/phr/newPatient.form?patientId=${patient.patientId}" width="100%" height="800" id="personalInfo">
 				Loading personal information for patient ...
 				</iframe>
 			</div>						

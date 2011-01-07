@@ -56,14 +56,15 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.controller.patient.ShortPatientValidator;
 import org.openmrs.web.controller.person.PersonFormController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -330,6 +331,15 @@ public class NewPatientFormController extends SimpleFormController {
 			    ATTR_VIEW_TYPE.VIEWING)) {
 				String paramName = type.getPersonAttributeTypeId().toString();
 				String value = request.getParameter(paramName);
+				
+				log.debug("paramName=" + paramName);
+				if("9".equalsIgnoreCase(paramName)) {
+				    if(PersonalhrUtil.isNullOrEmpty(value)) {
+				        errors.reject("Email address cannot be empty!");
+				    } else if(!PersonalhrUtil.isValidEmail(value)) {
+				        errors.reject("Invalid email address: " + value);
+				    }
+				}
 				
 				// if there is an error displaying the attribute, the value will be null
 				if (value != null) {

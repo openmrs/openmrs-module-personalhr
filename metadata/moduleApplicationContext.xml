@@ -14,6 +14,7 @@
 			   <prop key="phr/restrictedUserDashboard.form">phrRestrictedUserDashboardForm</prop>
 			   <prop key="phr/patientRelationshipsForm.form">phrPatientRelationshipsForm</prop>
 				<prop key="phr/newPatient.form">phrNewPatientForm</prop>
+				<prop key="phr/options.form">phrOptionsForm</prop>
 			   
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
@@ -93,13 +94,21 @@
 		<property name="successView"><value>patientRelationshipsForm.form</value></property>
 	</bean>
 	<!-- ** New (mini) Patient ** -->
+	<bean id="phrShortPatientValidator" class="org.openmrs.module.personalhr.web.controller.ShortPatientValidator" />
 	<bean id="phrNewPatientForm" class="org.openmrs.module.personalhr.web.controller.NewPatientFormController">
 		<property name="commandName"><value>patient</value></property>
 		<property name="commandClass"><value>org.openmrs.module.personalhr.web.controller.ShortPatientModel</value></property>
 		<property name="formView"><value>/module/personalhr/view/newPatientForm</value></property>
 		<property name="successView"><value>newPatient.form</value></property>
+		<property name="shortPatientValidator" ref="phrShortPatientValidator"/>
 	</bean>
 	<!-- ** /New Patient ** -->
+	<bean id="phrOptionsForm" class="org.openmrs.web.controller.OptionsFormController">
+		<property name="commandName"><value>opts</value></property>
+		<property name="commandClass"><value>org.openmrs.web.OptionsForm</value></property>
+		<property name="formView"><value>/module/personalhr/view/optionsForm</value></property>
+		<property name="successView"><value>options.form</value></property>
+	</bean>
 
 	
     <!-- Portlet Controllers -->

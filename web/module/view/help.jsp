@@ -17,4 +17,4 @@
 <openmrs:extensionPoint pointId="org.openmrs.help" type="html" />
 
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp" %>

@@ -72,7 +72,7 @@
 						<a href='${pageContext.request.contextPath}/moduleServlet/personalhr/phrLogoutServlet'><spring:message code="header.logout" /></a>
 					</span>
 					<span>
-						<a href="${pageContext.request.contextPath}/options.form"><spring:message code="Navigation.options"/></a>
+						<a href="${pageContext.request.contextPath}/phr/options.form"><spring:message code="Navigation.options"/></a>
 					</span>
 				</c:if>
 				<c:if test="${authenticatedUser == null}">
@@ -86,7 +86,7 @@
 			</openmrs:authentication>
 
 			<span id="userHelp">
-				<a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
+				<a href='<%= request.getContextPath() %>/phr/help.htm'><spring:message code="header.help"/></a>
 			</span>
 		</div>
 

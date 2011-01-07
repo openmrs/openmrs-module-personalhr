@@ -1,8 +1,12 @@
+
     <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Add Patients" otherwise="/login.htm" redirect="/admin/patients/newPatient.form" />
 
-<%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
+<%
+  session.setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "true");
+%>
+<%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
@@ -398,4 +402,4 @@
 	updateNewAge();
 </script>
 
-<%@ include file="/WEB-INF/template/footerMinimal.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp" %>
