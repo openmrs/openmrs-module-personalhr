@@ -26,10 +26,6 @@
 
 	<openmrs:authentication>var userId = "${authenticatedUser.userId}";</openmrs:authentication>
 
-	$j(document).ready(function() {
-		$j('#personalInfo').reload(true);
-	});
-
 	function initTabs() {
 		var c = getTabCookie();
 		if (c == null) {
@@ -107,7 +103,7 @@
 	</div>
 </c:if>
 
-<personalhr:portlet url="../module/personalhr/portlets/patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
+<personalhr:portlet url="../module/personalhr/portlets/patientHeader.portlet" id="patientDashboardHeader" patientId="${patient.patientId}"/>
 
 <openmrs:globalProperty var="enableFormEntryTab" key="FormEntry.enableDashboardTab" defaultValue="true"/>
 
@@ -154,9 +150,7 @@
 				<div class="tooltip">
 				Below is a list of your personal information. Please update this information if anything has changed.  
 				</div>
-				<iframe src ="${pageContext.request.contextPath}/phr/newPatient.form?patientId=${patient.patientId}" width="100%" height="800" id="personalInfo">
-				Loading personal information for patient ...
-				</iframe>
+				<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" parameters="patientId=${patient.patientId}" />
 			</div>						
 		</div>
 		

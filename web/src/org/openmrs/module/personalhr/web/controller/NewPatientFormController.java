@@ -233,8 +233,13 @@ public class NewPatientFormController extends SimpleFormController {
 			PersonService personService = Context.getPersonService();
 			
 			ShortPatientModel shortPatient = (ShortPatientModel) obj;
-			String view = getSuccessView();
+			String view = getFormView();
 			boolean isError = errors.hasErrors(); // account for possible errors in the processFormSubmission method
+            
+			if(isError) {
+                httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+                    errors.getFieldError().getCode());               
+            }
 			
 			String action = request.getParameter("action");
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -335,9 +340,13 @@ public class NewPatientFormController extends SimpleFormController {
 				log.debug("paramName=" + paramName);
 				if("9".equalsIgnoreCase(paramName)) {
 				    if(PersonalhrUtil.isNullOrEmpty(value)) {
-				        errors.reject("Email address cannot be empty!");
+				        //errors.reject("Email address cannot be empty!");
+	                    httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Email address cannot be empty!");
+				        isError = true;
 				    } else if(!PersonalhrUtil.isValidEmail(value)) {
-				        errors.reject("Invalid email address: " + value);
+				        //errors.reject("Invalid email address: " + value);
+                        httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Invalid email address: " + value);
+				        isError = true;
 				    }
 				}
 				
@@ -570,7 +579,7 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			// redirect if an error occurred
 			if (isError || errors.hasErrors()) {
-				log.error("Had an error during processing. Redirecting to " + this.getFormView());
+				log.error("Had an error during processing. Redirecting to " + this.getSuccessView());
 				
 				Map<String, Object> model = new HashMap<String, Object>();
 				model.put(getCommandName(), new ShortPatientModel(patient));
@@ -578,11 +587,12 @@ public class NewPatientFormController extends SimpleFormController {
 				// evict from session so that nothing temporarily added here is saved
 				Context.evictFromSession(patient);
 				
-				return this.showForm(request, response, errors, model);
-				//return new ModelAndView(new RedirectView(getFormView()));
+				//return this.showForm(request, response, errors, model);
+				return new ModelAndView(new RedirectView(this.getSuccessView() + "?patientId=" + patient.getPatientId()));
 			} else {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
-				return new ModelAndView(new RedirectView(view + "?patientId=" + newPatient.getPatientId()));
+				log.debug("Patient saved! Redirect to " + this.getSuccessView() + "?patientId=" + newPatient.getPatientId());
+				return new ModelAndView(new RedirectView(this.getSuccessView() + "?patientId=" + newPatient.getPatientId()));
 			}
 		} else {
 			return new ModelAndView(new RedirectView(getFormView()));
@@ -597,7 +607,7 @@ public class NewPatientFormController extends SimpleFormController {
 	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
+		log.debug("Start NewPatientFormController:formBackingObject...");
 		newIdentifiers = new HashSet<PatientIdentifier>();
 		Patient p = null;
 		Integer id = null;

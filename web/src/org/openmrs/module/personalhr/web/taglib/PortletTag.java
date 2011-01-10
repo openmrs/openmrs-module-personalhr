@@ -76,8 +76,8 @@ public class PortletTag extends ImportSupport {
 				pageContext.getOut().print("Every portlet must be defined with a URI");
 			else {
 				// all portlets are contained in the /WEB-INF/view/portlets/ folder and end with .portlet
-				if (!url.endsWith("portlet"))
-					url += ".portlet";
+				//if (!url.endsWith("portlet"))
+				//	url += ".portlet";
 				
 				// module specific portlets are in /WEB-INF/view/module/*/portlets/
 				if (moduleId != null && moduleId.length() > 0) {

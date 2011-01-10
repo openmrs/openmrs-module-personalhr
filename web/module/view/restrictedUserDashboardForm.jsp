@@ -90,7 +90,7 @@ patientRelationshipsTab
 	--%>
 		<div id="restrictedUserRelationships" style="display:none;">
 			
-			<personalhr:portlet url="../module/personalhr/portlets/restrictedUserRelationships" id="restrictedUserDashboardRelationships"/>
+			<personalhr:portlet url="../module/personalhr/portlets/restrictedUserRelationships.portlet" id="restrictedUserDashboardRelationships"/>
 			
 		</div>
 		
