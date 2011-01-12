@@ -94,7 +94,7 @@ public class RequireTag extends TagSupport {
 		String session_ip_addr = (String) httpSession.getAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR);
 		
 		UserContext userContext = Context.getUserContext();
-		
+ 		
 		if (userContext == null && privilege != null) {
 			log.error("userContext is null. Did this pass through a filter?");
 			//httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -103,16 +103,26 @@ public class RequireTag extends TagSupport {
 		}
 		
         if(!userContext.isAuthenticated()) {
+            log.error("userContext is not authenticated!");
             return SKIP_BODY; 
         } 
         
         User user = userContext.getAuthenticatedUser();
         
-        Integer patientId = (Integer) pageContext.getAttribute("org.openmrs.portlet.patientId");
-        Patient pat = Context.getPatientService().getPatient(patientId);
+        Integer patientId = (Integer) pageContext.getAttribute("patientId");
+        if(patientId==null) 
+            patientId = (Integer)this.pageContext.getRequest().getAttribute("patientId");
+ 
+        Integer personId = (Integer) pageContext.getAttribute("personId");
+        if(personId==null) 
+            personId = (Integer) this.pageContext.getRequest().getAttribute("personId");
         
-        Integer personId = (Integer) pageContext.getAttribute("org.openmrs.portlet.personId");
-        Person per = Context.getPersonService().getPerson(personId);        
+        log.debug("Checking user " + user + " for privs " + privilege + " on personId|patientId " + personId + "|" + patientId);
+
+        Patient pat = patientId==null? null : Context.getPatientService().getPatient(patientId);
+                 
+        Person per = personId==null? null : Context.getPersonService().getPerson(personId);        
+    
         if(per != null) {
             log.debug("Checking user " + user + " for privs " + privilege + " on person " + per);
         } 
@@ -125,6 +135,7 @@ public class RequireTag extends TagSupport {
             log.debug("Checking user " + user + " for privs " + privilege);           
         }
 		
+        log.debug("Checking user " + user + " for privs " + privilege + " on person|patient " + per + "|" + pat);
 		
 		// Parse comma-separated list of privileges in allPrivileges and anyPrivileges attributes
 		String[] allPrivilegesArray = StringUtils.commaDelimitedListToStringArray(allPrivileges);

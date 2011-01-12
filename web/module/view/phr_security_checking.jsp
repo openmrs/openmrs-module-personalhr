@@ -14,4 +14,4 @@
 
 <br/>
 
-<%@ include file="/WEB-INF/template/footerMinimal.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/footerMinimal.jsp" %>

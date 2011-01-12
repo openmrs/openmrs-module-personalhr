@@ -48,7 +48,10 @@ public class PersonDashboardController extends SimpleFormController {
 			} else {
 			    person = Context.getAuthenticatedUser().getPerson();
 			}
-			
+			if(person!=null) {
+			   log.debug("personId="+person.getPersonId());
+			   request.setAttribute("personId", person.getPersonId());
+			}
 			return person;
 		}
 	}

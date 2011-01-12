@@ -46,11 +46,21 @@ public class PrivilegeTag extends TagSupport {
 		
 		User user = userContext.getAuthenticatedUser();
 		
-        Integer patientId = (Integer) pageContext.getAttribute("org.openmrs.portlet.patientId");
-        Patient pat = Context.getPatientService().getPatient(patientId);
+        Integer patientId = (Integer) pageContext.getAttribute("patientId");
+        if(patientId==null) 
+            patientId = PersonalhrUtil.getParamAsInteger(this.pageContext.getRequest().getParameter("patientId"));
+        if(patientId==null) 
+            patientId = PersonalhrUtil.getParamAsInteger((String)this.pageContext.getAttribute("patientId"));
+
+        Patient pat = patientId==null? null : Context.getPatientService().getPatient(patientId);
         
-        Integer personId = (Integer) pageContext.getAttribute("org.openmrs.portlet.personId");
-        Person per = Context.getPersonService().getPerson(personId);		
+        Integer personId = (Integer) pageContext.getAttribute("personId");
+        if(personId==null) 
+            personId = PersonalhrUtil.getParamAsInteger(this.pageContext.getRequest().getParameter("personId"));
+        if(personId==null) 
+            personId = PersonalhrUtil.getParamAsInteger((String)this.pageContext.getRequest().getAttribute("personId"));
+        
+        Person per = personId==null? null : Context.getPersonService().getPerson(personId);		
         if(per != null) {
             log.debug("Checking user " + user + " for privs " + privilege + " on person " + per);
         } 

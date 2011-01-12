@@ -18,6 +18,7 @@
 			   <prop key="**/personalhr/portlets/newPatientForm.portlet">phrNewPatientForm</prop>
 			   
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
+			   <prop key="**/personalhr/portlets/restrictedUserRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
 			</props>
 		</property>

@@ -39,11 +39,11 @@
 	}
 	
 	function setTabCookie(tabType) {
-		document.cookie = "dashboardTab-" + userId + "="+escape(tabType);
+		document.cookie = "patientDashboardTab-" + userId + "="+escape(tabType);
 	}
 	
 	function getTabCookie() {
-		var cookies = document.cookie.match('dashboardTab-' + userId + '=(.*?)(;|$)');
+		var cookies = document.cookie.match('patientDashboardTab-' + userId + '=(.*?)(;|$)');
 		if (cookies) {
 			return unescape(cookies[1]);
 		}
@@ -113,15 +113,18 @@
 		<openmrs:hasPhrPrivilege privilege="PHR - View Overview Section">
 		</openmrs:hasPhrPrivilege>
 		--%>
+		
+	<personalhr:hasPrivilege privilege="View Relationships">	
 		<li><a id="patientRelationshipsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.relationships"/></a></li>
 		<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.demographics"/></a></li>
+	</personalhr:hasPrivilege>
 
 		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.patientDashboardTab" type="html">
-			<%-- %>openmrs:hasPrivilege privilege="${extension.requiredPrivilege}"--%>
+			<personalhr:hasPrivilege privilege="${extension.requiredPrivilege}">
 				<li>
 					<a id="${extension.tabId}Tab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="${extension.tabName}"/></a>
 				</li>
-			<%--/openmrs:hasPrivilege--%>
+		    </personalhr:hasPrivilege>
 		</openmrs:extensionPoint>		
 	</ul>
 </div>
@@ -131,6 +134,7 @@
 	<openmrs:hasPhrPrivilege privilege="PHR - View Overview Section">
 	</openmrs:hasPhrPrivilege>
 	--%>
+	<personalhr:hasPrivilege privilege="View Relationships">	
 		<div id="patientRelationships" style="display:none;">
 			<div class="boxHeader"><spring:message code="Relationship.relationships" /></div>
 			<div class="box">
@@ -144,6 +148,7 @@
 				</iframe>
 			</div>						
 		</div>
+		
 		<div id="patientDemographics" style="display:none;">
 			<div class="boxHeader"><spring:message code="patientDashboard.demographics" /></div>
 			<div class="box">
@@ -153,6 +158,7 @@
 				<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" parameters="patientId=${patient.patientId}" />
 			</div>						
 		</div>
+	</personalhr:hasPrivilege>
 		
 		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.patientDashboardTab" type="html">
 			<%--openmrs:hasPrivilege privilege="${extension.requiredPrivilege}"--%>
@@ -173,4 +179,4 @@
 		</openmrs:extensionPoint>			
 </div>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp" %>

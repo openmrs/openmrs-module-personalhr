@@ -10,23 +10,21 @@
 </script>
 
 <div id="followup-div"  >
-<center>
-<table border="1" style="margin: 0px 0px 1em 2em;">
+<table style="margin: 0px 0px 1em 2em;">
   <tr>
-    <th>Name</th>
-    <th>Relationship</th>
-    <th>Email</th>
+    <th>Patient Name</th>
+    <th>My Role</th>
+    <th>My Email</th>
     <th>Share Type</th>
   </tr>
   <c:forEach var="token" items="${model.phrSharingTokens}">
 	  <tr>
-	    <td>${token.relatedPersonName}</td>
+		<td><a href="patientDashboard.form?patientId=${token.patient.patientId}">${token.patient.personName.fullName}</a></td>
 	    <td>${token.relationType}</td>
 	    <td>${token.relatedPersonEmail}</td>
 	    <td>${token.shareType}</td>
 	  </tr> 
   </c:forEach>     
 </table>
-</center>
 </div>
 

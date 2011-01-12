@@ -26,4 +26,4 @@
 	<openmrs:portlet url="personRelationships" size="normal" personId="${person.personId}"/>
 </div>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp" %>

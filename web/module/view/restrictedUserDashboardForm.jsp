@@ -9,6 +9,8 @@ patientRelationshipsTab
 
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 
+<personalhr:require privilege="View Relationships" otherwise="/phr/phr_security_checking.htm" redirect="/phr/phr_security_checking.htm" />
+
 <script type="text/javascript">
 	var timeOut = null;
 	addEvent(window, 'load', initTabs);
@@ -26,11 +28,11 @@ patientRelationshipsTab
 	}
 	
 	function setTabCookie(tabType) {
-		document.cookie = "dashboardTab-" + userId + "="+escape(tabType);
+		document.cookie = "RestrictedUserDashboardTab-" + userId + "="+escape(tabType);
 	}
 	
 	function getTabCookie() {
-		var cookies = document.cookie.match('dashboardTab-' + userId + '=(.*?)(;|$)');
+		var cookies = document.cookie.match('RestrictedUserDashboardTab-' + userId + '=(.*?)(;|$)');
 		if (cookies) {
 			return unescape(cookies[1]);
 		}
@@ -113,4 +115,4 @@ patientRelationshipsTab
 		</openmrs:extensionPoint>			
 </div>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp" %>

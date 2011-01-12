@@ -184,8 +184,13 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
             if(token != null) {
                 String shareType = token.getShareType();
                 if(shareType != null && !shareType.trim().isEmpty()) {
-                   roles.add(PhrSecurityService.PhrDynamicRole.getRole(shareType));
                    log.debug("getDynamicRoles for shareType: " + shareType);
+                   if(PhrSecurityService.PhrSharingType.SHARE_ALL.getValue().equals(shareType)) {
+                       roles.add(PhrSecurityService.PhrDynamicRole.SHARE_JOURNAL);
+                       roles.add(PhrSecurityService.PhrDynamicRole.SHARE_MEDICAL);                       
+                   } else {
+                       roles.add(PhrSecurityService.PhrDynamicRole.getRole(shareType));
+                   }
                 }
             }
         }
