@@ -104,6 +104,9 @@
 			<script type="text/javascript">
 				// prevents users getting popup alerts when viewing pages
 				var handler = function(msg, ex) {
+					if(msg.indexOf('focus') != -1) {
+						return;
+					}
 					var div = document.getElementById("openmrs_dwr_error");
 					div.style.display = ""; // show the error div
 					var msgDiv = document.getElementById("openmrs_dwr_error_msg");
