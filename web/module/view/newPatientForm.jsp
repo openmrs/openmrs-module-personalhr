@@ -7,13 +7,6 @@
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <script type="text/javascript">
-	$j(document).ready(function() {
-		//document.getElementById("identifierRow").style.display = "none";
-		//addIdentifier(null, null, null, !atLeastOneIdentifierAdded, null);
-		updateNewAge();
-		//$j('#backButton').focus();
-	});
-
 	function addIdentifier(id, type, location, pref, oldIdentifier) {
 		var tbody = document.getElementById('identifiersTbody');
 		var row = document.getElementById('identifierRow');
@@ -396,3 +389,9 @@
 	<input type="button" value="<spring:message code="general.back"/>" onclick="history.go(-1);" id="backButton">
 </form>
 
+<script type="text/javascript">
+	//document.forms[0].elements[0].focus();
+	document.getElementById("identifierRow").style.display = "none";
+	addIdentifier(null, null, null, !atLeastOneIdentifierAdded, null);
+	//updateAge();
+</script>

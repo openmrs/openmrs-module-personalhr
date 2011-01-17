@@ -251,3 +251,4 @@
 </div>
 
 <br/>
+<%@ include file="/WEB-INF/template/footerMinimal.jsp" %>
