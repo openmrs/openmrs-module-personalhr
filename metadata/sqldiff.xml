@@ -21,7 +21,6 @@
 			Create phr_sharing_token table, for storing patient initiated relationships and data sharing authorization
 		</description>
 		<sql>	
-			drop table phr_sharing_token;	
 			CREATE TABLE IF NOT EXISTS `phr_sharing_token` (
 			  `id` int(11) NOT NULL auto_increment,
 			  `sharing_token` varchar(30),

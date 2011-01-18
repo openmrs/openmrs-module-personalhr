@@ -144,8 +144,10 @@
 			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/htmlformentry/htmlFormEntry.form','View Treatment Summary',1);
 			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/htmlformflowsheet/patientWidgetChart.list','View Treatment Summary',1);
 			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/htmlformflowsheet/encounterChartContent.list','View Journal',1);		
-			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/journal/journal.portlet','View Journal',1);		
+			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/journal/portlets/journal.portlet','View Journal',1);		
 			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/admin/patients/newPatient.form','View Treatment Summary',1);		
+   			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/lancearmstrong/portlets/patientFollowCare.portlet','View Treatment Summary',1);		
+   			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/lancearmstrong/patientFollowCareForm.form','View Treatment Summary',1);		
         </sql>
 	</diff>
 	
