@@ -68,6 +68,7 @@ public class PatientDashboardController extends SimpleFormController {
 					throw new ServletException("Integer 'patientId' is a required parameter");
 				}
 			}
+            request.setAttribute("patientId", patientId);		
 
 			//Add temporary privilege
 			PersonalhrUtil.addTemporayPrivileges();

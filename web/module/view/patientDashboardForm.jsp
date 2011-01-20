@@ -143,7 +143,7 @@
 				To change an existing relationship, modify the corresponding fields and click on the "Save Change" button. 
 				To delete an existing relationship, click on the corresponding "x" icon at the right end.  
 				</div>
-				<iframe src ="${pageContext.request.contextPath}/phr/patientRelationshipsForm.form?patientId=${patient.patientId}" width="100%" height="300">
+				<iframe src ="${pageContext.request.contextPath}/phr/patientRelationshipsForm.form?patientId=${patient.patientId}" width="100%" height="500">
 				Loading relationships ...
 				</iframe>
 			</div>						

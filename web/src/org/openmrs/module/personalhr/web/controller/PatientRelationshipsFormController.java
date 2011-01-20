@@ -128,7 +128,7 @@ public class PatientRelationshipsFormController extends SimpleFormController {
         List<PhrSharingToken> tokens = phrPat.getSharingTokens();
         PhrSharingToken newToken = phrPat.getNewSharingToken();
         
-        log.debug("onSubmit: tokens.size="+tokens.size() + "; new relationship with " + newToken.getRelatedPersonName() + ";" + phrPat.getPersonName());
+        log.debug("onSubmit: tokens.size="+tokens.size() + "; new relationship with " + newToken.getRelatedPersonName() + ";" + phrPat.getPersonName()+";" + newToken.getShareType() + "; " + newToken.getRelationType());
         try {
             if(command != null && command.startsWith("Delete")) {
                 Integer id = PersonalhrUtil.getParamAsInteger(command.substring(7));
@@ -153,11 +153,11 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                 }
             } 
             
-            String results = "Number of relationships changed: " + phrPat.getNumberChanged() + 
-            "; Number of relationships added: " + phrPat.getNumberAdded() +
-            "; Number of relationships deleted: " + phrPat.getNumberDeleted();
-            log.debug(results );
-            request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Saved " + phrPat.getPatient());
+            //String results = "Number of relationships changed: " + phrPat.getNumberChanged() + 
+            //"; Number of relationships added: " + phrPat.getNumberAdded() +
+            //"; Number of relationships deleted: " + phrPat.getNumberDeleted();
+            //log.debug(results );
+            //request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Saved " + phrPat.getPatient());
             String successView = getSuccessView() + "?patientId=" + phrPat.getPatientId();
             return new ModelAndView(new RedirectView(successView));
             

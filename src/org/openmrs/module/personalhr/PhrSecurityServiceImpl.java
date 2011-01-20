@@ -116,6 +116,10 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
                                 User user) {
         log.debug("PhrSecurityServiceImpl:hasPrivilege->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
         
+        if(user!=null && requestedPatient==null && requestedPerson==null) {
+            return true;
+        }
+        
         //When url privilege is not specified, allow only owner, admin, and shareee to access
         if(privilege==null || privilege.trim().isEmpty()) {
             if(requestedPatient!=null || requestedPerson!=null) {

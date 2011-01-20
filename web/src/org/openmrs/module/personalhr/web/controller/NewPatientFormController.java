@@ -380,6 +380,13 @@ public class NewPatientFormController extends SimpleFormController {
 				}
 			}
 			
+			if(newIdentifiers.isEmpty()) {
+			    PatientIdentifier ident = new PatientIdentifier();
+			    ident.setIdentifier(patient.getId().toString());
+			    ident.setIdentifierType(new PatientIdentifierType(1));
+			    ident.setLocation(new Location(1));	
+			    newIdentifiers.add(ident);
+			}
 			// add the new identifiers.  First remove them so that things like
 			// changes to preferred status and location are persisted
 			for (PatientIdentifier identifier : newIdentifiers) {

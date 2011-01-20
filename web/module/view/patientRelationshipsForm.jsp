@@ -111,15 +111,12 @@
 		  <tr>
 		    <td>Relation Type:</td>
 			<td>
-			<spring:bind path="patient.newSharingToken.relationType">
-				<select name="${status.expression}"  >
-					<c:forEach items="${patient.relationTypes}" var="relationType">
-						<option value="${status.value}"
-							<c:if test="${relationType.value == status.value}">selected="selected"</c:if>>${relationType.value}
-						</option>
-					</c:forEach>
-		    	</select>
-		    </spring:bind>
+			<form:select path="patient.newSharingToken.relationType" >
+				<c:forEach items="${patient.relationTypes}" var="relationType">
+					<option value="${relationType.value}" label="${relationType.value}"/>
+				</c:forEach>
+	    	</form:select>
+			
 		    </td>
 		  </tr>
 		  <tr>
@@ -134,15 +131,11 @@
 		  <tr>
 		    <td>Share:</td>
 		    <td> 
-			<spring:bind path="patient.newSharingToken.shareType">
-				<select name="${status.expression}"  >
-					<c:forEach items="${patient.sharingTypes}" var="sharingType">
-						<option value="${status.value}"
-							<c:if test="${sharingType.value == status.value}">selected="selected"</c:if>>${sharingType.value}
-						</option>
-					</c:forEach>
-		    	</select>
-		    </spring:bind>		    
+			<form:select path="patient.newSharingToken.shareType">
+				<c:forEach items="${patient.sharingTypes}" var="sharingType">
+					<option value="${sharingType.value}" label="${sharingType.value}"/>
+				</c:forEach>
+		    </form:select>
 		    <span style="color:red">*</span> (Required)
 		    </td>
 		  </tr>
@@ -212,7 +205,11 @@
 	  <c:forEach var="token" items="${patient.sharingTokens}" varStatus="status">
 
 		  <tr>
+		  <!-- 
 		    <td><a href="#" onClick="loadRelationDetailPopup('View Detail','${token.relatedPerson.personId}','${token.startDate}','${token.activateDate}','${token.expireDate}'); return false;">${token.relatedPersonName}</a></td>
+  	       -->
+		    <td><span style="color:blue">${token.relatedPersonName}</span></td>
+		    
 			<td>
 			<spring:bind path="patient.sharingTokens[${status.index}].relationType">
 				<select name="${status.expression}" onChange="onChange()">

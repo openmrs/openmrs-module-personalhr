@@ -6,91 +6,7 @@
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
-<script type="text/javascript">
-	function addIdentifier(id, type, location, pref, oldIdentifier) {
-		var tbody = document.getElementById('identifiersTbody');
-		var row = document.getElementById('identifierRow');
-		var newrow = row.cloneNode(true);
-		newrow.style.display = "";
-		newrow.id = tbody.childNodes.length;
-		tbody.appendChild(newrow);
-		var inputs = newrow.getElementsByTagName("input");
-		var selects = newrow.getElementsByTagName("select");
-		if (id) {
-			for (var i in inputs) {
-				if (inputs[i] && inputs[i].name == "identifier") {
-					inputs[i].value = id;
-					if (oldIdentifier && 1 == 0) {
-						inputs[i].parentNode.appendChild(document.createTextNode(id));
-						inputs[i].parentNode.removeChild(inputs[i]);
-					}
-				}
-			}
-		}
-		if (type) {
-			for (var i in selects)
-				if (selects[i] && selects[i].name == "identifierType") {
-					var selectedOpt;
-					var thisSelect = selects[i];
-					for (var o = 0; o < thisSelect.options.length ;o++) {
-						if (selects[i].options[o].value == type) {
-							selectedOpt = selects[i].options[o];
-							selectedOpt.selected = true;
-						}
-						else
-							selects[i].options[o].selected = false;
-					}
-					if (oldIdentifier && 1 == 0) {
-						selects[i].parentNode.appendChild(document.createTextNode(selectedOpt.text));
-						selects[i].parentNode.removeChild(selects[i]);
-					}
-				}
-		}
-		
-		/*
-		 Use the default location if one has been set and no location is defined
-		*/
-		if (!location && ("${defaultLocation}" != "")) {
-			location = "${defaultLocation}";
-		}
-		
-		if (location) {
-			for (var i in selects)
-				if (selects[i] && selects[i].name == "location") {
-					var selectedOpt;
-					var thisSelect = selects[i];
-					for (var o = 0; o < thisSelect.options.length ;o++) {
-						if (selects[i].options[o].value == location) {
-							selectedOpt = selects[i].options[o];
-							selectedOpt.selected = true;
-						}
-						else
-							selects[i].options[o].selected = false;
-					}
-					if (oldIdentifier && 1 == 0) {
-						selects[i].parentNode.appendChild(document.createTextNode(selectedOpt.text));
-						selects[i].parentNode.removeChild(selects[i]);
-					}
-				}	
-		}
-		
-		for (var i in inputs)
-			if (inputs[i] && inputs[i].name == "preferred") {
-				inputs[i].checked = (pref == true ? 'checked' : '');
-				inputs[i].value = id + type;
-			}
-		
-		/*
-		if (oldIdentifier) {
-			for (var i in inputs) {
-				if(inputs[i] && inputs[i].name == "closeButton")
-					inputs[i].style.display = "none";
-			}
-		}
-		*/
-
-	}
-	
+<script type="text/javascript">	
 	function updateAge() {
 		var birthdateBox = document.getElementById('birthdate');
 		var ageBox = document.getElementById('age');
@@ -243,62 +159,6 @@
 			</table>
 		</td>
 	</tr>
-   <tr> 
-		<th class="headerCell"><spring:message code="PatientIdentifier.title.endUser"/></th>
-		<td class="inputCell">
-			<table id="identifiers" cellspacing="2">
-				<tr>
-					<td><spring:message code="PatientIdentifier.identifier"/></td>
-					<openmrs:extensionPoint pointId="newPatientForm.identifierHeader" />
-					<td><spring:message code="PatientIdentifier.identifierType"/></td>
-					<td><spring:message code="PatientIdentifier.location.identifier"/></td>
-					<td><spring:message code="general.preferred"/></td>
-					<td></td>
-				</tr>
-				<tbody id="identifiersTbody">
-					<tr id="identifierRow">
-						<td valign="top">
-							<input type="text" size="30" name="identifier" onmouseup="identifierOrTypeChanged(this)" <c:if test="${isPhrAdministrator == false}">  </c:if>/>
-						</td>
-						<openmrs:extensionPoint pointId="newPatientForm.identifierBody" />
-						<td valign="top">
-							<select name="identifierType" onclick="identifierOrTypeChanged(this)" <c:if test="${isPhrAdministrator == false}">  </c:if>>
-								<openmrs:forEachRecord name="patientIdentifierType">
-									<option value="${record.patientIdentifierTypeId}">
-										${record.name}
-									</option>
-								</openmrs:forEachRecord>
-							</select>
-						</td>
-						<td valign="top">
-							<select name="location" <c:if test="${isPhrAdministrator == false}">  </c:if>>
-								<option value=""></option>
-								<openmrs:forEachRecord name="location">
-									<option value="${record.locationId}">
-										${record.name}
-									</option>
-								</openmrs:forEachRecord>
-							</select>
-						</td>
-						<td valign="middle" align="center">
-							<input type="radio" name="preferred" value="" onclick="identifierOrTypeChanged(this)" checked="checked" <c:if test="${isPhrAdministrator == false}">  </c:if>/>
-						</td>
-						<td valign="middle" align="center">
-							<input type="button" name="closeButton" onClick="return removeRow(this);" class="closeButton" value='<spring:message code="general.remove"/>' <c:if test="${isPhrAdministrator == false}">  </c:if>/>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<script type="text/javascript">
-				var atLeastOneIdentifierAdded = false;
-				<c:forEach items="${identifiers}" var="id">
-					addIdentifier("<c:out value="${id.identifier}"/>", "${id.identifierType.patientIdentifierTypeId}", "${id.location.locationId}", ${id.preferred}, ${id.dateCreated != null});
-					atLeastOneIdentifierAdded = true;
-				</c:forEach>
-			</script>
-			<input type="button" class="smallButton" onclick="addIdentifier(null, null, null, false, null)" value="<spring:message code="PatientIdentifier.add" />" <c:if test="${isPhrAdministrator == false}">  </c:if> hidefocus />
-		</td>
-	</tr>
 	
 	<tr>
 		<th class="headerCell"><spring:message code="patientDashboard.demographics"/></th>
@@ -391,7 +251,6 @@
 
 <script type="text/javascript">
 	//document.forms[0].elements[0].focus();
-	document.getElementById("identifierRow").style.display = "none";
-	addIdentifier(null, null, null, !atLeastOneIdentifierAdded, null);
+	//document.getElementById("identifierRow").style.display = "none";
 	//updateAge();
 </script>
