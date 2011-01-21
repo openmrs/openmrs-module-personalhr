@@ -17,6 +17,7 @@
 				<prop key="phr/options.form">phrOptionsForm</prop>
 				<!--<prop key="phr/user.form">phrUserForm</prop>-->
 			   <prop key="**/personalhr/portlets/newPatientForm.portlet">phrNewPatientForm</prop>
+				<prop key="**/personalhr/portlets/phrNameLayout.portlet">phrNameLayoutPortletController</prop>
 			   
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 			   <prop key="**/personalhr/portlets/restrictedUserRelationships.portlet">phrPersonRelationshipsPortletController</prop>
@@ -124,4 +125,5 @@
     <!-- Portlet Controllers -->
 	<bean id="phrPortletController" class="org.openmrs.module.personalhr.web.controller.PortletController" />
 	<bean id="phrPersonRelationshipsPortletController" class="org.openmrs.module.personalhr.web.controller.PersonRelationshipsPortletController" />	    
+	<bean id="phrNameLayoutPortletController" class="org.openmrs.module.personalhr.web.controller.PhrNameLayoutPortletController" />
 </beans>

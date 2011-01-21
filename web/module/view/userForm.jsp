@@ -1,7 +1,7 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
-
+ 
 <c:set var="errorsFromPreviousSubmit" value="false"/>
 <spring:hasBindErrors name="user">
 	<c:set var="errorsFromPreviousSubmit" value="true"/>
@@ -49,7 +49,7 @@
 						</c:if>
 					</spring:bind>
 					<spring:nestedPath path="user.person.names[0]">
-						<personalhr:portlet url="phrNameLayout" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
+						<personalhr:portlet url="../module/personalhr/portlets/phrNameLayout.portlet" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
 					</spring:nestedPath>
 					<tr>
 						<td><spring:message code="Person.gender"/></td>
