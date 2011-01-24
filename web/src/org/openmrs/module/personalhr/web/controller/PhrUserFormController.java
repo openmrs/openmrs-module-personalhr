@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.personalhr.web.controller;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,9 @@ import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrSecurityService;
+import org.openmrs.module.personalhr.PhrSharingToken;
 import org.openmrs.propertyeditor.RoleEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -40,6 +44,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -65,8 +70,10 @@ public class PhrUserFormController {
 	// the personId attribute is called person_id so that spring MVC doesn't try to bind it to the personId property of user
 	@ModelAttribute("user")
 	public User formBackingObject(WebRequest request,
+	                              @RequestParam(required=false, value="sharingToken") String sharingToken,	                              
 	                              @RequestParam(required=false, value="person_id") Integer personId) {
-	    log.debug("Entering PhrUserFormController:formBackingObject...");
+	    log.debug("Entering PhrUserFormController:formBackingObject: sharingToken=" + sharingToken + ", personId=" + personId);
+	    	    	    
 		String userId = request.getParameter("userId");
 		User u = null;
 		try {
@@ -84,6 +91,7 @@ public class PhrUserFormController {
 			u.setPerson(p);
 	        log.debug("Entering PhrUserFormController:formBackingObject...setPerson" + p);			
 		}
+				
 		return u;
 	}
 	
@@ -104,11 +112,36 @@ public class PhrUserFormController {
 	@RequestMapping(value="/phr/user.form", method=RequestMethod.GET)
 	public String showForm(@RequestParam(required=false, value="userId") Integer userId,
 	                       @RequestParam(required=false, value="createNewPerson") String createNewPerson,
+                           @RequestParam(required=false, value="sharingToken") String sharingToken,
 	                       @ModelAttribute("user") User user,
-	                       ModelMap model) {
+	                       ModelMap model,
+	                       HttpSession session) {
 
 		// the formBackingObject method above sets up user, depending on userId and personId parameters   
-        log.debug("Entering PhrUserFormController:showForm...");
+        log.debug("Entering PhrUserFormController:showForm: sharingToken=" + sharingToken + ", httpSession=" + session);
+
+        PhrSharingToken token = sharingToken==null? null : PersonalhrUtil.getService().getSharingTokenDao().getSharingToken(sharingToken);
+        if(!Context.isAuthenticated() && token==null){
+            //Not allowed to register without a sharing token
+            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register without a valid sharing token");
+            log.error("Failed to register without a valid sharing token");
+            return "redirect:/phr/index.htm?noredirect=true";            
+        } else if(!Context.isAuthenticated() && token.getRelatedPerson()!=null){
+            //Not allowed to register without a sharing token
+            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register with a used sharing token");
+            log.error("Failed to register with a used sharing token");
+            return "redirect:/phr/index.htm?noredirect=true";            
+        } else if(Context.isAuthenticated()) {
+            //Already registered
+            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "You've already registered!");
+            log.error("You've already registered!");
+            return "redirect:/phr/index.htm?noredirect=true";            
+        } else if((!Context.isAuthenticated()||((PhrSecurityService.PhrBasicRole.PHR_ADMINISTRATOR.getValue()).equals(PersonalhrUtil.getService().getPhrRole(Context.getAuthenticatedUser())))) && (user!=null && user.getUserId() != null)) {
+            //Not allowed to modify other user's information
+            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "You're not allowed to view other user's information! user=" + user);
+            log.error("You're not allowed to view other user's information!");
+            return "redirect:/phr/index.htm?noredirect=true";                        
+        }
 		
 		model.addAttribute("isNewUser", isNewUser(user));
 		if (isNewUser(user) || Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS))
@@ -120,6 +153,9 @@ public class PhrUserFormController {
 		if(!isNewUser(user))
 			model.addAttribute("changePassword",new UserProperties(user.getUserProperties()).isSupposedToChangePassword());
 		
+        if (sharingToken != null)
+            model.addAttribute("sharingToken", sharingToken);
+        
 		// not using the default view name because I'm converting from an existing form
 		return "module/personalhr/view/userForm";
 	}
@@ -138,16 +174,31 @@ public class PhrUserFormController {
 	                               @RequestParam(required=false, value="confirm") String confirm,
 	                               @RequestParam(required=false, value="forcePassword") Boolean forcePassword,
 	                               @RequestParam(required=false, value="roleStrings") String[] roles,
-	                               @RequestParam(required=false, value="createNewPerson") String createNewPerson,
+                                   @RequestParam(required=false, value="createNewPerson") String createNewPerson,
+                                   @RequestParam(required=false, value="sharingToken") String sharingToken,
 	                               @ModelAttribute("user") User user, BindingResult errors) {
+	    
+	    if(sharingToken==null) {
+	        sharingToken = (String) model.get("sharingToken");
+	    }
 		
-        log.debug("Entering PhrUserFormController:handleSubmission...");
-		UserService us = Context.getUserService();
+        log.debug("Entering PhrUserFormController:handleSubmission..." + sharingToken);
+        //add temporary privileges
+        boolean isTemporary = false;
+        if(!Context.isAuthenticated()) {                
+            Context.authenticate("temporary", "Temporary8");
+            Context.addProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+            Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+            Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+            Context.addProxyPrivilege("PHR Restricted Patient Access");
+            isTemporary = true;
+            log.debug("Added proxy privileges!");
+        }
+
+        UserService us = Context.getUserService();
 		MessageSourceService mss = Context.getMessageSourceService();
 		
-		if (!Context.isAuthenticated()) {
-			errors.reject("auth.invalid");
-		} else if (mss.getMessage("User.assumeIdentity").equals(action)) {
+		if (mss.getMessage("User.assumeIdentity").equals(action)) {
 			Context.becomeUser(user.getSystemId());
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.assumeIdentity.success");
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, user.getPersonName());
@@ -169,7 +220,7 @@ public class PhrUserFormController {
 			String retireReason = request.getParameter("retireReason");
 			if (!(StringUtils.hasText(retireReason))) {
 				errors.rejectValue("retireReason", "User.disableReason.empty");
-				return showForm(user.getUserId(), createNewPerson, user, model);
+				return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
 			} else {
 				us.retireUser(user, retireReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.retiredMessage");
@@ -178,8 +229,7 @@ public class PhrUserFormController {
 		} else if(mss.getMessage("User.unRetire").equals(action)) {
 			us.unretireUser(user);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.unRetiredMessage");
-		}else {
-				
+		}else {	
 			// check if username is already in the database
 			if (us.hasDuplicateUsername(user))
 				errors.rejectValue("username", "error.username.taken");
@@ -223,6 +273,11 @@ public class PhrUserFormController {
 					}
 					newRoles.add(role);
 				}
+			} else {
+                Role role = us.getRole("PHR Restricted User");
+                newRoles.add(role);			    
+                user.addRole(role);
+                log.debug("Added PHR Restricted User role only: " + role);
 			}
 			
 			if (user.getRoles() == null)
@@ -248,12 +303,57 @@ public class PhrUserFormController {
 			uv.validate(user, errors);
 			
 			if (errors.hasErrors()) {
-				return showForm(user.getUserId(), createNewPerson, user, model);
+                log.debug("errors validating user: " + errors.getErrorCount() + errors.toString());
+				return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
 			}
 			
-			if (isNewUser(user)){
-				us.saveUser(user, password);
-            } else {
+			if (isNewUser(user)){			    
+			    log.debug("Saving new user " + user.getUsername() + ", sharingToken=" + sharingToken);
+			    PhrSharingToken token = PersonalhrUtil.getService().getSharingTokenDao().getSharingToken(sharingToken);
+			    
+			    //check name matching
+			    if(token == null) {
+                   httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register without a valid sharing token");
+                   log.error("Failed to register without a valid sharing token");
+                   if(isTemporary) {
+                       Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+                       Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS); 
+                       Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+                       Context.removeProxyPrivilege("PHR Restricted Patient Access");
+                       Context.logout();
+                       log.debug("Removed proxy privileges!");
+                  }            
+                   return "redirect:/phr/index.htm?noredirect=true";                                                  
+                } else  if(token!=null && token.getRelatedPerson() != null) {			        
+			        httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register with a used sharing token");
+		            log.error("Failed to register with a used sharing token");
+		            if(isTemporary) {
+		                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+		                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS); 
+		                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		                Context.removeProxyPrivilege("PHR Restricted Patient Access");
+		                Context.logout();
+		                log.debug("Removed proxy privileges!");
+		            }            
+
+		            return "redirect:/phr/index.htm?noredirect=true";            			        
+			    } else if(token.getRelatedPersonName().toLowerCase().contains(user.getFamilyName().toLowerCase()) && token.getRelatedPersonName().toLowerCase().contains(user.getGivenName().toLowerCase())) {			        
+			        log.debug("PHR Restricted Patient Access=" + Context.getAuthenticatedUser().hasPrivilege("PHR Restricted Patient Access"));;
+			        us.saveUser(user, password);
+			        
+                    token.setRelatedPerson(user.getPerson());
+                    token.setChangedBy(user);
+                    Date date = new Date();
+                    token.setDateChanged(date);
+                    token.setActivateDate(date);                    
+                    PersonalhrUtil.getService().getSharingTokenDao().savePhrSharingToken(token);
+                    httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");                    
+                    log.debug("New self-registered user created: " + user.getUsername());
+			    } else {			        
+		            httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Failed to create new user due to name mismatch: " + user.getFamilyName() + ", " + user.getGivenName());
+                    log.debug("Failed to create new user due to name mismatch: " + token.getRelatedPersonName() + " vs " + user.getFamilyName() + ", " + user.getGivenName());			        
+			    }
+	         } else {
 				us.saveUser(user, null);
                 
 				if (!password.equals("") && Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
@@ -261,15 +361,26 @@ public class PhrUserFormController {
 						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
 					us.changePassword(user, password);
 				}
+                log.debug("Existing user " + user.getUsername() + " changed by user " + Context.getAuthenticatedUser().getUsername());
+                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
 			}
             
             if (StringUtils.hasLength(secretQuestion) && StringUtils.hasLength(secretAnswer)) {
             	us.changeQuestionAnswer(user, secretQuestion, secretAnswer);
+                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
             }
             
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
+            //remove temporary privileges
+            if(isTemporary) {
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS); 
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+                Context.removeProxyPrivilege("PHR Restricted Patient Access");
+                Context.logout();
+                log.debug("Removed proxy privileges!");
+           }            
 		}
-		return "redirect:user.list";
+		return "redirect:/phr/index.htm?noredirect=true";
 	}
 	/**
 	 * Superficially determines if this form is being filled out for a new user (basically just

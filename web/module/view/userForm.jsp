@@ -38,6 +38,9 @@
 	<c:if test="${param.userId != null}">
 		<input type="hidden" name="userId" value="${param.userId}"/>
 	</c:if>
+	<c:if test="${param.sharingToken != null}">
+		<input type="hidden" name="sharingToken" value="${param.sharingToken}"/>
+	</c:if>
 	<fieldset>
 		<legend><spring:message code="User.demographicInfo"/></legend>
 				<table>
@@ -118,13 +121,14 @@
 			
 			<tr><td colspan="2">&nbsp;</td></tr>
 			
+			<openmrs:hasPrivilege privilege="PHR All Patients Access">
 			<tr>
 				<td valign="top"><spring:message code="User.roles"/></td>
 				<td valign="top">
 					<openmrs:listPicker name="roleStrings" allItems="${allRoles}" currentItems="${user.roles}" />
 				</td>
 			</tr>
-			
+			</openmrs:hasPrivilege>			
 			<tr><td colspan="2">&nbsp;</td></tr>
 			
 			<tr>
@@ -196,12 +200,12 @@
 	
 	<c:if test="${user.userId != null}">
 		<c:if test="${!user.retired}">
-		<openmrs:hasPrivilege privilege="Become User (Actually you need to be a superuser)">
+		<openmrs:hasPrivilege privilege="PHR All Patients Access">
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<input type="submit" name="action" value="<spring:message code="User.assumeIdentity" />" onClick="return confirm('<spring:message code="User.assumeIdentity.confirm"/>');" />
 		</openmrs:hasPrivilege>
 		</c:if>
-		<openmrs:hasPrivilege privilege="Delete User">
+		<openmrs:hasPrivilege privilege="PHR All Patients Access">
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<input type="submit" name="action" value="<spring:message code="User.delete" />" onClick="return confirm('<spring:message code="User.delete.confirm"/>');" />
 		</openmrs:hasPrivilege>

@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 
 <spring:message var="pageTitle" code="index.title" scope="page"/>
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>

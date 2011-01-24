@@ -16,6 +16,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
+		<meta http-equiv="Pragma" content="no-cache"> 
+		<meta http-equiv="Expires" content="0"> 		
 		<openmrs:htmlInclude file="/openmrs.js" />
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<link href="<openmrs:contextPath/><spring:theme code='stylesheet' />" type="text/css" rel="stylesheet" />
