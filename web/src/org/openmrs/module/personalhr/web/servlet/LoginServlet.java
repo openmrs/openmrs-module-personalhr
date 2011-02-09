@@ -119,6 +119,7 @@ public class LoginServlet extends HttpServlet {
 				
 				String username = request.getParameter("uname");
 				String password = request.getParameter("pw");
+				String sharingToken = request.getParameter("sharingToken");
 				
 				// only try to authenticate if they actually typed in a username
 				if (username == null || username.length() == 0)
@@ -127,10 +128,13 @@ public class LoginServlet extends HttpServlet {
 				Context.authenticate(username, password);
 				
 				if (Context.isAuthenticated()) {
-					
 					httpSession.setAttribute("loginAttempts", 0);
 					User user = Context.getAuthenticatedUser();
-					
+
+	                log.debug("Logged in: username="+username+", sharingToken="+sharingToken);
+	                //update sharimg token table
+	                PersonalhrUtil.getService().getSharingTokenDao().updateSharingToken(user, user.getPerson(), sharingToken);	                    	                    
+
 					// load the user's default locale if possible
 					if (user.getUserProperties() != null) {
 						if (user.getUserProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {

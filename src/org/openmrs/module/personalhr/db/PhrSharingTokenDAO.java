@@ -65,4 +65,12 @@ public interface PhrSharingTokenDAO {
      * @return
      */
     public PhrSharingToken getSharingToken(String tokenString);
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param person
+     * @param sharingToken
+     */
+    public void updateSharingToken(User user, Person person, String sharingToken);
 }

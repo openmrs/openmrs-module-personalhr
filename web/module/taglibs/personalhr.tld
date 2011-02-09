@@ -187,5 +187,34 @@
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 </tag>
+<tag>
+	<description>
+		Loops over all the alerts for a user.  If user is not defined, the
+		authenticated user is searched.  
+	</description>
+	<name>forEachAlert</name>
+	<tag-class>org.openmrs.module.personalhr.web.taglib.ForEachAlertTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>user</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>role</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>includeRead</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>includeExpired</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
 
 </taglib>

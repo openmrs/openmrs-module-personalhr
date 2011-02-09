@@ -14,6 +14,8 @@
 package org.openmrs.module.personalhr.web.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +45,12 @@ public class SpringController implements Controller {
 		path = "module/personalhr/view/" + path;
 		//int qmark = path.indexOf("?");
 		log.debug("Exiting: path=" + path);
-		return new ModelAndView(path);
+		
+        Map<String, Object> model = new HashMap<String, Object>();
+        String sharingToken = request.getParameter("sharingToken");
+        model.put("sharingToken", sharingToken);
+        
+		return new ModelAndView(path, "model", model);
 		
 	}
 }

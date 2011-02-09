@@ -150,5 +150,16 @@
    			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/lancearmstrong/patientFollowCareForm.form','View Treatment Summary',1);		
         </sql>
 	</diff>
+	<diff>
+		<version>1.0.0</version>
+		<author>Hui Xiao</author>
+		<date>Nov 22 2010</date>
+		<description>
+			Insert a new logic rule token
+		</description>
+		<sql>	
+			insert into logic_rule_token (creator, date_created, token, class_name) values (1, now(), 'Follow-up Care Alert', 'org.openmrs.module.lancearmstrong.FollowupCareAlertRule');
+        </sql>
+	</diff>
 	
 </sqldiff>

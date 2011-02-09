@@ -119,24 +119,20 @@
 				dwr.engine.setWarningHandler(handler);
 			</script>
 
-			<openmrs:forEachAlert>
-				<c:if test="${varStatus.first}"><div id="alertOuterBox"><div id="alertInnerBox"></c:if>
-					<div class="alert">
-						<a href="#markRead" onClick="return markAlertRead(this, '${alert.alertId}')" HIDEFOCUS class="markAlertRead">
-							<img src="${pageContext.request.contextPath}/images/markRead.gif" alt='<spring:message code="Alert.mark"/>' title='<spring:message code="Alert.mark"/>'/> <span class="markAlertText"><spring:message code="Alert.markAsRead"/></span>
-						</a>
-						${alert.text} ${alert.dateToExpire} <c:if test="${alert.satisfiedByAny}"><i class="smallMessage">(<spring:message code="Alert.mark.satisfiedByAny"/>)</i></c:if>
+			<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.alertBar" type="html">
+				<%--openmrs:hasPrivilege privilege="${extension.requiredPrivilege}"--%>
+					<div id="${extension.tabId}" >
+						<c:choose>
+							<c:when test="${extension.portletUrl == '' || extension.portletUrl == null}">
+								portletId is null: '${extension.extensionId}'
+							</c:when>
+							<c:otherwise>
+								<openmrs:portlet url="${extension.portletUrl}" id="${extension.tabId}" moduleId="${extension.moduleId}"/>							
+							</c:otherwise>
+						</c:choose>
 					</div>
-				<c:if test="${varStatus.last}">
-					</div>
-					<div id="alertBar">
-						<img src="${pageContext.request.contextPath}/images/alert.gif" align="center" alt='<spring:message code="Alert.unreadAlert"/>' title='<spring:message code="Alert.unreadAlert"/>'/>
-						<c:if test="${varStatus.count == 1}"><spring:message code="Alert.unreadAlert"/></c:if>
-						<c:if test="${varStatus.count != 1}"><spring:message code="Alert.unreadAlerts" arguments="${varStatus.count}" /></c:if>
-					</div>
-					</div>
-				</c:if>
-			</openmrs:forEachAlert>
+				<%--/openmrs:hasPrivilege--%>
+			</openmrs:extensionPoint>
 
 			<c:if test="${msg != null}">
 				<div id="openmrs_msg"><spring:message code="${msg}" text="${msg}" arguments="${msgArgs}" /></div>

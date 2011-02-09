@@ -53,7 +53,8 @@ public class PersonalhrUtil {
 	    OpenmrsConstants.PRIV_ADD_PERSONS,
 	    OpenmrsConstants.PRIV_EDIT_PERSONS,
 	    OpenmrsConstants.PRIV_ADD_PATIENTS,
-	    OpenmrsConstants.PRIV_EDIT_PATIENTS
+	    OpenmrsConstants.PRIV_EDIT_PATIENTS,
+	    OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS
 	};
 	
   

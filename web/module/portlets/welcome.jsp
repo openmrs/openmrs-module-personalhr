@@ -18,7 +18,7 @@
 		<spring:message code="welcome" arguments="${fn:substring(pageContext.request.contextPath,1,-1)}" />
 		<c:if test="${model.showLogin == 'true'}">
 			<br/>
-			<openmrs:portlet url="../module/personalhr/portlets/login" parameters="redirect=${model.redirect}" />
+			<openmrs:portlet url="../module/personalhr/portlets/login" parameters="redirect=${model.redirect}|sharingToken=${model.sharingToken}" />
 		</c:if>
 	</c:otherwise>
 </c:choose>

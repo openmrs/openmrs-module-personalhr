@@ -65,6 +65,17 @@
 							</spring:bind>
 						</td>
 					</tr>
+					<tr>
+						<td><spring:message code="personalhr.email"/></td>
+						<td>
+						<openmrs:fieldGen 
+							type="java.lang.String" 
+							formFieldName="Email" 
+							val="${user.person.attributeMap['Email'].hydratedObject}" 
+							parameters="optionHeader=[blank]|isNullable=false" /> <%-- isNullable=false so booleans don't have 'unknown' radiobox --%>
+						
+						</td>
+					</tr>
 				</table>
 	</fieldset>	
 

@@ -1,5 +1,6 @@
 package org.openmrs.module.personalhr.db.hibernate;
 
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Patient;
@@ -154,5 +155,35 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
             return list.get(0);
         else
             return null;
+    }
+
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#updateSharingToken(org.openmrs.Person, java.lang.String)
+     */
+    @Override
+    public void updateSharingToken(User user, Person person, String sharingToken) {
+        // TODO Auto-generated method stub
+        PhrSharingToken token = getSharingToken(sharingToken);
+        if(token != null) {
+            Date date = new Date();
+
+            if(token.getExpireDate().after(date)){
+                if( token.getRelatedPerson()==null) {
+                    token.setRelatedPerson(person);
+                    token.setChangedBy(user);                  
+                    token.setDateChanged(date);
+                    token.setActivateDate(date);
+                    savePhrSharingToken(token);
+                    log.debug("Sharing token updated: " + token.getId());
+                } else {
+                    log.debug("Sharing token is igored because it was activated before by: " + token.getChangedBy() + " at " + token.getActivateDate());
+                }               
+            } else {
+                log.debug("Sharing token is ignored because it expired at " + token.getExpireDate());
+            }
+        } else {
+            log.debug("Sharing token is ignored because it is invalid: " + sharingToken);
+        }
+        
     }
 }

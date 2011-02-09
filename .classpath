@@ -88,14 +88,12 @@
 	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/xerces/xercesSamples.jar"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/xerces/xml-apis.jar"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/xstream/xstream-1.3.1.jar"/>
-	<classpathentry kind="lib" path="/openmrs-1.7.x/dist/openmrs-api-1.7.0.15985-RC.jar"/>
-	<classpathentry kind="lib" path="/openmrs-1.7.x/dist/tests-openmrs-api-1.7.0.15985-RC.jar" sourcepath="/openmrs-1.7.x/test/api"/>
-	<classpathentry kind="lib" path="/openmrs-1.7.x/dist/web-openmrs-api-1.7.0.15985-RC.jar"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/metadata/api/hibernate"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/metadata/api/log4j"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/metadata/api/spring"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/metadata/model"/>
-	<classpathentry kind="lib" path="build"/>
-	<classpathentry kind="lib" path="dist"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.7.2.18048-dev.jar"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.7.2.18048-dev.jar"/>
+	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.7.2.18048-dev.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

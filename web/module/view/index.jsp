@@ -19,7 +19,7 @@
 	
 	<br/><br/><br/>
 	
-	<openmrs:portlet url="../module/personalhr/portlets/welcome" parameters="showName=true|showLogin=true" />
+	<openmrs:portlet url="../module/personalhr/portlets/welcome" parameters="showName=true|showLogin=true|sharingToken=${model.sharingToken}" />
 </center>
 </c:if>
 
