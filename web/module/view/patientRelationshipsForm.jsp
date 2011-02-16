@@ -2,11 +2,6 @@
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
 <openmrs:htmlInclude file="/scripts/easyAjax.js" />
 
-<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
-<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
-<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css" />
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 <script type="text/javascript">
 	$j(document).ready(function() {
 		$j('#addNewRelationshipPopup').dialog({

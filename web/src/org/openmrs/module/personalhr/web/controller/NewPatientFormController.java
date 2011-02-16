@@ -647,6 +647,8 @@ public class NewPatientFormController extends SimpleFormController {
 				}
 			}
 		}
+
+        log.debug("Patient=" + p + ", id: " + id);
 		
 		ShortPatientModel patient = new ShortPatientModel(p);
 		

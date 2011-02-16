@@ -25,10 +25,10 @@
 		<openmrs:htmlInclude file="/dwr/engine.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
 		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
-			<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
-			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
+	<openmrs:htmlInclude file="/moduleResources/lancearmstrong/jquery-1.4.4.min.js" />
+	<openmrs:htmlInclude file="/moduleResources/lancearmstrong/jquery-ui-1.8.9.custom.css" />
+	<openmrs:htmlInclude file="/moduleResources/lancearmstrong/jquery-ui-1.8.9.custom.min.js" />
 			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
-			<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css" />
 		</c:if>
 		<link rel="icon" type="image/ico" href="<openmrs:contextPath/><spring:theme code='favicon' />">
 
@@ -120,7 +120,7 @@
 			</script>
 
 			<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.alertBar" type="html">
-				<%--openmrs:hasPrivilege privilege="${extension.requiredPrivilege}"--%>
+				<personalhr:hasPrivilege privilege="${extension.requiredPrivilege}">
 					<div id="${extension.tabId}" >
 						<c:choose>
 							<c:when test="${extension.portletUrl == '' || extension.portletUrl == null}">
@@ -131,7 +131,7 @@
 							</c:otherwise>
 						</c:choose>
 					</div>
-				<%--/openmrs:hasPrivilege--%>
+				</personalhr:hasPrivilege>
 			</openmrs:extensionPoint>
 
 			<c:if test="${msg != null}">

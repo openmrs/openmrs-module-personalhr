@@ -14,11 +14,6 @@
 	<spring:message var="pageTitle" code="patientDashboard.title" scope="page"/>
 </c:if>
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
-<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
-<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
-<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css" />
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 
 <script type="text/javascript">
 	var timeOut = null;
