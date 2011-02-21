@@ -189,4 +189,24 @@ public class PersonalhrUtil {
         String email = "hxiao@regenstrief.org";
         System.out.print(email + " is valid? " + isValidEmail("hxiao@regenstrief.org"));
     }
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param attribute
+     * @return
+     */
+    public static Integer getInteger(Object value) {
+        // TODO Auto-generated method stub
+        if(value== null) {
+            return null;
+        } else if (value instanceof String ) {
+            return  getParamAsInteger( (String) value);
+        } else if (value instanceof Integer) {
+            return (Integer) value;
+        } else {
+            log.error("getInteger called for non integer value: " + value);
+            return null;
+        }
+    }
 }

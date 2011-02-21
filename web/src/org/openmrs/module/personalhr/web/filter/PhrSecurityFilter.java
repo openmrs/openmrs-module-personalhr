@@ -93,8 +93,10 @@ public class PhrSecurityFilter implements Filter {
                log.debug("***URL access not allowed!!! " + requestURI + "|" + pat + "|" + per + "|" + Context.getAuthenticatedUser());
                config.getServletContext().getRequestDispatcher(loginForm).forward(request, response);
             } 
+           
+           log.debug("***URL access is allowed for this authenticated user!!! " + Context.getAuthenticatedUser().getUsername() + "|" + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
         } else {
-            log.debug("***URL access is allowed!!! " + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
+            log.debug("***URL access is allowed for all unauthenticated users!!! " + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
         }
         
         chain.doFilter(request, response);       

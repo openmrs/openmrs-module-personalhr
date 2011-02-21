@@ -106,6 +106,7 @@
 			insert into phr_security_rule (privilege, required_role, creator) values ('View Journal','Administrator, Owner, Share Medical',1);
 			insert into phr_security_rule (privilege, required_role, creator) values ('Create Message','Administrator, Owner',1);
 			insert into phr_security_rule (privilege, required_role, creator) values ('View Message','Administrator, Owner',1);			
+			insert into phr_security_rule (privilege, required_role, creator) values ('PHR Authenticated','Administrator, Owner, Share Medical, Share Journal',1);			
 		</sql>
 	</diff>
 	
@@ -148,6 +149,8 @@
 			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/admin/patients/newPatient.form','View Treatment Summary',1);		
    			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/lancearmstrong/portlets/patientFollowCare.portlet','View Treatment Summary',1);		
    			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/lancearmstrong/patientFollowCareForm.form','View Treatment Summary',1);		
+   			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/module/lancearmstrong/htmlFormEntryForm.form','View Treatment Summary',1);		
+   			insert into phr_allowed_url (allowed_url,required_privilege,creator) values ('/openmrs/module/lancearmstrong/htmlFormEntryForm.form','View Treatment Summary',1);		
         </sql>
 	</diff>
 	<diff>

@@ -1,0 +1,203 @@
+<!-- CANCER TREATMENT - CHEMOTHEROPY -->
+<htmlform>
+<div id="realtooltip"  style="visibility:hidden">
+Encounter date: <encounterDate default="now"/> 
+Location: <encounterLocation default="2"/>
+Provider: <encounterProvider role="Provider" default="currentuser"/>
+</div>
+
+Name of medication:<span style="color:red">*</span> (Required) <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6156" answerConceptId="6123" answerLabel="Oxaliplation (eloxatin)" style="checkbox"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6156" answerConceptId="6124" answerLabel="Mitomycin (multamycin)" style="checkbox"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6156" answerConceptId="6125" answerLabel="Fluoruracil (5-FU, adrucil)" style="checkbox"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6156" answerConceptId="6126" answerLabel="Capecitabine (xeloda)" style="checkbox"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6156" answerConceptId="6127" answerLabel="Irinotecan (camptosar, cpt-11)" style="checkbox"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6156" answerConceptId="6128" answerLabel="Bavacizumab (erbitux)" style="checkbox"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6156" answerConceptId="6129" answerLabel="Cetuximab (erbitux)" style="checkbox"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6156" answerConceptId="6130" answerLabel="Panitumumab (vectibix)" style="checkbox"/> <br/>
+
+<obs conceptId="6119" labelText="Any major complications:" style="radio" required="true"/>(Required)<br/>
+<span style="padding-left:20px"/>
+If YES, please describe: <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6120" rows="3" cols="80"/><br/>
+
+<obs conceptId="6131" labelText="Central line:" style="radio"/>(Required) <br/>
+
+When received? <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6132" labelText="Start:" /> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6133" labelText="Finish:" /> <br/>
+
+
+<obsgroup groupingConceptId="6140">
+<obs conceptId="6121" labelText="Name of institution where you had surgery:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6122" labelText="Town/city:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6141" labelText="State:" /><br/>
+</obsgroup>
+
+<obsgroup groupingConceptId="6143">
+<obs conceptId="6107" labelText="Name of oncologist:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6108" labelText="Phone number of oncologist's office:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6109" labelText="Email address of oncologist:" /><br/>
+</obsgroup>
+
+
+<br/>
+
+<submit/>
+</htmlform>
+
+<!-- CANCER TREATMENT - RADIATION -->
+
+<htmlform>
+<div id="realtooltip"  style="visibility:hidden">
+Encounter date: <encounterDate default="now"/> 
+Location: <encounterLocation default="2"/>
+Provider: <encounterProvider role="Provider" default="currentuser"/>
+</div>
+
+Type of radiation:<span style="color:red">*</span> (Required)<br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6154" answerConceptId="6134" AnswerLabel="x-ray based radiation" style="checkbox"/><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6154" answerConceptId="6137" AnswerLabel="proto-based radiation" style="checkbox"/><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6154" answerConceptId="6138" AnswerLabel="cobalt-based radiation" style="checkbox"/><br/>
+
+<obs conceptId="6119" labelText="Any major complications:" style="radio" required="true"/>(Required)<br/>
+<span style="padding-left:20px"/>
+If YES, please describe: <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6120" rows="3" cols="80"/><br/>
+
+When received? <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6132" labelText="Start:" /> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6133" labelText="Finish:" /> <br/>
+
+
+<obsgroup groupingConceptId="6140">
+<obs conceptId="6121" labelText="Name of institution where you had surgery:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6122" labelText="Town/city:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6141" labelText="State:" /><br/>
+</obsgroup>
+
+<obsgroup groupingConceptId="6144">
+<obs conceptId="6107" labelText="Name of physician who supervised radiation therapy:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6108" labelText="Phone number of radiation therapist's office:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6109" labelText="Email address of radiation therapist:" /><br/>
+</obsgroup>
+
+
+<br/>
+
+<submit/>
+</htmlform>
+
+<!-- CANCER TREATMENT - SURGERY -->
+
+<htmlform>
+<div id="realtooltip"  style="visibility:hidden">
+Encounter date: <encounterDate default="now"/> 
+Location: <encounterLocation default="2"/>
+Provider: <encounterProvider role="Provider" default="currentuser"/> 
+</div>
+
+Type of surgery:<span style="color:red">*</span> (Required) <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6152" answerConceptId="6112" answerLabel="Permanent colostomy or ileostomy"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6152" answerConceptId="6113" answerLabel="Lymph node removal/dissection"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6152" answerConceptId="6114" answerLabel="Surgery for rectal or anal cancer"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6152" answerConceptId="6115" answerLabel="Removal of section of bowel"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6152" answerConceptId="6116" answerLabel="Removal of female reproductive organs"/> <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6152" answerConceptId="6117" answerLabel="Removal of bladder"/> <br/>
+
+
+<obs conceptId="6118" labelText="Date of surgery:" required="true"/>(Required) <br/>
+ 
+<obs conceptId="6119" labelText="Any major complications:" style="radio" required="true"/>(Required)<br/>
+<span style="padding-left:20px"/>
+If YES, please describe: <br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6120" rows="3" cols="80"/><br/>
+
+
+<obsgroup groupingConceptId="6140">
+<obs conceptId="6121" labelText="Name of institution where you had surgery:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6122" labelText="Town/city:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6141" labelText="State:" /><br/>
+</obsgroup>
+
+<obsgroup groupingConceptId="6143">
+<obs conceptId="6107" labelText="Name of surgeon:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6108" labelText="Phone number of surgeon's office:" /><br/>
+<span style="padding-left:20px"/>
+<obs conceptId="6109" labelText="Email address of surgeon:" /><br/>
+</obsgroup>
+
+<br/>
+
+<submit/>
+</htmlform>
+
+<!-- Cancer Treatment Summary -->
+<htmlform>
+<div id="realtooltip"  style="visibility:hidden">
+Encounter date: <encounterDate default="now"/> 
+Location: <encounterLocation default="2"/>
+Provider: <encounterProvider role="Provider" default="currentuser"/>
+</div>
+
+<obs conceptId="6145" labelText="Type of cancer" required="true" /> (Required)<br/>
+
+<obs conceptId="6146" labelText="Stage of cancer" required="true"/>(Required)<br/>
+ 
+<obs conceptId="6101" labelText="Date of cancer diagnosis" required="true"/>(Required) <br/>
+
+<obs conceptId="6102" labelText="Has your doctor told you that you have a genetic or predisposing abnormality?" style="yes_no" required="true"/>(Required)<br/>
+<span style="padding-left:20px">
+<obs conceptId="6147"  labelText="If YES, please specify:"/><br/>
+</span>
+<obsgroup groupingConceptId="6143">
+<obs conceptId="6107" labelText="Primary care doctor's name (family doctor, internist, etc.):" /><br/>
+<obs conceptId="6108" labelText="Phone number of primary care doctor's office:" /><br/>
+<obs conceptId="6109" labelText="Email address of primary care doctor:" /><br/>
+</obsgroup>
+
+<br/><br/>
+Treatment History - Surgery <br/>
+<htmlformflowsheet formId="8"/> <br/><br/>
+Treatment History - Chemotherapy<br/>
+<htmlformflowsheet formId="7"/><br/><br/>
+Treatment History - Radiation<br/>
+<htmlformflowsheet formId="9"/><br/><br/>
+
+<submit/>
+</htmlform>

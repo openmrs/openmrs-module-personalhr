@@ -2,6 +2,7 @@
 <%-- 
 <openmrs:phrRequire privilege="PHR - View Patient" otherwise="/phr/login.htm" redirect="/module/personalhr/view/patientDashboard.form" />
 --%>
+<personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/module/personalhr/view/patientDashboard.form" />
 
 <c:set var="OPENMRS_VIEWING_PATIENT_ID" scope="request" value="${patient.patientId}"/>
 <openmrs:globalProperty var="enablePatientName" key="dashboard.showPatientName" defaultValue="false"/>
@@ -28,7 +29,7 @@
 			if (tabs.length && tabs[0].id)
 				c = tabs[0].id;
 		}
-		
+		//changeTab("patientTreatmentSummaryTab");
 		changeTab(c);
 
 	}

@@ -101,21 +101,20 @@ public class RequireTag extends TagSupport {
 			//TODO find correct error to throw 
 			throw new APIException("The context is currently null.  Please try reloading the site.");
 		}
-		
-        if(!userContext.isAuthenticated()) {
-            log.error("userContext is not authenticated!");
-            return SKIP_BODY; 
-        } 
-        
+		       
         User user = userContext.getAuthenticatedUser();
         
-        Integer patientId = (Integer) pageContext.getAttribute("patientId");
+        Integer patientId = PersonalhrUtil.getInteger(pageContext.getAttribute("patientId"));
         if(patientId==null) 
-            patientId = (Integer)this.pageContext.getRequest().getAttribute("patientId");
+            patientId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getAttribute("patientId"));
+        if(patientId==null) 
+            patientId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getParameter("patientId"));
  
-        Integer personId = (Integer) pageContext.getAttribute("personId");
+        Integer personId = PersonalhrUtil.getInteger( pageContext.getAttribute("personId"));
         if(personId==null) 
-            personId = (Integer) this.pageContext.getRequest().getAttribute("personId");
+            personId = PersonalhrUtil.getInteger( this.pageContext.getRequest().getAttribute("personId"));
+        if(personId==null) 
+            personId = PersonalhrUtil.getInteger( this.pageContext.getRequest().getParameter("personId"));
         
         log.debug("Checking user " + user + " for privs " + privilege + " on personId|patientId " + personId + "|" + patientId);
 
@@ -253,6 +252,10 @@ public class RequireTag extends TagSupport {
 	 */
 	private boolean hasPrivileges(User user, Person per, Patient pat, String privilege, String[] allPrivilegesArray,
 	                              String[] anyPrivilegeArray) {
+	    if(user==null) {
+	        return false;
+	    }
+	    
         PhrSecurityService serv = PersonalhrUtil.getService();
 
 		if (privilege != null && !serv.hasPrivilege(privilege.trim(), pat, per, user))
