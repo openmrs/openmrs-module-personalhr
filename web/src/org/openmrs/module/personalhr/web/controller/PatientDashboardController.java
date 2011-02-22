@@ -65,7 +65,9 @@ public class PatientDashboardController extends SimpleFormController {
 			if (patientId == null) {
 				patientId = getPatientId(Context.getAuthenticatedUser().getPerson());
 				if(patientId == null) {
-					throw new ServletException("Integer 'patientId' is a required parameter");
+					//throw new ServletException("Integer 'patientId' is a required parameter");
+				    log.error("Integer 'patientId' is a required parameter");
+				    return new Patient();				    
 				}
 			}
             request.setAttribute("patientId", patientId);		

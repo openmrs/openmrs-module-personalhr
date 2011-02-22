@@ -7,10 +7,59 @@
 	<c:set var="errorsFromPreviousSubmit" value="true"/>
 </spring:hasBindErrors>
 
+<c:set var="selfRegistration" value="true"/>
+<openmrs:hasPrivilege privilege="PHR All Patients Access">
+	<c:set var="selfRegistration" value="false"/>
+</openmrs:hasPrivilege>
+
+<c:choose>
+	<c:when test="${selfRegistration=='false' && errorsFromPreviousSubmit == 'false' && empty param.userId && empty param.person_id && empty createNewPerson}">	
+		<script type="text/javascript">
+			function personSelectedCallback(relType, person) {
+				if (person != null && person.personId != null) {
+					document.getElementById('useExistingButton').disabled = false;
+				} else {
+					document.getElementById('useExistingButton').disabled = true;
+				}
+			}
+		</script>
+		<h2><spring:message code="User.title.add"/></h2>
+		<spring:message code="User.needsAPerson"/>
+		<br/>
+		<br/>
+		<table>
+			<tr valign="top">
+				<td style="border-right: 1px lightgrey solid; padding-right: 5em">
+					<h3><spring:message code="User.createNewPerson"/></h3>
+					<form method="get" action="user.form">
+						<input type="hidden" name="createNewPerson" value="true"/>
+						<input type="submit" value="<spring:message code="general.next"/>"/>
+					</form>
+				</td>
+				<td style="padding-left: 5em">
+					<h3><spring:message code="User.useExisting"/></h3>
+					<form method="get" action="user.form">
+						<spring:message code="User.whichPerson"/> <openmrs_tag:personField formFieldName="person_id" formFieldId="existingPersonId" callback="personSelectedCallback"/>
+						<br/>
+						<input id="useExistingButton" disabled="true" type="submit" value="<spring:message code="general.next"/>"/>
+					</form>
+				</td>
+			</tr>
+		</table>
+	</c:when>
+	<c:otherwise>
+
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <openmrs:htmlInclude file="/scripts/validation.js" />
 
-<h2><spring:message code="personalhr.self_registration"/></h2>
+<c:choose>
+<c:when test="${selfRegistration == 'true'}">	
+	<h2><spring:message code="personalhr.self_registration"/></h2>
+</c:when>
+<c:otherwise>
+	<h2><spring:message code="User.title"/></h2>
+</c:otherwise>
+</c:choose>
 
 <c:if test="${user.retired}">
 	<div id="userFormRetired" class="retiredMessage">
@@ -41,6 +90,9 @@
 	<c:if test="${param.sharingToken != null}">
 		<input type="hidden" name="sharingToken" value="${param.sharingToken}"/>
 	</c:if>
+	<c:if test="${createNewPerson}">
+		<input type="hidden" name="createNewPerson" value="true"/>
+	</c:if>	
 	<fieldset>
 		<legend><spring:message code="User.demographicInfo"/></legend>
 				<table>
@@ -132,14 +184,14 @@
 			
 			<tr><td colspan="2">&nbsp;</td></tr>
 			
-			<openmrs:hasPrivilege privilege="PHR All Patients Access">
+			<c:if test="${selfRegistration == 'false'}">	
 			<tr>
 				<td valign="top"><spring:message code="User.roles"/></td>
 				<td valign="top">
 					<openmrs:listPicker name="roleStrings" allItems="${allRoles}" currentItems="${user.roles}" />
 				</td>
 			</tr>
-			</openmrs:hasPrivilege>			
+			</c:if>			
 			<tr><td colspan="2">&nbsp;</td></tr>
 			
 			<tr>
@@ -211,21 +263,22 @@
 	
 	<c:if test="${user.userId != null}">
 		<c:if test="${!user.retired}">
-		<openmrs:hasPrivilege privilege="PHR All Patients Access">
-			&nbsp;&nbsp;&nbsp;&nbsp;
-			<input type="submit" name="action" value="<spring:message code="User.assumeIdentity" />" onClick="return confirm('<spring:message code="User.assumeIdentity.confirm"/>');" />
-		</openmrs:hasPrivilege>
+			<c:if test="${selfRegistration == 'false'}">	
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="submit" name="action" value="<spring:message code="User.assumeIdentity" />" onClick="return confirm('<spring:message code="User.assumeIdentity.confirm"/>');" />
+			</c:if>
 		</c:if>
-		<openmrs:hasPrivilege privilege="PHR All Patients Access">
+		<c:if test="${selfRegistration == 'false'}">	
 			&nbsp;&nbsp;&nbsp;&nbsp;
 			<input type="submit" name="action" value="<spring:message code="User.delete" />" onClick="return confirm('<spring:message code="User.delete.confirm"/>');" />
-		</openmrs:hasPrivilege>
+		</c:if>
 	</c:if>
 </form>
 
 <br/>
 
 <c:if test="${not empty user.userId}">
+  <c:if test="${selfRegistration == 'false'}">	
 	<form method="post" action="user.form">
 		<c:if test="${param.userId != null}">
 			<input type="hidden" name="userId" value="${param.userId}"/>
@@ -252,10 +305,14 @@
 			</c:choose>
 		</fieldset>
 	</form>
+  </c:if>
 </c:if>
 
 <script type="text/javascript">
  document.forms[0].elements[0].focus();
 </script>
+
+	</c:otherwise>
+</c:choose>
 
 <%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp" %>

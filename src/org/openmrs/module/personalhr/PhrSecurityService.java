@@ -108,7 +108,24 @@ public interface PhrSecurityService {
         public String getValue() {
             return value;
         }
-    };    
+    };   
+    
+    public enum PhrBasicPrivilege {
+        PHR_ADMINISTRATOR_PRIV ("PHR All Patients Access"),
+        PHR_PATIENT_PRIV ("PHR Single Patient Access"),
+        PHR_RESTRICTED_USER_PRIV ("PHR Restricted Patient Access");
+         
+        private String value;
+        
+        PhrBasicPrivilege(String priv) {
+            this.value = priv;
+        }
+        
+        public String getValue() {
+            return value;
+        }
+    };      
+    
     public boolean isUrlAllowed(String requestedUrl, 
                                 Patient requestedPatient, 
                                 Person requestedPerson, 

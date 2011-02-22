@@ -187,7 +187,7 @@ public class LoginServlet extends HttpServlet {
                             log.error("Error: PHR Restricted user's person id is null!");
                         }
                     } else if(PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)){
-                        redirect = request.getContextPath() + "/findPatient.htm";
+                        redirect = request.getContextPath() + "/phr/findPatient.htm";
                         PersonalhrUtil.addTemporayPrivileges();
                     }
 					

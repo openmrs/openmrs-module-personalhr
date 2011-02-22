@@ -22,6 +22,7 @@
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 			   <prop key="**/personalhr/portlets/restrictedUserRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
+				<prop key="phr/user.list">phrUserList</prop>
 			</props>
 		</property>
     </bean>
@@ -121,6 +122,13 @@
 		<property name="successView"><value>user.form</value></property>
 	</bean>
 	-->
+	<!-- ** User ** -->
+	<bean id="phrUserList" class="org.openmrs.module.personalhr.web.controller.PhrUserListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>userList</value></property>
+		<property name="formView"><value>/module/personalhr/view/userList</value></property>
+		<property name="successView"><value>/phr/user.list</value></property>
+	</bean>
 	
     <!-- Portlet Controllers -->
 	<bean id="phrPortletController" class="org.openmrs.module.personalhr.web.controller.PortletController" />

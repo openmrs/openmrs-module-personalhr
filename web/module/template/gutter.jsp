@@ -19,8 +19,13 @@
 		<openmrs:hasPrivilege privilege="PHR Restricted Patient Access" inverse="true">
 			<openmrs:hasPrivilege privilege="PHR All Patients Access">
 				<li id="findPatientNavLink">
-					<a href="${pageContext.request.contextPath}/findPatient.htm">
+					<a href="${pageContext.request.contextPath}/phr/findPatient.htm">
 						<spring:message code="Navigation.findCreatePatient"/>
+					</a>
+				</li>
+				<li id="manageUserLink">
+					<a href="user.list">
+						<spring:message code="User.manage"/>
 					</a>
 				</li>
 			</openmrs:hasPrivilege>

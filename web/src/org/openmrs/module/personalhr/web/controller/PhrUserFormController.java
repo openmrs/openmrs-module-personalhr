@@ -131,16 +131,18 @@ public class PhrUserFormController {
             session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register with a used sharing token");
             log.error("Failed to register with a used sharing token");
             return "redirect:/phr/index.htm?noredirect=true";            
-        } else if(Context.isAuthenticated()) {
-            //Already registered
-            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "You've already registered!");
-            log.error("You've already registered!");
-            return "redirect:/phr/index.htm?noredirect=true";            
-        } else if((!Context.isAuthenticated()||((PhrSecurityService.PhrBasicRole.PHR_ADMINISTRATOR.getValue()).equals(PersonalhrUtil.getService().getPhrRole(Context.getAuthenticatedUser())))) && (user!=null && user.getUserId() != null)) {
+        } else if(!Context.isAuthenticated() && (user!=null && user.getUserId() != null)) {
             //Not allowed to modify other user's information
             session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "You're not allowed to view other user's information! user=" + user);
             log.error("You're not allowed to view other user's information!");
             return "redirect:/phr/index.htm?noredirect=true";                        
+        } else if(Context.isAuthenticated()) {
+            if(!Context.hasPrivilege(PhrSecurityService.PhrBasicPrivilege.PHR_ADMINISTRATOR_PRIV.getValue())) {
+                //Already registered
+                session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "You've already registered!");
+                log.error("You've already registered!");
+                return "redirect:/phr/index.htm?noredirect=true";  
+            } 
         }
 		
 		model.addAttribute("isNewUser", isNewUser(user));
