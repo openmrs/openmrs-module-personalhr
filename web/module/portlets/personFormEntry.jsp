@@ -18,13 +18,6 @@ Parameters:
 <%-- hack because calling a portlet clears parameters --%>
 <c:set var="showDecorationProp" value="${model.showDecoration}" />
 
-<c:if test="${model.showLastThreeEncounters}">
-	<openmrs:hasPrivilege privilege="View Encounters">
-		<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=3|hideHeader=true|title=Encounter.last.encounters|hideFormEntry=true" />
-		<br/>
-	</openmrs:hasPrivilege>
-</c:if>
-
 <c:if test="${showDecorationProp}">
 	<div class="boxHeader${model.patientVariation}"><spring:message code="FormEntry.fillOutForm"/></div>
 	<div class="box${model.patientVariation}">

@@ -85,26 +85,29 @@ public class PersonalhrUtil {
 	 */
 	public static String getRandomToken() {
 	      int n = 30;
-	      
-	      if(n<=0) {
-	          return null;
-	      }
-	      
-	      char[] token = new char[n];
-	      int c  = 'A';
-	      int  r1 = 0;
-	      for (int i=0; i < n; i++)
-	      {
-	        r1 = (int)(Math.random() * 3);
-	        switch(r1) {
-	          case 0: c = '0' +  (int)(Math.random() * 10); break;
-	          case 1: c = 'a' +  (int)(Math.random() * 26); break;
-	          case 2: c = 'A' +  (int)(Math.random() * 26); break;
-	        }
-	        token[i] = (char)c;
-	      }
-	      return new String(token);
+	      return getRandomToken(n);
 	}
+	
+    public static String getRandomToken(int n) {        
+        if(n<=0) {
+            return null;
+        }
+        
+        char[] token = new char[n];
+        int c  = 'A';
+        int  r1 = 0;
+        for (int i=0; i < n; i++)
+        {
+          r1 = (int)(Math.random() * 3);
+          switch(r1) {
+            case 0: c = '0' +  (int)(Math.random() * 10); break;
+            case 1: c = 'a' +  (int)(Math.random() * 26); break;
+            case 2: c = 'A' +  (int)(Math.random() * 26); break;
+          }
+          token[i] = (char)c;
+        }
+        return new String(token);
+  }	
 		
     public static PhrSecurityService getService() {
         return Context.getService(PhrSecurityService.class);
@@ -208,5 +211,15 @@ public class PersonalhrUtil {
             log.error("getInteger called for non integer value: " + value);
             return null;
         }
+    }
+
+    /**
+     * Auto generated method comment
+     * 
+     * @return
+     */
+    public static String getRandomIdentifer() {
+        int n = 8;
+        return getRandomToken(n);
     }
 }

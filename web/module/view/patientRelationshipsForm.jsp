@@ -39,7 +39,7 @@
 			.dialog('open');
 	}
 
-	function loadRelationDetailPopup(title, personId, startDate, activateDate, expireDate) {
+	function loadRelationDetailPopup(title, personId, startDate, activateDate, expireDate, sharingToken) {
 		$j('#relationDetailPopup')
 			.dialog('option', 'title', title)
 			.dialog('option', 'height', $j(window).height() - 50) 
@@ -47,6 +47,7 @@
 		$j('#startDate').text(startDate);
 		$j('#activateDate').text(activateDate);
 		$j('#expireDate').text(expireDate);		
+		$j('#sharingToken').text(sharingToken);		
 	}	
 
 	function onDelete(id, prompt) {
@@ -163,6 +164,12 @@
 		    <label id="expireDate"></label>
 		    </td>
 		  </tr>	  
+		  <tr>
+		    <td>Token string:</td>
+		    <td>
+		    <label id="sharingToken"></label>
+		    </td>
+		  </tr>	  
 	  </tbody>   
 	</table>
   </form>
@@ -200,10 +207,10 @@
 	  <c:forEach var="token" items="${patient.sharingTokens}" varStatus="status">
 
 		  <tr>
+		    <td><a href="#" onClick="loadRelationDetailPopup('View Detail','${token.relatedPerson.personId}','${token.startDate}','${token.activateDate}','${token.expireDate}', '${token.sharingToken}'); return false;">${token.relatedPersonName}</a></td>
 		  <!-- 
-		    <td><a href="#" onClick="loadRelationDetailPopup('View Detail','${token.relatedPerson.personId}','${token.startDate}','${token.activateDate}','${token.expireDate}'); return false;">${token.relatedPersonName}</a></td>
-  	       -->
-		    <td><span style="color:blue">${token.relatedPersonName}</span></td>
+ 		    <td><span style="color:blue">${token.relatedPersonName}</span></td>
+		  --> 
 		    
 			<td>
 			<spring:bind path="patient.sharingTokens[${status.index}].relationType">

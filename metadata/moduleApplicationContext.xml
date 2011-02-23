@@ -17,8 +17,10 @@
 				<prop key="phr/options.form">phrOptionsForm</prop>
 				<!--<prop key="phr/user.form">phrUserForm</prop>-->
 			   <prop key="**/personalhr/portlets/newPatientForm.portlet">phrNewPatientForm</prop>
+			   <prop key="phr/newPatientForm.form">phrNewPatientForm</prop>
 				<prop key="**/personalhr/portlets/phrNameLayout.portlet">phrNameLayoutPortletController</prop>
-			   
+				<prop key="**/personalhr/portlets/personFormEntry.portlet">personFormEntryPortletController</prop>
+			    <prop key="phr/module/htmlformentry/htmlFormEntry.form">htmlFormEntryController</prop>			   
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 			   <prop key="**/personalhr/portlets/restrictedUserRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   

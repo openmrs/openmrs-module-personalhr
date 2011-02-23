@@ -1,7 +1,7 @@
 
     <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Add Patients" otherwise="/login.htm" redirect="/admin/patients/newPatient.form" />
+<openmrs:require privilege="Add Patients" otherwise="/phr/login.htm" redirect="../module/personalhr/portlets/newPatientForm.portlet" />
 
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
@@ -137,7 +137,7 @@
 	</div>
 </spring:hasBindErrors>
 
-<form method="post" action="newPatient.form" onSubmit="removeHiddenRows()">
+<form method="post" action="newPatientForm.form" onSubmit="removeHiddenRows()">
 	<c:set var="isPhrAdministrator" value="false" />
 	<openmrs:hasPrivilege privilege="PHR All Patients Access">
 		<c:if test="${patient.patientId == null}"><h2><spring:message code="Patient.create"/></h2></c:if>
@@ -145,6 +145,7 @@
 		<c:set var="isPhrAdministrator" value="true" />
 	</openmrs:hasPrivilege>
     
+	<b class="boxHeader"><spring:message code="Patient.addNew"/></b>
 	<table cellspacing="0" cellpadding="7">
 	<tr>
 		<th class="headerCell"><spring:message code="Person.name"/></th>

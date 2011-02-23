@@ -382,7 +382,7 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			if(newIdentifiers.isEmpty()) {
 			    PatientIdentifier ident = new PatientIdentifier();
-			    ident.setIdentifier(patient.getId().toString());
+			    ident.setIdentifier(PersonalhrUtil.getRandomIdentifer());
 			    ident.setIdentifierType(new PatientIdentifierType(1));
 			    ident.setLocation(new Location(1));	
 			    newIdentifiers.add(ident);

@@ -4,6 +4,11 @@
 --%>
 <personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/module/personalhr/view/patientDashboard.form" />
 
+<c:set var="enableFormEntry" value="false"/>
+<openmrs:hasPrivilege privilege="PHR All Patients Access">
+	<c:set var="enableFormEntry" value="true"/>
+</openmrs:hasPrivilege>
+
 <c:set var="OPENMRS_VIEWING_PATIENT_ID" scope="request" value="${patient.patientId}"/>
 <openmrs:globalProperty var="enablePatientName" key="dashboard.showPatientName" defaultValue="false"/>
 
@@ -113,6 +118,9 @@
 	<personalhr:hasPrivilege privilege="View Relationships">	
 		<li><a id="patientRelationshipsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.relationships"/></a></li>
 		<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.demographics"/></a></li>
+		<c:if test="${enableFormEntry}">
+			<li><a id="formEntryTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.formEntry"/></a></li>
+		</c:if>
 	</personalhr:hasPrivilege>
 
 		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.patientDashboardTab" type="html">
@@ -154,7 +162,15 @@
 				<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" parameters="patientId=${patient.patientId}" />
 			</div>						
 		</div>
+
 	</personalhr:hasPrivilege>
+		
+	    <c:if test="${enableFormEntry}">
+			<div id="formEntry" style="display:none;">		
+				<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.FormEntryTabHeader" type="html" parameters="patientId=${patient.patientId}" />
+				<personalhr:portlet url="../module/personalhr/portlets/personFormEntry.portlet" id="formEntryPortlet" personId="${patient.personId}" parameters="showDecoration=true|showLastThreeEncounters=true|returnUrl=${pageContext.request.contextPath}/phr/patientDashboard.form"/>			
+			</div>
+		</c:if>
 		
 		<openmrs:extensionPoint pointId="org.openmrs.module.personalhr.patientDashboardTab" type="html">
 			<%--openmrs:hasPrivilege privilege="${extension.requiredPrivilege}"--%>

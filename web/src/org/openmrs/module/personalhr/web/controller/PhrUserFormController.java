@@ -119,27 +119,28 @@ public class PhrUserFormController {
 
 		// the formBackingObject method above sets up user, depending on userId and personId parameters   
         log.debug("Entering PhrUserFormController:showForm: sharingToken=" + sharingToken + ", httpSession=" + session);
-
+        MessageSourceService mss = Context.getMessageSourceService();
+        
         PhrSharingToken token = sharingToken==null? null : PersonalhrUtil.getService().getSharingTokenDao().getSharingToken(sharingToken);
         if(!Context.isAuthenticated() && token==null){
             //Not allowed to register without a sharing token
-            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register without a valid sharing token");
+            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, mss.getMessage("personalhr.error.valid.invitation"));
             log.error("Failed to register without a valid sharing token");
             return "redirect:/phr/index.htm?noredirect=true";            
         } else if(!Context.isAuthenticated() && token.getRelatedPerson()!=null){
             //Not allowed to register without a sharing token
-            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register with a used sharing token");
+            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, mss.getMessage("personalhr.error.valid.invitation"));
             log.error("Failed to register with a used sharing token");
             return "redirect:/phr/index.htm?noredirect=true";            
         } else if(!Context.isAuthenticated() && (user!=null && user.getUserId() != null)) {
             //Not allowed to modify other user's information
-            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "You're not allowed to view other user's information! user=" + user);
-            log.error("You're not allowed to view other user's information!");
+            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, mss.getMessage("personalhr.error.other.user"));
+            log.error("You're not allowed to view other user's information! user=" + user);
             return "redirect:/phr/index.htm?noredirect=true";                        
         } else if(Context.isAuthenticated()) {
             if(!Context.hasPrivilege(PhrSecurityService.PhrBasicPrivilege.PHR_ADMINISTRATOR_PRIV.getValue())) {
                 //Already registered
-                session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "You've already registered!");
+                session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, mss.getMessage("personalhr.error.already.registered"));
                 log.error("You've already registered!");
                 return "redirect:/phr/index.htm?noredirect=true";  
             } 
