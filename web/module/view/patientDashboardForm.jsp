@@ -5,9 +5,11 @@
 <personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/module/personalhr/view/patientDashboard.form" />
 
 <c:set var="enableFormEntry" value="false"/>
+<%--
 <openmrs:hasPrivilege privilege="PHR All Patients Access">
 	<c:set var="enableFormEntry" value="true"/>
 </openmrs:hasPrivilege>
+--%>
 
 <c:set var="OPENMRS_VIEWING_PATIENT_ID" scope="request" value="${patient.patientId}"/>
 <openmrs:globalProperty var="enablePatientName" key="dashboard.showPatientName" defaultValue="false"/>

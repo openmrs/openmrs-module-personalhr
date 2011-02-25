@@ -12,11 +12,8 @@ Parameters:
 	}
 </style>
 		
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
-
 <%-- hack because calling a portlet clears parameters --%>
-<c:set var="showDecorationProp" value="${model.showDecoration}" />
+<c:set var="showDecorationProp" value="false" />
 
 <c:if test="${showDecorationProp}">
 	<div class="boxHeader${model.patientVariation}"><spring:message code="FormEntry.fillOutForm"/></div>
@@ -48,31 +45,6 @@ Parameters:
 		);
 
 		$j(document).ready(function() {
-			/* the parent selector here only only allows one datatable call per formEntryTable.
-			   without that selector, the .dialog() call for the popup was calling this twice */
-			var oTable${model.id} = $j("#formEntryTableParent${model.id} > #formEntryTable${model.id}").dataTable({
-				"bPaginate": false,
-				"bAutoWidth": false,
-				"aaSorting": [[0, 'asc']],
-				"aoColumns":
-					[
-						{ "iDataSort": 1 },
-						{ "bVisible": false, "sType": "numeric" },
-						null,
-						{ "sClass": "EncounterTypeClass" },
-						{ "bVisible": false }
-					]
-			});
-			oTable${model.id}.fnDraw(); <%-- trigger filter-and-draw of datatable now --%>
-
-			<%-- trigger filter-and-draw of the datatable whenever the showRetired checkbox changes --%>
-			$j('#showRetired${model.id}').click(function() {
-				showRetiredFormsForEntry${model.id} = this.checked;
-				oTable${model.id}.fnDraw();
-			});
-
-			<%-- move the showRetired checkbox inside the flow of the datatable after the filter --%>
-			$j('#handleForShowRetired${model.id}').appendTo($j('#formEntryTable${model.id}_filter'));
 		});
 	
 		function startDownloading() {
@@ -86,18 +58,10 @@ Parameters:
 		}
 	</script>
 	<div id="formEntryTableParent${model.id}">
-	<span id="handleForShowRetired${model.id}">
-		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="checkbox" id="showRetired${model.id}"/> <spring:message code="SearchResults.includeRetired"/>
-	</span>
 	<table id="formEntryTable${model.id}" cellspacing="0" cellpadding="3">
 		<thead>
 			<tr>
-				<th><spring:message code="general.name"/></th>
-				<th><!-- Hidden column for sorting previous column --></th>
-				<th><spring:message code="Form.version"/></th>
-				<th class="EncounterTypeClass"><spring:message code="Encounter.type"/></th>
-				<th><!-- Hidden column for retired --></th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -111,19 +75,8 @@ Parameters:
 					</c:url>
 					<tr<c:if test="${entry.key.retired}"> class="retired"</c:if>>
 						<td>
-							<a href="${formUrl}" onclick="startDownloading();">${entry.key.name}</a>
+							<a href="${formUrl}" onclick="startDownloading();"> Create ${entry.key.name}</a>
 						</td>
-						<td>
-							${rowCounter.count}
-						</td>
-						<td>
-							${entry.key.version}
-							<c:if test="${!entry.key.published}"><i>(<spring:message code="Form.unpublished"/>)</i></c:if>
-						</td>
-						<td>
-							${entry.key.encounterType.name}
-						</td>
-						<td>${entry.key.retired}</td>
 					</tr>
 				</openmrs:hasPrivilege>
 			</c:forEach>
