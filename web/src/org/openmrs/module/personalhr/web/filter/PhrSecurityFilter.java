@@ -22,6 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,30 +70,33 @@ public class PhrSecurityFilter implements Filter {
         
         if (Context.isAuthenticated() && shouldCheckAccessToUrl(requestURI)) {
             
-            log.debug("***Checking isUrlAllowed1: " + requestURI + "|" + Context.getAuthenticatedUser());
             Integer patId = PersonalhrUtil.getParamAsInteger(patientId); 
             
-            log.debug("***Checking isUrlAllowed3: " + requestURI + "|" + Context.getAuthenticatedUser());
             Patient pat = patId==null? null : Context.getPatientService().getPatient(patId);
                         
-            log.debug("***Checking isUrlAllowed4: " + requestURI + "|" + Context.getAuthenticatedUser());
             Integer perId = PersonalhrUtil.getParamAsInteger(personId);
-            log.debug("***Checking isUrlAllowed5: " + requestURI + "|" + Context.getAuthenticatedUser());
             Person per = perId==null? null : Context.getPersonService().getPerson(perId); 
             
-            log.debug("***Checking isUrlAllowed6: " + requestURI + "|" + Context.getAuthenticatedUser());
             Integer encId = PersonalhrUtil.getParamAsInteger(encounterId);
-            log.debug("***Checking isUrlAllowed2: " + requestURI + "|" + pat + "|" + per + "|" + Context.getAuthenticatedUser());
             Encounter enc = encId==null? null : Context.getEncounterService().getEncounter(encId);
             if(enc != null) {
                 pat = enc.getPatient();
             }
                        
-           log.debug("***Checking isUrlAllowed: " + requestURI + "|" + pat + "|" + per + "|" + Context.getAuthenticatedUser());
            if(!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
                log.debug("***URL access not allowed!!! " + requestURI + "|" + pat + "|" + per + "|" + Context.getAuthenticatedUser());
                config.getServletContext().getRequestDispatcher(loginForm).forward(request, response);
-            } 
+            } else {
+                if(requestURI.toLowerCase().contains("index.htm") && !requestURI.toLowerCase().contains("/phr/")) {
+                  if(PersonalhrUtil.getService().getPhrRole(Context.getAuthenticatedUser()) != null) {
+                    String redirect = null;
+                    redirect="/phr/index.htm";                   
+                    log.debug("***URL access is redirected to " + redirect + " for user " + Context.getAuthenticatedUser().getUsername() + "|" + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
+                    ((HttpServletResponse) response).sendRedirect(((HttpServletRequest)request).getContextPath()+redirect);
+                    return;
+                  } 
+                }               
+            }
            
            log.debug("***URL access is allowed for this authenticated user!!! " + Context.getAuthenticatedUser().getUsername() + "|" + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
         } else {

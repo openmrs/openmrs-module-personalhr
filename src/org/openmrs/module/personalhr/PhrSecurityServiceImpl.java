@@ -36,6 +36,17 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
       
     /**
      * Called only after user has been authenticated (i.e. requestingUser != null)
+     * 
+     * PHR URL level security check rules:
+     * 1. Check user type: unauthenticated (null) user, PHR user, non PHR user
+     * 2. If unauthenticated user: all URL's are allowed (page level check needed)
+     * 3. Otherwise check patient or person object in the request
+     * 4. If no patient or person object involved: all URL's are allowed
+     * 5. Otherwise check access to /phr/ or /personalhr/ domain
+     * 7. If access to /phr/ or /personalhr/ domain, allow authorized PHR user only; do not allow non PHR user
+     * 8. Otherwise, allow all non PHR users, or
+     * 9. Allow only registered non /phr/ or /personalhr/ URL's to be accessed by only authorized PHR users
+     * 
      * @see org.openmrs.module.personalhr.PhrSecurityService#isUrlAllowed(java.lang.String, org.openmrs.Patient, org.openmrs.Person, org.openmrs.User)
      */
     public boolean isUrlAllowed(String requestedUrl, 
