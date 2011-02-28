@@ -33,6 +33,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.User;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
@@ -63,7 +64,7 @@ public class PatientDashboardController extends SimpleFormController {
 			String patientId = request.getParameter("patientId");
 			log.debug("patientId: " + patientId);
 			if (patientId == null) {
-				patientId = getPatientId(Context.getAuthenticatedUser().getPerson());
+				patientId = getPatientId(Context.getAuthenticatedUser());
 				if(patientId == null) {
 					//throw new ServletException("Integer 'patientId' is a required parameter");
 				    log.error("Integer 'patientId' is a required parameter");
@@ -104,16 +105,9 @@ public class PatientDashboardController extends SimpleFormController {
      * @param person a given person object
      * @return null if no patient is assoicated with this person
      */
-    private String getPatientId(Person person) {    	
-   	    log.debug("Finding a matching patient for person:" + person.getPersonId());
-	    List<Patient> patientList = Context.getPatientService().getAllPatients();
-	    for(Patient pat : patientList) {
-	    	if(pat.getPersonId().equals(person.getPersonId())) {
-	    	  log.debug("A matching patient is found:" + pat.getPatientId());
-	    	  return pat.getPatientId()+"";
-	    	}
-	    }
-	    return null;
+    private String getPatientId(User user) {    	
+   	    log.debug("Finding a matching patient for user:" + user);
+	    return user==null ? null : user.getPerson().getId().toString();
     }
 
 	/**

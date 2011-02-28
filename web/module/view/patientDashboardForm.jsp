@@ -161,7 +161,7 @@
 				<div class="tooltip">
 				Below is a list of your personal information. Please update this information if anything has changed.  
 				</div>
-				<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" parameters="patientId=${patient.patientId}" />
+				<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" patientId="${patient.patientId}" />
 			</div>						
 		</div>
 
