@@ -109,7 +109,7 @@
 			<td>
 			<form:select path="patient.newSharingToken.relationType" >
 				<c:forEach items="${patient.relationTypes}" var="relationType">
-					<option value="${relationType.value}" label="${relationType.value}"/>
+					<option value="${relationType.value}" label="${relationType.value}">${relationType.value}</option>
 				</c:forEach>
 	    	</form:select>
 			
@@ -129,7 +129,7 @@
 		    <td> 
 			<form:select path="patient.newSharingToken.shareType">
 				<c:forEach items="${patient.sharingTypes}" var="sharingType">
-					<option value="${sharingType.value}" label="${sharingType.value}"/>
+					<option value="${sharingType.value}" label="${sharingType.value}">${sharingType.value}</option>
 				</c:forEach>
 		    </form:select>
 		    <span style="color:red">*</span> (Required)
