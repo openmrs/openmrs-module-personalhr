@@ -622,6 +622,10 @@ public class NewPatientFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("patientId");
+			if (!StringUtils.hasText(patientId) && request.getAttribute("org.openmrs.portlet.patientId") != null) {
+			    patientId=request.getAttribute("org.openmrs.portlet.patientId").toString();
+			}
+			
 			if (StringUtils.hasText(patientId)) {
 				try {
 					id = Integer.valueOf(patientId);

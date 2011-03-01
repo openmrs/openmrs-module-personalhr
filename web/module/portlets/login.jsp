@@ -24,11 +24,11 @@
 		</tr>
 		<tr>
 			<td></td>
-			<td><a class="forgotPasswordLink" href="${pageContext.request.contextPath}/forgotPassword.form"><spring:message code="User.password.forgot"/></a></td>
+			<td><a style="font-size: 90%;" href="${pageContext.request.contextPath}/forgotPassword.form"><spring:message code="User.password.forgot"/></a></td>
 		</tr>
 		<tr>
 			<td><input type="hidden" name="sharingToken" id="sharingToken" value="${model.sharingToken}"/></td>
-			<td><a class="forgotPasswordLink" href="${pageContext.request.contextPath}/phr/user.form?sharingToken=${model.sharingToken}"><spring:message code="personalhr.signon"/></a></td>
+			<td><a style="font-size: 90%;" href="${pageContext.request.contextPath}/phr/user.form?sharingToken=${model.sharingToken}"><spring:message code="personalhr.signon"/></a></td>
 		</tr>
 	</table>
 	<br/>

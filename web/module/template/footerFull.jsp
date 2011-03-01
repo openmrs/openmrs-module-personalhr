@@ -34,7 +34,7 @@
 			
 			<span id="codeVersion"><spring:message code="footer.version"/>: ${openmrsVersion}</span>
 			
-			<span id="fundedBy"><a href="http://www.livestrong.org"><spring:message code="personalhr.fundedBy"/> <img border="0" align="top" src="<%= request.getContextPath() %>/images/laf_logo_tiny.jpg"/></a></span>
+			<span id="poweredBy"><a href="http://www.livestrong.org"> | <spring:message code="personalhr.fundedBy"/> <img border="0" align="top" src="<%= request.getContextPath() %>/images/laf_logo_tiny.jpg"/></a></span>
 			<span id="poweredBy"><a href="http://openmrs.org"><spring:message code="footer.poweredBy"/> <img border="0" align="top" src="<%= request.getContextPath() %>/images/openmrs_logo_tiny.png"/></a></span>
 		</div>
 	</div>

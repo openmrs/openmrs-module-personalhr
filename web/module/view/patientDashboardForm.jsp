@@ -25,6 +25,7 @@
 
 <script type="text/javascript">
 	var timeOut = null;
+	var summaryTabLoaded=false;
 	addEvent(window, 'load', initTabs);
 
 	<openmrs:authentication>var userId = "${authenticatedUser.userId}";</openmrs:authentication>
@@ -37,6 +38,9 @@
 				c = tabs[0].id;
 		}
 		//changeTab("patientTreatmentSummaryTab");
+		if(c=="patientTreatmentSummaryTab") {
+			summaryTabLoaded = true;
+		}
 		changeTab(c);
 
 	}
@@ -54,9 +58,14 @@
 	}
 	
 	function changeTab(tabObj) {
+		var c = "";
 		if (!document.getElementById || !document.createTextNode) {return;}
-		if (typeof tabObj == "string")
+		if (typeof tabObj == "string") {
 			tabObj = document.getElementById(tabObj);
+			c = tabObj;
+		} else {			
+			c = tabObj.id;
+		}
 		
 		if (tabObj) {
 			var tabs = tabObj.parentNode.parentNode.getElementsByTagName('a');
@@ -76,6 +85,10 @@
 			addClass(tabObj, 'current');
 			
 			setTabCookie(tabObj.id);
+			if(c=="patientTreatmentSummaryTab" && !summaryTabLoaded) {
+				summaryTabLoaded = true;
+				location.reload(true);
+			}
 		}
 		return false;
     }
