@@ -29,8 +29,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrSecurityService.PhrBasicRole;
 import org.openmrs.web.user.UserProperties;
 
 /**
@@ -69,6 +71,7 @@ public class PhrSecurityFilter implements Filter {
         log.debug("Entering PhrSecurityFilter.doFilter: " + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
         
         if (Context.isAuthenticated() && shouldCheckAccessToUrl(requestURI)) {
+            User user = Context.getAuthenticatedUser();
             
             Integer patId = PersonalhrUtil.getParamAsInteger(patientId); 
             
@@ -88,17 +91,37 @@ public class PhrSecurityFilter implements Filter {
                config.getServletContext().getRequestDispatcher(loginForm).forward(request, response);
             } else {
                 if(requestURI.toLowerCase().contains("index.htm") && !requestURI.toLowerCase().contains("/phr/")) {
-                  if(PersonalhrUtil.getService().getPhrRole(Context.getAuthenticatedUser()) != null) {
-                    String redirect = null;
-                    redirect="/phr/index.htm";                   
-                    log.debug("***URL access is redirected to " + redirect + " for user " + Context.getAuthenticatedUser().getUsername() + "|" + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
-                    ((HttpServletResponse) response).sendRedirect(((HttpServletRequest)request).getContextPath()+redirect);
-                    return;
-                  } 
-                }               
+                    String redirect = requestURI;
+                    String phrRole = PersonalhrUtil.getService().getPhrRole(user);
+                    if(phrRole!=null) {                    
+                        Integer userPersonId = (user==null? null : user.getPerson().getId());
+                        if(PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
+                            if(userPersonId != null) {
+                                redirect = "/phr/patientDashboard.form?patientId=" + userPersonId;
+                            } else {
+                                log.error("Error: PHR Patient's person id is null!");
+                            }
+                            PersonalhrUtil.addTemporayPrivileges();
+                       } else if(PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
+                            if(userPersonId != null) {
+                                redirect = "/phr/restrictedUserDashboard.form?personId=" + userPersonId;  
+                           } else {
+                                log.error("Error: PHR Restricted user's person id is null!");
+                            }
+                            PersonalhrUtil.addTemporayPrivileges();
+                        } else if(PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)){
+                            redirect = "/phr/findPatient.htm";
+                            PersonalhrUtil.addTemporayPrivileges();
+                        }
+                        
+                        log.debug("***URL access is redirected to " + redirect + " for user " + user + "|" + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
+                        ((HttpServletResponse) response).sendRedirect(((HttpServletRequest)request).getContextPath()+redirect);
+                        return;
+                  }
+               }                     
             }
            
-           log.debug("***URL access is allowed for this authenticated user!!! " + Context.getAuthenticatedUser().getUsername() + "|" + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
+           log.debug("***URL access is allowed for this authenticated user!!! " + user + "|" + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
         } else {
             log.debug("***URL access is allowed for all unauthenticated users!!! " + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
         }

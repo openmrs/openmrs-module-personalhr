@@ -133,7 +133,9 @@ public class LoginServlet extends HttpServlet {
 
 	                log.debug("Logged in: username="+username+", sharingToken="+sharingToken);
 	                //update sharimg token table
-	                PersonalhrUtil.getService().getSharingTokenDao().updateSharingToken(user, user.getPerson(), sharingToken);	                    	                    
+	                if(!PersonalhrUtil.isNullOrEmpty(sharingToken)) {
+	                    PersonalhrUtil.getService().getSharingTokenDao().updateSharingToken(user, user.getPerson(), sharingToken);
+	                }
 
 					// load the user's default locale if possible
 					if (user.getUserProperties() != null) {

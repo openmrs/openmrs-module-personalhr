@@ -45,29 +45,42 @@ public class PrivilegeTag extends TagSupport {
 		} 
 		
 		User user = userContext.getAuthenticatedUser();
+        //log.debug("Checking user " + user + " for privs " + privilege);           
 		
-        Integer patientId = (Integer) pageContext.getAttribute("patientId");
+        Integer patientId = PersonalhrUtil.getInteger(pageContext.getAttribute("patientId"));
+        //log.debug("1Checking user " + user + " for privs " + privilege + " on patient " + patientId);            
         if(patientId==null) 
-            patientId = PersonalhrUtil.getParamAsInteger(this.pageContext.getRequest().getParameter("patientId"));
+            patientId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getParameter("patientId"));
+        //log.debug("2Checking user " + user + " for privs " + privilege + " on patient " + patientId);            
         if(patientId==null) 
-            patientId = PersonalhrUtil.getParamAsInteger((String)this.pageContext.getAttribute("patientId"));
+            patientId = PersonalhrUtil.getInteger(this.pageContext.getAttribute("patientId"));
+        //log.debug("3Checking user " + user + " for privs " + privilege + " on patient " + patientId);            
+        if(patientId==null)
+            patientId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getAttribute("org.openmrs.portlet.patientId"));
+        //log.debug("4Checking user " + user + " for privs " + privilege + " on patient " + patientId);            
 
         Patient pat = patientId==null? null : Context.getPatientService().getPatient(patientId);
+        if (pat != null){
+            log.debug("Checking user " + user + " for privs " + privilege + " on patient " + pat);            
+        }
         
-        Integer personId = (Integer) pageContext.getAttribute("personId");
+        Integer personId = PersonalhrUtil.getInteger(pageContext.getAttribute("personId"));
+        //log.debug("1Checking user " + user + " for privs " + privilege + " on person " + personId);            
         if(personId==null) 
-            personId = PersonalhrUtil.getParamAsInteger(this.pageContext.getRequest().getParameter("personId"));
+            personId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getParameter("personId"));
+        //log.debug("2Checking user " + user + " for privs " + privilege + " on person " + personId);            
         if(personId==null) 
-            personId = PersonalhrUtil.getParamAsInteger((String)this.pageContext.getRequest().getAttribute("personId"));
+            personId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getAttribute("personId"));
+        //log.debug("3Checking user " + user + " for privs " + privilege + " on person " + personId);            
+        if(personId==null)
+            personId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getAttribute("org.openmrs.portlet.personId"));
+        //log.debug("4Checking user " + user + " for privs " + privilege + " on person " + personId);            
         
         Person per = personId==null? null : Context.getPersonService().getPerson(personId);		
         if(per != null) {
             log.debug("Checking user " + user + " for privs " + privilege + " on person " + per);
         } 
         
-        if (pat != null){
-            log.debug("Checking user " + user + " for privs " + privilege + " on patient " + pat);            
-        }
         
         if(per==null && pat==null) {
             log.debug("Checking user " + user + " for privs " + privilege);           

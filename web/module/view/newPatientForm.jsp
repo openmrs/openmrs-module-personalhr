@@ -203,6 +203,13 @@
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 						</spring:bind>												
 					</td>
+					<td style="padding-right: 3em">
+						<spring:bind path="patient.patientId">			
+							<input type="hidden" 
+									name="patientId" size="10" id="patientId"
+									value="${status.value}" />
+						</spring:bind>												
+					</td>
 				</tr>
 			</table>
 		</td>
