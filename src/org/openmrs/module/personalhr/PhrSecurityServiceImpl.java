@@ -21,6 +21,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
 
+import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.personalhr.db.*;
 
@@ -283,6 +284,49 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
     
     public void setSharingTokenDao(PhrSharingTokenDAO sharingTokenDao) {
         this.sharingTokenDao = sharingTokenDao;
+    }
+
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.PhrSecurityService#getRelatedPersons(org.openmrs.Person)
+     */
+    @Override
+    public List<Person> getRelatedPersons(Person person) {
+        // TODO Auto-generated method stub
+        Patient pat = getPatient(person);
+        if(pat!=null) {
+            return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPatient(pat));         
+        }  else {
+            return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPerson(person));         
+        }
+    }
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param sharingTokenByPatient
+     * @return
+     */
+    private List<Person> getRelatedPersons(List<PhrSharingToken> tokens) {
+        // TODO Auto-generated method stub
+        List<Person> persons = new ArrayList<Person>();
+        for(PhrSharingToken token : tokens) {
+           persons.add(token.getRelatedPerson());
+        }
+        return persons;
+    }
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param person
+     * @return
+     */
+    private Patient getPatient(Person person) {
+        // TODO Auto-generated method stub
+        if(person != null)
+          return Context.getPatientService().getPatient(person.getPersonId());
+        else
+          return null;
     }
 
 }

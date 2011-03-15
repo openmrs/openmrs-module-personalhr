@@ -140,13 +140,13 @@ public interface PhrSecurityService {
                                                 Person requestedPerson, 
                                                 User requestingUser);
     
+    public List<Person> getRelatedPersons(Person person);
+    
     public PhrSecurityRuleDAO getSecurityRuleDao();
 
-    
     public void setSecurityRuleDao(PhrSecurityRuleDAO securityRuleDao);
     
     public PhrAllowedUrlDAO getAllowedUrlDao();
-
     
     public void setAllowedUrlDao(PhrAllowedUrlDAO allowedUrlDao);
 

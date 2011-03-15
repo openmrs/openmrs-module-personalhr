@@ -19,6 +19,9 @@
 	<!-- /Base Module Properties -->
 	
 	<require_version>1.2.0.3400</require_version>
+	<require_modules>  	
+	     <require_module>org.openmrs.module.messaging</require_module>  	
+	</require_modules> 
 	
 	<!-- Extensions -->
 	<extension>

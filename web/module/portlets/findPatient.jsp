@@ -109,7 +109,6 @@
 					dwr.util.useLoadingMessage();
 				
 					<request:existsParameter name="patientId">
-						<!-- User has 'patientId' in the request params -- selecting that patient -->
 						var pats = new Array();
 						pats.push(new Object());
 						pats[0].patientId = '<request:parameter name="patientId"/>';
@@ -117,7 +116,6 @@
 					</request:existsParameter>
 					
 					<request:existsParameter name="phrase">
-						<!-- User has 'phrase' in the request params -- searching on that -->
 						searchBox.value = '<request:parameter name="phrase"/>';
 					</request:existsParameter>
 				
@@ -136,7 +134,7 @@
 		</c:when>
 		<c:when test="${model.size == 'full'}">
 			
-			<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/index.htm" />
+			<openmrs:require privilege="View Patients" otherwise="/phr/login.htm" redirect="/phr/index.htm" />
 
 			<openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
 			<openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
@@ -175,9 +173,8 @@
 			<c:if test="${empty model.hideAddNewPatient}">
 				<openmrs:hasPrivilege privilege="Add Patients">
 					<br/> &nbsp; <spring:message code="general.or"/><br/><br/>
-					<!--<openmrs:portlet id="addPersonForm" url="../module/personalhr/portlets/newPatientForm" parameters="personType=patient|postURL=../admin/person/addPerson.htm|viewType=${model.viewType}" />-->
-					<!-- <openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=../module/personalhr/portlets/newPatientForm.portlet|viewType=${model.viewType}" /> -->
-					<openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=newPatient.htm|viewType=${model.viewType}" />
+					<!-- openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=newPatient.htm|viewType=${model.viewType}" /-->
+					<openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=addPerson.htm|viewType=${model.viewType}" />
 				</openmrs:hasPrivilege>
 				
 				<script type="text/javascript">

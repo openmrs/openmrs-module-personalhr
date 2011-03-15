@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrPatient;
 import org.openmrs.module.personalhr.PhrSecurityService;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import org.openmrs.module.messaging.MessagingService;
 
 /**
  * The controller for entering/viewing a form. This should always be set to sessionForm=false.
@@ -147,7 +150,7 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                     String url = "https://" + ip + ":8443/" + "openmrs/phr/signUp.form?sharingToken=" + token;
                     email = email.replaceAll("OPENMRS_PHR_SHARING_LINK", url);
                     
-                    //MessagingApi.send(emailAddress, email);
+                    sendEmail(emailAddress, email);
                     
                     log.debug("\n\nThe following email has been sent to " + emailAddress + ":\n" + email + "\n\n");
                 }
@@ -167,6 +170,21 @@ public class PatientRelationshipsFormController extends SimpleFormController {
             ex.printStackTrace(new PrintWriter(sw));
             errors.reject("Exception! " + ex.getMessage() + "<br/>" + sw.toString());
             return showForm(request, response, errors);
+        }
+    }
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param emailAddress
+     * @param email
+     */
+    private void sendEmail(String emailAddress, String email) {
+        // TODO Auto-generated method stub
+        try{
+            Context.getService(MessagingService.class).sendMessage(email, emailAddress, org.openmrs.module.messaging.email.EmailProtocol.class);
+        } catch (Exception e) {
+            log.debug("Unable to send message to " + emailAddress, e);
         }
     }
     

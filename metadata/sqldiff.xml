@@ -124,5 +124,25 @@
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;			
 		</sql>
 	</diff>
-	
+
+	<diff>
+		<version>1.0.0</version>
+		<author>Hui Xiao</author>
+		<date>15 Mar 2011</date>
+		<description>
+			Create phr_event_log  table to track user activities for research purpose 
+		</description>
+		<sql>	
+			create table IF NOT EXISTS phr_event_log (
+				event_id	int(16) primary key,
+				event_type	varchar(20),
+				event_date	datetime,
+				user_id	int(11),
+				session_id  varchar(32),
+				patient_id	int(11),
+				event_content	text   
+			);	
+		</sql>
+	</diff>
+
 </sqldiff>
