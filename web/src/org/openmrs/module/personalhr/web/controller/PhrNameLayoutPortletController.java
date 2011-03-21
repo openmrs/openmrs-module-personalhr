@@ -19,19 +19,22 @@ import org.openmrs.layout.web.LayoutSupport;
 import org.openmrs.layout.web.name.NameSupport;
 
 public class PhrNameLayoutPortletController extends PhrLayoutPortletController {
-	
-	private static Log log = LogFactory.getLog(PhrNameLayoutPortletController.class);
-	
-	protected String getDefaultsPropertyName() {
-		return "layout.name.defaults";
-	}
-	
-	protected String getDefaultDivId() {
-		return "phrNameLayoutPortlet";
-	}
-	
-	protected LayoutSupport getLayoutSupportInstance() {
-		log.debug("Getting PHR name layout instance");
-		return NameSupport.getInstance();
-	}
+    
+    private static Log log = LogFactory.getLog(PhrNameLayoutPortletController.class);
+    
+    @Override
+    protected String getDefaultsPropertyName() {
+        return "layout.name.defaults";
+    }
+    
+    @Override
+    protected String getDefaultDivId() {
+        return "phrNameLayoutPortlet";
+    }
+    
+    @Override
+    protected LayoutSupport getLayoutSupportInstance() {
+        log.debug("Getting PHR name layout instance");
+        return NameSupport.getInstance();
+    }
 }

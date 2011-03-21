@@ -15,11 +15,7 @@ package org.openmrs.module.personalhr.db;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
-import org.openmrs.Patient;
-import org.openmrs.Person;
 import org.openmrs.module.personalhr.PhrAllowedUrl;
-import org.openmrs.module.personalhr.PhrSharingToken;
-
 
 /**
  *
@@ -33,11 +29,11 @@ public interface PhrAllowedUrlDAO {
     
     public PhrAllowedUrl savePhrAllowedUrl(PhrAllowedUrl url);
     
-    public void deletePhrAllowedUrl(PhrAllowedUrl url) ;
-
-    public List<PhrAllowedUrl> getAllPhrAllowedUrls() ;
-
+    public void deletePhrAllowedUrl(PhrAllowedUrl url);
+    
+    public List<PhrAllowedUrl> getAllPhrAllowedUrls();
+    
     public List<PhrAllowedUrl> getByUrl(String url);
     
-    public List<PhrAllowedUrl> getByPrivilege(String priv) ;
+    public List<PhrAllowedUrl> getByPrivilege(String priv);
 }

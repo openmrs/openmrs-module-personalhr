@@ -32,7 +32,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrSecurityService;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.util.StringUtils;
@@ -52,299 +51,315 @@ import org.springframework.util.StringUtils;
  * "/admin/concepts/conceptClass.form".
  */
 public class RequireTag extends TagSupport {
-	
-	public static final long serialVersionUID = 122998L;
-	
-	private final Log log = LogFactory.getLog(getClass());
-	
-	private String privilege;
-	
-	private String allPrivileges;
-	
-	private String anyPrivilege;
-	
-	private String otherwise;
-	
-	private String redirect;
-	
-	private boolean errorOccurred;
-	
-	/**
-	 * This is where all the magic happens. The privileges are checked and the user is redirected if
-	 * need be. <br/>
-	 * <br/>
-	 * Returns SKIP_PAGE if the user doesn't have the privilege and SKIP_BODY if it does.
-	 * 
-	 * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
-	 * @should allow user with the privilege
-	 * @should allow user to have any privilege
-	 * @should allow user with all privileges
-	 * @should reject user without the privilege
-	 * @should reject user without any of the privileges
-	 * @should reject user without all of the privileges
-	 */
-	public int doStartTag() {
-        log.debug("PHR RequireTag started...");
-		
-		errorOccurred = false;
-		HttpServletResponse httpResponse = (HttpServletResponse) pageContext.getResponse();
-		HttpSession httpSession = pageContext.getSession();
-		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-		String request_ip_addr = request.getLocalAddr();
-		String session_ip_addr = (String) httpSession.getAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR);
-		
-		UserContext userContext = Context.getUserContext();
- 		
-		if (userContext == null && privilege != null) {
-			log.error("userContext is null. Did this pass through a filter?");
-			//httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-			//TODO find correct error to throw 
-			throw new APIException("The context is currently null.  Please try reloading the site.");
-		}
-		       
-        User user = userContext.getAuthenticatedUser();
-        
-        Integer patientId = PersonalhrUtil.getInteger(pageContext.getAttribute("patientId"));
-        if(patientId==null) 
-            patientId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getAttribute("patientId"));
-        if(patientId==null) 
-            patientId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getParameter("patientId"));
- 
-        Integer personId = PersonalhrUtil.getInteger( pageContext.getAttribute("personId"));
-        if(personId==null) 
-            personId = PersonalhrUtil.getInteger( this.pageContext.getRequest().getAttribute("personId"));
-        if(personId==null) 
-            personId = PersonalhrUtil.getInteger( this.pageContext.getRequest().getParameter("personId"));
-        
-        log.debug("Checking user " + user + " for privs " + privilege + " on personId|patientId " + personId + "|" + patientId);
-
-        Patient pat = patientId==null? null : Context.getPatientService().getPatient(patientId);
-                 
-        Person per = personId==null? null : Context.getPersonService().getPerson(personId);        
     
-        if(per != null) {
-            log.debug("Checking user " + user + " for privs " + privilege + " on person " + per);
-        } 
+    public static final long serialVersionUID = 122998L;
+    
+    private final Log log = LogFactory.getLog(getClass());
+    
+    private String privilege;
+    
+    private String allPrivileges;
+    
+    private String anyPrivilege;
+    
+    private String otherwise;
+    
+    private String redirect;
+    
+    private boolean errorOccurred;
+    
+    /**
+     * This is where all the magic happens. The privileges are checked and the user is redirected if
+     * need be. <br/>
+     * <br/>
+     * Returns SKIP_PAGE if the user doesn't have the privilege and SKIP_BODY if it does.
+     * 
+     * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
+     * @should allow user with the privilege
+     * @should allow user to have any privilege
+     * @should allow user with all privileges
+     * @should reject user without the privilege
+     * @should reject user without any of the privileges
+     * @should reject user without all of the privileges
+     */
+    @Override
+    public int doStartTag() {
+        this.log.debug("PHR RequireTag started...");
         
-        if (pat != null){
-            log.debug("Checking user " + user + " for privs " + privilege + " on patient " + pat);            
+        this.errorOccurred = false;
+        final HttpServletResponse httpResponse = (HttpServletResponse) this.pageContext.getResponse();
+        final HttpSession httpSession = this.pageContext.getSession();
+        final HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
+        final String request_ip_addr = request.getLocalAddr();
+        final String session_ip_addr = (String) httpSession.getAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR);
+        
+        final UserContext userContext = Context.getUserContext();
+        
+        if ((userContext == null) && (this.privilege != null)) {
+            this.log.error("userContext is null. Did this pass through a filter?");
+            //httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+            //TODO find correct error to throw 
+            throw new APIException("The context is currently null.  Please try reloading the site.");
         }
         
-        if(per==null && pat==null) {
-            log.debug("Checking user " + user + " for privs " + privilege);           
+        final User user = userContext.getAuthenticatedUser();
+        
+        Integer patientId = PersonalhrUtil.getInteger(this.pageContext.getAttribute("patientId"));
+        if (patientId == null) {
+            patientId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getAttribute("patientId"));
         }
-		
-        log.debug("Checking user " + user + " for privs " + privilege + " on person|patient " + per + "|" + pat);
-		
-		// Parse comma-separated list of privileges in allPrivileges and anyPrivileges attributes
-		String[] allPrivilegesArray = StringUtils.commaDelimitedListToStringArray(allPrivileges);
-		String[] anyPrivilegeArray = StringUtils.commaDelimitedListToStringArray(anyPrivilege);
-		
-		boolean hasPrivilege = hasPrivileges(user, per, pat, privilege, allPrivilegesArray, anyPrivilegeArray);
-		if (!hasPrivilege) {
-			errorOccurred = true;
-			if (userContext.isAuthenticated()) {
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
-				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect
-				        + " which requires privilege: " + privilege + " or one of: " + allPrivileges + " or any of "
-				        + anyPrivilege);
-			} else
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
-		} else if (hasPrivilege && userContext.isAuthenticated()) {
-			// redirect users to password change form
-			log.debug("Login redirect: " + redirect);
-			if (new UserProperties(user.getUserProperties()).isSupposedToChangePassword()
-			        && !redirect.contains("options.form")) {
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.password.change");
-				errorOccurred = true;
-				redirect = request.getContextPath() + "/options.form#Change Login Info";
-				otherwise = redirect;
-				try {
-					httpResponse.sendRedirect(redirect);
-					return SKIP_PAGE;
-				}
-				catch (IOException e) {
-					// oops, cannot redirect
-					log.error("Unable to redirect for password change: " + redirect, e);
-					throw new APIException(e);
-				}
-			}
-		}
-		
-		if (differentIpAddresses(session_ip_addr, request_ip_addr)) {
-			errorOccurred = true;
-			// stops warning message in IE when refreshing repeatedly
-			if ("0.0.0.0".equals(request_ip_addr) == false) {
-				log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
-			}
-		}
-		
-		log.debug("session ip addr: " + session_ip_addr);
-		
-		if (errorOccurred) {
-			
-			String url = "";
-			if (redirect != null && !redirect.equals(""))
-				url = request.getContextPath() + redirect;
-			else
-				url = request.getRequestURI();
-			
-			if (request.getQueryString() != null)
-				url = url + "?" + request.getQueryString();
-			httpSession.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, url);
-			try {
-				httpResponse.sendRedirect(request.getContextPath() + otherwise);
-				return SKIP_PAGE;
-			}
-			catch (IOException e) {
-				// oops, cannot redirect
-				throw new APIException(e);
-			}
-		}
-		
-		return SKIP_BODY;
-	}
-	
-	/**
-	 * Determines if the given ip addresses are the same.
-	 * 
-	 * @param session_ip_addr
-	 * @param request_ip_addr
-	 * @return true/false whether these IPs are different
-	 */
-	private boolean differentIpAddresses(String sessionIpAddr, String requestIpAddr) {
-		if (sessionIpAddr == null || requestIpAddr == null)
-			return false;
-		
-		// IE7 and firefox store "localhost" IP addresses differently.
-		// To accomodate switching from firefox browing to IE taskpane,
-		// we assume these addresses to be equivalent
-		List<String> equivalentAddresses = new ArrayList<String>();
-		equivalentAddresses.add("127.0.0.1");
-		equivalentAddresses.add("0.0.0.0");
-		
-		// if the addresses are equal, all is well
-		if (sessionIpAddr.equals(requestIpAddr))
-			return false;
-		// if they aren't equal, but we consider them to be, also all is well
-		else if (equivalentAddresses.contains(sessionIpAddr) && equivalentAddresses.contains(requestIpAddr)) {
-			return false;
-		}
-		
-		// the IP addresses were not equal, (don't continue with this user)
-		return true;
-	}
-	
-	/**
-	 * Returns true if all of the following three are true:
-	 * <ul>
-	 * <li>privilege is not defined OR user has privilege</li>
-	 * <li>allPrivileges is not defined OR user has every privilege in allPrivileges</li>
-	 * <li>anyPrivilege is not defined OR user has at least one of the privileges in anyPrivileges</li>
-	 * </ul>
-	 * 
-	 * @param userContext current user context
-	 * @param privilege a single required privilege
-	 * @param allPrivilegesArray an array of required privileges
-	 * @param anyPrivilegeArray an array of privileges, at least one of which is required
-	 * @return true if privilege conditions are met
-	 */
-	private boolean hasPrivileges(User user, Person per, Patient pat, String privilege, String[] allPrivilegesArray,
-	                              String[] anyPrivilegeArray) {
-	    if(user==null) {
-	        return false;
-	    }
-	    
-        PhrSecurityService serv = PersonalhrUtil.getService();
-
-		if (privilege != null && !serv.hasPrivilege(privilege.trim(), pat, per, user))
-			return false;
-		if (allPrivilegesArray.length > 0 && !hasAllPrivileges(user, per, pat, allPrivilegesArray))
-			return false;
-		if (anyPrivilegeArray.length > 0 && !hasAnyPrivilege(user, per, pat, anyPrivilegeArray))
-			return false;
-		return true;
-	}
-	
-	/**
-	 * Returns true if user has all privileges
-	 * 
-	 * @param userContext current user context
-	 * @param allPrivilegesArray list of privileges
-	 * @return true if user has all of the privileges
-	 */
-	private boolean hasAllPrivileges(User user, Person per, Patient pat, String[] allPrivilegesArray) {
-        PhrSecurityService serv = PersonalhrUtil.getService();
-		for (String p : allPrivilegesArray)
-			if (!serv.hasPrivilege(p.trim(), pat, per, user))
-				return false;
-		return true;
-	}
-	
-	/**
-	 * Returns true if user has any of the privileges
-	 * 
-	 * @param userContext current user context
-	 * @param anyPriviegeArray list of privileges
-	 * @return true if user has at least one of the privileges
-	 */
-	private boolean hasAnyPrivilege(User user, Person per, Patient pat, String[] anyPriviegeArray) {
-        PhrSecurityService serv = PersonalhrUtil.getService();
-		for (String p : anyPriviegeArray)
-			if (serv.hasPrivilege(p.trim(), pat, per, user))
-				return true;
-		return false;
-	}
-	
-	/**
-	 * @see javax.servlet.jsp.tagext.TagSupport#doEndTag()
-	 */
-	public int doEndTag() {
-		if (errorOccurred)
-			return SKIP_PAGE;
-		else
-			return EVAL_PAGE;
-	}
-	
-	public String getPrivilege() {
-		return privilege;
-	}
-	
-	public void setPrivilege(String privilege) {
-		this.privilege = privilege;
-	}
-	
-	public String getAllPrivileges() {
-		return allPrivileges;
-	}
-	
-	public void setAllPrivileges(String allPrivileges) {
-		this.allPrivileges = allPrivileges;
-	}
-	
-	public String getAnyPrivilege() {
-		return anyPrivilege;
-	}
-	
-	public void setAnyPrivilege(String anyPrivilege) {
-		this.anyPrivilege = anyPrivilege;
-	}
-	
-	public String getOtherwise() {
-		return otherwise;
-	}
-	
-	public void setOtherwise(String otherwise) {
-		this.otherwise = otherwise;
-	}
-	
-	public String getRedirect() {
-		return redirect;
-	}
-	
-	public void setRedirect(String redirect) {
-		this.redirect = redirect;
-	}
-	
+        if (patientId == null) {
+            patientId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getParameter("patientId"));
+        }
+        
+        Integer personId = PersonalhrUtil.getInteger(this.pageContext.getAttribute("personId"));
+        if (personId == null) {
+            personId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getAttribute("personId"));
+        }
+        if (personId == null) {
+            personId = PersonalhrUtil.getInteger(this.pageContext.getRequest().getParameter("personId"));
+        }
+        
+        this.log.debug("Checking user " + user + " for privs " + this.privilege + " on personId|patientId " + personId + "|"
+                + patientId);
+        
+        final Patient pat = patientId == null ? null : Context.getPatientService().getPatient(patientId);
+        
+        final Person per = personId == null ? null : Context.getPersonService().getPerson(personId);
+        
+        if (per != null) {
+            this.log.debug("Checking user " + user + " for privs " + this.privilege + " on person " + per);
+        }
+        
+        if (pat != null) {
+            this.log.debug("Checking user " + user + " for privs " + this.privilege + " on patient " + pat);
+        }
+        
+        if ((per == null) && (pat == null)) {
+            this.log.debug("Checking user " + user + " for privs " + this.privilege);
+        }
+        
+        this.log.debug("Checking user " + user + " for privs " + this.privilege + " on person|patient " + per + "|" + pat);
+        
+        // Parse comma-separated list of privileges in allPrivileges and anyPrivileges attributes
+        final String[] allPrivilegesArray = StringUtils.commaDelimitedListToStringArray(this.allPrivileges);
+        final String[] anyPrivilegeArray = StringUtils.commaDelimitedListToStringArray(this.anyPrivilege);
+        
+        final boolean hasPrivilege = hasPrivileges(user, per, pat, this.privilege, allPrivilegesArray, anyPrivilegeArray);
+        if (!hasPrivilege) {
+            this.errorOccurred = true;
+            if (userContext.isAuthenticated()) {
+                httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
+                this.log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + this.redirect
+                        + " which requires privilege: " + this.privilege + " or one of: " + this.allPrivileges
+                        + " or any of " + this.anyPrivilege);
+            } else {
+                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
+            }
+        } else if (hasPrivilege && userContext.isAuthenticated()) {
+            // redirect users to password change form
+            this.log.debug("Login redirect: " + this.redirect);
+            if (new UserProperties(user.getUserProperties()).isSupposedToChangePassword()
+                    && !this.redirect.contains("options.form")) {
+                httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.password.change");
+                this.errorOccurred = true;
+                this.redirect = request.getContextPath() + "/options.form#Change Login Info";
+                this.otherwise = this.redirect;
+                try {
+                    httpResponse.sendRedirect(this.redirect);
+                    return SKIP_PAGE;
+                } catch (final IOException e) {
+                    // oops, cannot redirect
+                    this.log.error("Unable to redirect for password change: " + this.redirect, e);
+                    throw new APIException(e);
+                }
+            }
+        }
+        
+        if (differentIpAddresses(session_ip_addr, request_ip_addr)) {
+            this.errorOccurred = true;
+            // stops warning message in IE when refreshing repeatedly
+            if ("0.0.0.0".equals(request_ip_addr) == false) {
+                this.log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
+                httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
+            }
+        }
+        
+        this.log.debug("session ip addr: " + session_ip_addr);
+        
+        if (this.errorOccurred) {
+            
+            String url = "";
+            if ((this.redirect != null) && !this.redirect.equals("")) {
+                url = request.getContextPath() + this.redirect;
+            } else {
+                url = request.getRequestURI();
+            }
+            
+            if (request.getQueryString() != null) {
+                url = url + "?" + request.getQueryString();
+            }
+            httpSession.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, url);
+            try {
+                httpResponse.sendRedirect(request.getContextPath() + this.otherwise);
+                return SKIP_PAGE;
+            } catch (final IOException e) {
+                // oops, cannot redirect
+                throw new APIException(e);
+            }
+        }
+        
+        return SKIP_BODY;
+    }
+    
+    /**
+     * Determines if the given ip addresses are the same.
+     * 
+     * @param session_ip_addr
+     * @param request_ip_addr
+     * @return true/false whether these IPs are different
+     */
+    private boolean differentIpAddresses(final String sessionIpAddr, final String requestIpAddr) {
+        if ((sessionIpAddr == null) || (requestIpAddr == null)) {
+            return false;
+        }
+        
+        // IE7 and firefox store "localhost" IP addresses differently.
+        // To accomodate switching from firefox browing to IE taskpane,
+        // we assume these addresses to be equivalent
+        final List<String> equivalentAddresses = new ArrayList<String>();
+        equivalentAddresses.add("127.0.0.1");
+        equivalentAddresses.add("0.0.0.0");
+        
+        // if the addresses are equal, all is well
+        if (sessionIpAddr.equals(requestIpAddr)) {
+            return false;
+        } else if (equivalentAddresses.contains(sessionIpAddr) && equivalentAddresses.contains(requestIpAddr)) {
+            return false;
+        }
+        
+        // the IP addresses were not equal, (don't continue with this user)
+        return true;
+    }
+    
+    /**
+     * Returns true if all of the following three are true:
+     * <ul>
+     * <li>privilege is not defined OR user has privilege</li>
+     * <li>allPrivileges is not defined OR user has every privilege in allPrivileges</li>
+     * <li>anyPrivilege is not defined OR user has at least one of the privileges in anyPrivileges</li>
+     * </ul>
+     * 
+     * @param userContext current user context
+     * @param privilege a single required privilege
+     * @param allPrivilegesArray an array of required privileges
+     * @param anyPrivilegeArray an array of privileges, at least one of which is required
+     * @return true if privilege conditions are met
+     */
+    private boolean hasPrivileges(final User user, final Person per, final Patient pat, final String privilege,
+                                  final String[] allPrivilegesArray, final String[] anyPrivilegeArray) {
+        if (user == null) {
+            return false;
+        }
+        
+        final PhrSecurityService serv = PersonalhrUtil.getService();
+        
+        if ((privilege != null) && !serv.hasPrivilege(privilege.trim(), pat, per, user)) {
+            return false;
+        }
+        if ((allPrivilegesArray.length > 0) && !hasAllPrivileges(user, per, pat, allPrivilegesArray)) {
+            return false;
+        }
+        if ((anyPrivilegeArray.length > 0) && !hasAnyPrivilege(user, per, pat, anyPrivilegeArray)) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Returns true if user has all privileges
+     * 
+     * @param userContext current user context
+     * @param allPrivilegesArray list of privileges
+     * @return true if user has all of the privileges
+     */
+    private boolean hasAllPrivileges(final User user, final Person per, final Patient pat, final String[] allPrivilegesArray) {
+        final PhrSecurityService serv = PersonalhrUtil.getService();
+        for (final String p : allPrivilegesArray) {
+            if (!serv.hasPrivilege(p.trim(), pat, per, user)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Returns true if user has any of the privileges
+     * 
+     * @param userContext current user context
+     * @param anyPriviegeArray list of privileges
+     * @return true if user has at least one of the privileges
+     */
+    private boolean hasAnyPrivilege(final User user, final Person per, final Patient pat, final String[] anyPriviegeArray) {
+        final PhrSecurityService serv = PersonalhrUtil.getService();
+        for (final String p : anyPriviegeArray) {
+            if (serv.hasPrivilege(p.trim(), pat, per, user)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * @see javax.servlet.jsp.tagext.TagSupport#doEndTag()
+     */
+    @Override
+    public int doEndTag() {
+        if (this.errorOccurred) {
+            return SKIP_PAGE;
+        } else {
+            return EVAL_PAGE;
+        }
+    }
+    
+    public String getPrivilege() {
+        return this.privilege;
+    }
+    
+    public void setPrivilege(final String privilege) {
+        this.privilege = privilege;
+    }
+    
+    public String getAllPrivileges() {
+        return this.allPrivileges;
+    }
+    
+    public void setAllPrivileges(final String allPrivileges) {
+        this.allPrivileges = allPrivileges;
+    }
+    
+    public String getAnyPrivilege() {
+        return this.anyPrivilege;
+    }
+    
+    public void setAnyPrivilege(final String anyPrivilege) {
+        this.anyPrivilege = anyPrivilege;
+    }
+    
+    public String getOtherwise() {
+        return this.otherwise;
+    }
+    
+    public void setOtherwise(final String otherwise) {
+        this.otherwise = otherwise;
+    }
+    
+    public String getRedirect() {
+        return this.redirect;
+    }
+    
+    public void setRedirect(final String redirect) {
+        this.redirect = redirect;
+    }
+    
 }

@@ -30,7 +30,6 @@ import org.openmrs.Person;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.dwr.PersonListItem;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -38,245 +37,254 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class AddPersonController extends SimpleFormController {
-	
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
-	
-	private final String PATIENT_SHORT_EDIT_URL = "/phr/newPatient.htm";
-	
-	private final String PATIENT_EDIT_URL = "/phr/patient.form";
-	
-	private final String PATIENT_VIEW_URL = "/phr/patientDashboard.form";
-	
-	private final String USER_EDIT_URL = "/phr/user.form";
-	
-	private final String FORM_ENTRY_ERROR_URL = "/phr/newPatient.htm";
-
-	/** Parameters passed in view request object **/
-	private String name = "";
-	
-	private String birthdate = "";
-	
-	private String age = "";
-	
-	private String gender = "";
-	
-	private String personType = "patient";
-	
-	private String personId = "";
-	
-	private String viewType = "view";
-
-	private boolean invalidAgeFormat = false;
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
-	 *      org.springframework.validation.BindException)
-	 */
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-	                                BindException errors) throws Exception {
-		
-		getParametersFromRequest(request);
-		
-		if ("".equals(personId)) {
-			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted)
-			if ("view".equals(viewType) || "shortEdit".equals(viewType))
-				viewType = "shortEdit";
-			else
-				viewType = "edit";
-			
-			return new ModelAndView(new RedirectView(getPersonURL("", personType, viewType, request)));
-		} else {
-			// if they picked a person, go to the type of view that was requested
-			
-			// if they selected view, do a double check to make sure that type of person already exists
-			if ("view".equals(viewType)) {
-				// TODO Do we even want to ever redirect to a 'view'.  I'm torn between jumping the DAs right to the 
-				// dashboard or jumping them to the short edit screen to make (potential) adjustments
-				if ("patient".equals(personType)) {
-					try {
-						if (Context.getPatientService().getPatient(Integer.valueOf(personId)) == null)
-							viewType = "shortEdit";
-					}
-					catch (Exception noPatientEx) {
-						// if there is no patient yet, they must go through those motions
-						viewType = "shortEdit";
-					}
-				}
-			}
-			
-			// redirect to the appropriate url
-			return new ModelAndView(new RedirectView(getPersonURL(personId, personType, viewType, request)));
-		}
-	}
-	
-	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
-	 * 
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
-	@Override
-	protected List<PersonListItem> formBackingObject(HttpServletRequest request) throws ServletException {
-		
-		log.debug("Entering formBackingObject()");
-		
-		List<PersonListItem> personList = new Vector<PersonListItem>();
-		
-		if (Context.isAuthenticated()) {
-			PersonService ps = Context.getPersonService();
-			
-			Integer userId = Context.getAuthenticatedUser().getUserId();
-			
-			invalidAgeFormat = false;
-			getParametersFromRequest(request);
-			
-			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
-			
-			if (!name.equals("") || !birthdate.equals("") || !age.equals("") || !gender.equals("")) {
-				
-				log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
-				
-				Integer d = null;
-				birthdate = birthdate.trim();
-				
-				String birthyear = "";
-				if (birthdate.length() > 6)
-					birthyear = birthdate.substring(6); //parse out the year. assuming XX-XX-XXXX
-					
-				age = age.trim();
-				
-				if (birthyear.length() > 3)
-					d = Integer.valueOf(birthyear);
-				else if (age.length() > 0) {
-					Calendar c = Calendar.getInstance();
-					c.setTime(new Date());
-					d = c.get(Calendar.YEAR);
-					try {
-						d = d - Integer.parseInt(age);
-					} catch (NumberFormatException e) {
-						// In theory, this should never happen -- Javascript in the UI should prevent this... 
-						invalidAgeFormat = true;
-					}
-				}
-				
-				if (gender.length() < 1)
-					gender = null;
-								
-				personList = new Vector<PersonListItem>();
-				for (Person p : ps.getSimilarPeople(name, d, gender)) {
-					personList.add(PersonListItem.createBestMatch(p));
-				}
-			}
-			
-		}
-		
-		log.debug("Returning personList of size: " + personList.size() + " from formBackingObject");
-		
-		return personList;
-	}
-	
-	/**
-	 * Prepares the form view
-	 */
-	public ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors)
-	                                                                                                            throws Exception {
-		
-		log.debug("In showForm method");
-		
-		ModelAndView mav = super.showForm(request, response, errors);
-
-		// If a invalid age is submitted, give the user a useful error message.
-		if (invalidAgeFormat) {
-			mav = new ModelAndView(FORM_ENTRY_ERROR_URL);
-			mav.addObject("errorTitle", "Person.age.error");
-			mav.addObject("errorMessage", "Person.birthdate.required");
-			return mav;
-		}
-
-		Object o = mav.getModel().get(this.getCommandName());
-		
-		List personList = (List) o;
-		
-		log.debug("Found list of size: " + personList.size());
-		
-		if (personList.size() < 1 && Context.isAuthenticated()) {
-			getParametersFromRequest(request);
-			if (viewType == null)
-				viewType = "edit";
-			
-			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
-			
-			if (!name.equals("") || !birthdate.equals("") || !age.equals("") || !gender.equals("")) {
-				mav.clear();
-				mav.setView(new RedirectView(getPersonURL("", personType, viewType, request)));
-			}
-		}
-		
-		return mav;
-	}
-	
-	/**
-	 * Returns the url string for the given personType and viewType
-	 * 
-	 * @param personId
-	 * @param personType
-	 * @param viewType
-	 * @param request
-	 * @return url string
-	 * @throws ServletException
-	 * @throws UnsupportedEncodingException
-	 */
-	private String getPersonURL(String personId, String personType, String viewType, HttpServletRequest request)
-	                                                                                                            throws ServletException,
-	                                                                                                            UnsupportedEncodingException {
-		if ("patient".equals(personType)) {
-			if ("edit".equals(viewType))
-				return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(personId, personType);
-			if ("shortEdit".equals(viewType))
-				return request.getContextPath() + PATIENT_SHORT_EDIT_URL + getParametersForURL(personId, personType);
-			else if ("view".equals(viewType))
-				return request.getContextPath() + PATIENT_VIEW_URL + getParametersForURL(personId, personType);
-		} else if ("user".equals(personType)) {
-			return request.getContextPath() + USER_EDIT_URL + getParametersForURL(personId, personType);
-		}
-		throw new ServletException("Undefined personType/viewType combo: " + personType + "/" + viewType);
-	}
-	
-	/**
-	 * Returns the appropriate ?patientId/?userId/?name&age&birthyear etc
-	 * 
-	 * @param personId
-	 * @param personType
-	 * @return
-	 * @throws UnsupportedEncodingException
-	 */
-	private String getParametersForURL(String personId, String personType) throws UnsupportedEncodingException {
-		if ("".equals(personId))
-			return "?addName=" + URLEncoder.encode(name, "UTF-8") + "&addBirthdate=" + birthdate + "&addAge=" + age
-			        + "&addGender=" + gender;
-		else {
-			if ("patient".equals(personType))
-				return "?patientId=" + personId;
-			else if ("user".equals(personType))
-				return "?userId=" + personId;
-		}
-		return "";
-	}
-	
-	/**
-	 * @param request
-	 */
-	private void getParametersFromRequest(HttpServletRequest request) {
-		name = ServletRequestUtils.getStringParameter(request, "addName", "");
-		birthdate = ServletRequestUtils.getStringParameter(request, "addBirthdate", "");
-		age = ServletRequestUtils.getStringParameter(request, "addAge", "");
-		gender = ServletRequestUtils.getStringParameter(request, "addGender", "");
-		
-		personType = ServletRequestUtils.getStringParameter(request, "personType", "patient");
-		personId = ServletRequestUtils.getStringParameter(request, "personId", "");
-		viewType = ServletRequestUtils.getStringParameter(request, "viewType", "");
-	}
+    
+    /** Logger for this class and subclasses */
+    protected final Log log = LogFactory.getLog(getClass());
+    
+    private final String PATIENT_SHORT_EDIT_URL = "/phr/newPatient.htm";
+    
+    private final String PATIENT_EDIT_URL = "/phr/patient.form";
+    
+    private final String PATIENT_VIEW_URL = "/phr/patientDashboard.form";
+    
+    private final String USER_EDIT_URL = "/phr/user.form";
+    
+    private final String FORM_ENTRY_ERROR_URL = "/phr/newPatient.htm";
+    
+    /** Parameters passed in view request object **/
+    private String name = "";
+    
+    private String birthdate = "";
+    
+    private String age = "";
+    
+    private String gender = "";
+    
+    private String personType = "patient";
+    
+    private String personId = "";
+    
+    private String viewType = "view";
+    
+    private boolean invalidAgeFormat = false;
+    
+    /**
+     * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+     *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+     *      org.springframework.validation.BindException)
+     */
+    @Override
+    protected ModelAndView onSubmit(final HttpServletRequest request, final HttpServletResponse response,
+                                    final Object command, final BindException errors) throws Exception {
+        
+        getParametersFromRequest(request);
+        
+        if ("".equals(this.personId)) {
+            // if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted)
+            if ("view".equals(this.viewType) || "shortEdit".equals(this.viewType)) {
+                this.viewType = "shortEdit";
+            } else {
+                this.viewType = "edit";
+            }
+            
+            return new ModelAndView(new RedirectView(getPersonURL("", this.personType, this.viewType, request)));
+        } else {
+            // if they picked a person, go to the type of view that was requested
+            
+            // if they selected view, do a double check to make sure that type of person already exists
+            if ("view".equals(this.viewType)) {
+                // TODO Do we even want to ever redirect to a 'view'.  I'm torn between jumping the DAs right to the 
+                // dashboard or jumping them to the short edit screen to make (potential) adjustments
+                if ("patient".equals(this.personType)) {
+                    try {
+                        if (Context.getPatientService().getPatient(Integer.valueOf(this.personId)) == null) {
+                            this.viewType = "shortEdit";
+                        }
+                    } catch (final Exception noPatientEx) {
+                        // if there is no patient yet, they must go through those motions
+                        this.viewType = "shortEdit";
+                    }
+                }
+            }
+            
+            // redirect to the appropriate url
+            return new ModelAndView(new RedirectView(getPersonURL(this.personId, this.personType, this.viewType, request)));
+        }
+    }
+    
+    /**
+     * This is called prior to displaying a form for the first time. It tells Spring the
+     * form/command object to load into the request
+     * 
+     * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+     */
+    @Override
+    protected List<PersonListItem> formBackingObject(final HttpServletRequest request) throws ServletException {
+        
+        this.log.debug("Entering formBackingObject()");
+        
+        List<PersonListItem> personList = new Vector<PersonListItem>();
+        
+        if (Context.isAuthenticated()) {
+            final PersonService ps = Context.getPersonService();
+            
+            final Integer userId = Context.getAuthenticatedUser().getUserId();
+            
+            this.invalidAgeFormat = false;
+            getParametersFromRequest(request);
+            
+            this.log.debug("name: " + this.name + " birthdate: " + this.birthdate + " age: " + this.age + " gender: "
+                    + this.gender);
+            
+            if (!this.name.equals("") || !this.birthdate.equals("") || !this.age.equals("") || !this.gender.equals("")) {
+                
+                this.log.info(userId + "|" + this.name + "|" + this.birthdate + "|" + this.age + "|" + this.gender);
+                
+                Integer d = null;
+                this.birthdate = this.birthdate.trim();
+                
+                String birthyear = "";
+                if (this.birthdate.length() > 6) {
+                    birthyear = this.birthdate.substring(6); //parse out the year. assuming XX-XX-XXXX
+                }
+                
+                this.age = this.age.trim();
+                
+                if (birthyear.length() > 3) {
+                    d = Integer.valueOf(birthyear);
+                } else if (this.age.length() > 0) {
+                    final Calendar c = Calendar.getInstance();
+                    c.setTime(new Date());
+                    d = c.get(Calendar.YEAR);
+                    try {
+                        d = d - Integer.parseInt(this.age);
+                    } catch (final NumberFormatException e) {
+                        // In theory, this should never happen -- Javascript in the UI should prevent this... 
+                        this.invalidAgeFormat = true;
+                    }
+                }
+                
+                if (this.gender.length() < 1) {
+                    this.gender = null;
+                }
+                
+                personList = new Vector<PersonListItem>();
+                for (final Person p : ps.getSimilarPeople(this.name, d, this.gender)) {
+                    personList.add(PersonListItem.createBestMatch(p));
+                }
+            }
+            
+        }
+        
+        this.log.debug("Returning personList of size: " + personList.size() + " from formBackingObject");
+        
+        return personList;
+    }
+    
+    /**
+     * Prepares the form view
+     */
+    @Override
+    public ModelAndView showForm(final HttpServletRequest request, final HttpServletResponse response,
+                                 final BindException errors) throws Exception {
+        
+        this.log.debug("In showForm method");
+        
+        ModelAndView mav = super.showForm(request, response, errors);
+        
+        // If a invalid age is submitted, give the user a useful error message.
+        if (this.invalidAgeFormat) {
+            mav = new ModelAndView(this.FORM_ENTRY_ERROR_URL);
+            mav.addObject("errorTitle", "Person.age.error");
+            mav.addObject("errorMessage", "Person.birthdate.required");
+            return mav;
+        }
+        
+        final Object o = mav.getModel().get(this.getCommandName());
+        
+        final List personList = (List) o;
+        
+        this.log.debug("Found list of size: " + personList.size());
+        
+        if ((personList.size() < 1) && Context.isAuthenticated()) {
+            getParametersFromRequest(request);
+            if (this.viewType == null) {
+                this.viewType = "edit";
+            }
+            
+            this.log.debug("name: " + this.name + " birthdate: " + this.birthdate + " age: " + this.age + " gender: "
+                    + this.gender);
+            
+            if (!this.name.equals("") || !this.birthdate.equals("") || !this.age.equals("") || !this.gender.equals("")) {
+                mav.clear();
+                mav.setView(new RedirectView(getPersonURL("", this.personType, this.viewType, request)));
+            }
+        }
+        
+        return mav;
+    }
+    
+    /**
+     * Returns the url string for the given personType and viewType
+     * 
+     * @param personId
+     * @param personType
+     * @param viewType
+     * @param request
+     * @return url string
+     * @throws ServletException
+     * @throws UnsupportedEncodingException
+     */
+    private String getPersonURL(final String personId, final String personType, final String viewType,
+                                final HttpServletRequest request) throws ServletException, UnsupportedEncodingException {
+        if ("patient".equals(personType)) {
+            if ("edit".equals(viewType)) {
+                return request.getContextPath() + this.PATIENT_EDIT_URL + getParametersForURL(personId, personType);
+            }
+            if ("shortEdit".equals(viewType)) {
+                return request.getContextPath() + this.PATIENT_SHORT_EDIT_URL + getParametersForURL(personId, personType);
+            } else if ("view".equals(viewType)) {
+                return request.getContextPath() + this.PATIENT_VIEW_URL + getParametersForURL(personId, personType);
+            }
+        } else if ("user".equals(personType)) {
+            return request.getContextPath() + this.USER_EDIT_URL + getParametersForURL(personId, personType);
+        }
+        throw new ServletException("Undefined personType/viewType combo: " + personType + "/" + viewType);
+    }
+    
+    /**
+     * Returns the appropriate ?patientId/?userId/?name&age&birthyear etc
+     * 
+     * @param personId
+     * @param personType
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    private String getParametersForURL(final String personId, final String personType) throws UnsupportedEncodingException {
+        if ("".equals(personId)) {
+            return "?addName=" + URLEncoder.encode(this.name, "UTF-8") + "&addBirthdate=" + this.birthdate + "&addAge="
+                    + this.age + "&addGender=" + this.gender;
+        } else {
+            if ("patient".equals(personType)) {
+                return "?patientId=" + personId;
+            } else if ("user".equals(personType)) {
+                return "?userId=" + personId;
+            }
+        }
+        return "";
+    }
+    
+    /**
+     * @param request
+     */
+    private void getParametersFromRequest(final HttpServletRequest request) {
+        this.name = ServletRequestUtils.getStringParameter(request, "addName", "");
+        this.birthdate = ServletRequestUtils.getStringParameter(request, "addBirthdate", "");
+        this.age = ServletRequestUtils.getStringParameter(request, "addAge", "");
+        this.gender = ServletRequestUtils.getStringParameter(request, "addGender", "");
+        
+        this.personType = ServletRequestUtils.getStringParameter(request, "personType", "patient");
+        this.personId = ServletRequestUtils.getStringParameter(request, "personId", "");
+        this.viewType = ServletRequestUtils.getStringParameter(request, "viewType", "");
+    }
 }

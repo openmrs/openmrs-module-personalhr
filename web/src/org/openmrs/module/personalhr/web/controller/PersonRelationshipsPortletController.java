@@ -19,31 +19,33 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.Person;
-import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrSharingToken;
 
 public class PersonRelationshipsPortletController extends PortletController {
-	
-	/**
-	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,
-	 *      java.util.Map)
-	 */
-	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
-        log.debug("Entering PersonRelationshipsPortletController:populateModel");
+    
+    /**
+     * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,
+     *      java.util.Map)
+     */
+    @Override
+    protected void populateModel(final HttpServletRequest request, final Map<String, Object> model) {
+        this.log.debug("Entering PersonRelationshipsPortletController:populateModel");
         Integer personId = null;
         Person per = null;
         if (!PersonalhrUtil.isNullOrEmpty(request.getParameter("personId"))) {
             personId = PersonalhrUtil.getParamAsInteger(request.getParameter("personId"));
-            per = (personId==null ? null : Context.getPersonService().getPerson(personId));
+            per = (personId == null ? null : Context.getPersonService().getPerson(personId));
             
-        } else if(Context.isAuthenticated()){
-            per = Context.getAuthenticatedUser().getPerson();            
+        } else if (Context.isAuthenticated()) {
+            per = Context.getAuthenticatedUser().getPerson();
         }
-	    List<PhrSharingToken> sharingTokens = PersonalhrUtil.getService().getSharingTokenDao().getSharingTokenByPerson(per); 
-		model.put("phrSharingTokens", sharingTokens);		
-	    log.debug("Exiting PersonRelationshipsPortletController:populateModel -> personId|sharingTokens.size = " + personId + "|" + sharingTokens==null? null:sharingTokens.size());	    		
-	}
-	
+        final List<PhrSharingToken> sharingTokens = PersonalhrUtil.getService().getSharingTokenDao()
+                .getSharingTokenByPerson(per);
+        model.put("phrSharingTokens", sharingTokens);
+        this.log.debug("Exiting PersonRelationshipsPortletController:populateModel -> personId|sharingTokens.size = "
+                + personId + "|" + sharingTokens == null ? null : sharingTokens.size());
+    }
+    
 }

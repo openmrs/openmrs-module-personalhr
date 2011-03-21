@@ -27,30 +27,34 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 public class SpringController implements Controller {
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
-	
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                           IOException {
-		log.debug("Entering org.openmrs.module.cancertoolkit.web.controller.SpringController");
-		
-		String path = request.getServletPath();
-		if (path.endsWith("htm"))
-			path = path.replace(".htm", "");
-		else if (path.endsWith("jsp"))
-			path = path.replace(".jsp", "");
-		
-		path = path.replace("/phr/", "");
-		
-		path = "module/personalhr/view/" + path;
-		//int qmark = path.indexOf("?");
-		log.debug("Exiting: path=" + path);
-		
-        Map<String, Object> model = new HashMap<String, Object>();
-        String sharingToken = request.getParameter("sharingToken");
+    
+    /** Logger for this class and subclasses */
+    protected final Log log = LogFactory.getLog(getClass());
+    
+    @Override
+    public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response)
+                                                                                                           throws ServletException,
+                                                                                                           IOException {
+        this.log.debug("Entering org.openmrs.module.cancertoolkit.web.controller.SpringController");
+        
+        String path = request.getServletPath();
+        if (path.endsWith("htm")) {
+            path = path.replace(".htm", "");
+        } else if (path.endsWith("jsp")) {
+            path = path.replace(".jsp", "");
+        }
+        
+        path = path.replace("/phr/", "");
+        
+        path = "module/personalhr/view/" + path;
+        //int qmark = path.indexOf("?");
+        this.log.debug("Exiting: path=" + path);
+        
+        final Map<String, Object> model = new HashMap<String, Object>();
+        final String sharingToken = request.getParameter("sharingToken");
         model.put("sharingToken", sharingToken);
         
-		return new ModelAndView(path, "model", model);
-		
-	}
+        return new ModelAndView(path, "model", model);
+        
+    }
 }

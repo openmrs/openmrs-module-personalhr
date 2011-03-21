@@ -26,24 +26,27 @@ import org.springframework.web.servlet.mvc.Controller;
  * Redirects the request to the given <code>formView</code>
  */
 public class RedirectController implements Controller {
-	
-	private String redirectView = "";
-	
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                           IOException {
-		
-		// default to the current path
-		if (redirectView == null)
-			redirectView = request.getServletPath();
-		
-		return new ModelAndView(redirectView);
-	}
-	
-	public void setRedirectView(String view) {
-		this.redirectView = view;
-	}
-	
-	public String getRedirectView() {
-		return this.redirectView;
-	}
+    
+    private String redirectView = "";
+    
+    @Override
+    public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response)
+                                                                                                           throws ServletException,
+                                                                                                           IOException {
+        
+        // default to the current path
+        if (this.redirectView == null) {
+            this.redirectView = request.getServletPath();
+        }
+        
+        return new ModelAndView(this.redirectView);
+    }
+    
+    public void setRedirectView(final String view) {
+        this.redirectView = view;
+    }
+    
+    public String getRedirectView() {
+        return this.redirectView;
+    }
 }

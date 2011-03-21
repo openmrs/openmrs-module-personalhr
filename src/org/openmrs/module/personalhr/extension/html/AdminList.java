@@ -25,31 +25,34 @@ import org.openmrs.module.web.extension.AdministrationSectionExt;
  * /metadata/config.xml file.
  */
 public class AdminList extends AdministrationSectionExt {
-	
-	/**
-	 * @see org.openmrs.module.web.extension.AdministrationSectionExt#getMediaType()
-	 */
-	public Extension.MEDIA_TYPE getMediaType() {
-		return Extension.MEDIA_TYPE.html;
-	}
-	
-	/**
-	 * @see org.openmrs.module.web.extension.AdministrationSectionExt#getTitle()
-	 */
-	public String getTitle() {
-		return "Personal Health Record Module";
-	}
-	
-	/**
-	 * @see org.openmrs.module.web.extension.AdministrationSectionExt#getLinks()
-	 */
-	public Map<String, String> getLinks() {
-		
-		Map<String, String> map = new HashMap<String, String>();
-		
-		map.put("module/personalhr/manageSecurity.form", "Manage Security Rules");
-		
-		return map;
-	}
-	
+    
+    /**
+     * @see org.openmrs.module.web.extension.AdministrationSectionExt#getMediaType()
+     */
+    @Override
+    public Extension.MEDIA_TYPE getMediaType() {
+        return Extension.MEDIA_TYPE.html;
+    }
+    
+    /**
+     * @see org.openmrs.module.web.extension.AdministrationSectionExt#getTitle()
+     */
+    @Override
+    public String getTitle() {
+        return "Personal Health Record Module";
+    }
+    
+    /**
+     * @see org.openmrs.module.web.extension.AdministrationSectionExt#getLinks()
+     */
+    @Override
+    public Map<String, String> getLinks() {
+        
+        final Map<String, String> map = new HashMap<String, String>();
+        
+        map.put("module/personalhr/manageSecurity.form", "Manage Security Rules");
+        
+        return map;
+    }
+    
 }

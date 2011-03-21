@@ -20,83 +20,100 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
-
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.personalhr.db.*;
+import org.openmrs.module.personalhr.db.PhrAllowedUrlDAO;
+import org.openmrs.module.personalhr.db.PhrSecurityRuleDAO;
+import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
 /**
  *
  */
 public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSecurityService {
+    
     protected final Log log = LogFactory.getLog(getClass());
     
     private PhrSecurityRuleDAO securityRuleDao;
+    
     private PhrAllowedUrlDAO allowedUrlDao;
+    
     private PhrSharingTokenDAO sharingTokenDao;
-      
+    
     /**
-     * Called only after user has been authenticated (i.e. requestingUser != null)
+     * Called only after user has been authenticated (i.e. requestingUser != null) PHR URL level
+     * security check rules: 1. Check user type: unauthenticated (null) user, PHR user, non PHR user
+     * 2. If unauthenticated user: all URL's are allowed (page level check needed) 3. Otherwise
+     * check patient or person object in the request 4. If no patient or person object involved: all
+     * URL's are allowed 5. Otherwise check access to /phr/ or /personalhr/ domain 7. If access to
+     * /phr/ or /personalhr/ domain, allow authorized PHR user only; do not allow non PHR user 8.
+     * Otherwise, allow all non PHR users, or 9. Allow only registered non /phr/ or /personalhr/
+     * URL's to be accessed by only authorized PHR users
      * 
-     * PHR URL level security check rules:
-     * 1. Check user type: unauthenticated (null) user, PHR user, non PHR user
-     * 2. If unauthenticated user: all URL's are allowed (page level check needed)
-     * 3. Otherwise check patient or person object in the request
-     * 4. If no patient or person object involved: all URL's are allowed
-     * 5. Otherwise check access to /phr/ or /personalhr/ domain
-     * 7. If access to /phr/ or /personalhr/ domain, allow authorized PHR user only; do not allow non PHR user
-     * 8. Otherwise, allow all non PHR users, or
-     * 9. Allow only registered non /phr/ or /personalhr/ URL's to be accessed by only authorized PHR users
-     * 
-     * @see org.openmrs.module.personalhr.PhrSecurityService#isUrlAllowed(java.lang.String, org.openmrs.Patient, org.openmrs.Person, org.openmrs.User)
+     * @see org.openmrs.module.personalhr.PhrSecurityService#isUrlAllowed(java.lang.String,
+     *      org.openmrs.Patient, org.openmrs.Person, org.openmrs.User)
      */
-    public boolean isUrlAllowed(String requestedUrl, 
-                                Patient requestedPatient, 
-                                Person requestedPerson, 
-                                User requestingUser) {
-        log.debug("PhrSecurityServiceImpl:isUrlAllowed->" + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
-        if(requestingUser == null) {
-            log.warn("Allowed -> User not authenticated yet: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+    @Override
+    public boolean isUrlAllowed(final String requestedUrl, final Patient requestedPatient, final Person requestedPerson,
+                                final User requestingUser) {
+        this.log.debug("PhrSecurityServiceImpl:isUrlAllowed->" + requestedUrl + "|" + requestedPatient + "|"
+                + requestedPerson + "|" + requestingUser);
+        if (requestingUser == null) {
+            this.log.warn("Allowed -> User not authenticated yet: " + requestedUrl + "|" + requestedPatient + "|"
+                    + requestedPerson + "|" + requestingUser);
             return true;
         }
         
         //always allowed if requestedPatient==null && requestedPerson==null
-        if(requestedPatient==null && requestedPerson==null) {
-            log.debug("Allowed -> accessing common URL: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+        if ((requestedPatient == null) && (requestedPerson == null)) {
+            this.log.debug("Allowed -> accessing common URL: " + requestedUrl + "|" + requestedPatient + "|"
+                    + requestedPerson + "|" + requestingUser);
             return true;
         }
         
         //Check access to /phr/ or /personalhr/ domain
-        String phrRole = getPhrRole(requestingUser);
-        if(requestedUrl.contains("/phr") || requestedUrl.contains("/personalhr")) {
-            if(phrRole != null) {
-                log.debug("Allowed -> PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+        final String phrRole = getPhrRole(requestingUser);
+        if (requestedUrl.contains("/phr") || requestedUrl.contains("/personalhr")) {
+            if (phrRole != null) {
+                this.log.debug("Allowed -> PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"
+                        + requestedPatient + "|" + requestedPerson + "|" + requestingUser);
                 return hasPrivilege("", requestedPatient, requestedPerson, requestingUser);
-
+                
             } else {
-                log.warn("Not allowed - > Non PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+                this.log.warn("Not allowed - > Non PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"
+                        + requestedPatient + "|" + requestedPerson + "|" + requestingUser);
                 return false;
             }
         } else {
             //Always allow non PHR user accessing non /phr/ domain
-            if(phrRole == null) {
-                log.debug("Allowed -> non PHR user accessing non /phr domain or /personalhr: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+            if (phrRole == null) {
+                this.log.debug("Allowed -> non PHR user accessing non /phr domain or /personalhr: " + requestedUrl + "|"
+                        + requestedPatient + "|" + requestedPerson + "|" + requestingUser);
                 return true;
-            }            
+            }
         }
         
         //Check access to non /phr/ domain
-        List<PhrAllowedUrl> urls  = allowedUrlDao.getByUrl(requestedUrl);
-        if(urls != null) {
-            for(PhrAllowedUrl url : urls) {
-                if(url != null) {
-                    log.debug("Allowed - > Accessing allowed non /phr or /personalhr domain -> Checking privileges ... " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser+"|"+url.getPrivilege());
+        final List<PhrAllowedUrl> urls = this.allowedUrlDao.getByUrl(requestedUrl);
+        if (urls != null) {
+            for (final PhrAllowedUrl url : urls) {
+                if (url != null) {
+                    this.log.debug("Allowed - > Accessing allowed non /phr or /personalhr domain -> Checking privileges ... "
+                            + requestedUrl
+                            + "|"
+                            + requestedPatient
+                            + "|"
+                            + requestedPerson
+                            + "|"
+                            + requestingUser
+                            + "|"
+                            + url.getPrivilege());
                     return hasPrivilege(url.getPrivilege(), requestedPatient, requestedPerson, requestingUser);
                 }
-            } 
+            }
         }
         
-        log.warn("Not allowed - > Accessing non /phr or /personalhr domain by non-authorized PHR user: " + requestedUrl + "|"+requestedPatient+"|"+requestedPerson+"|"+requestingUser);
+        this.log.warn("Not allowed - > Accessing non /phr or /personalhr domain by non-authorized PHR user: " + requestedUrl
+                + "|" + requestedPatient + "|" + requestedPerson + "|" + requestingUser);
         return false;
     }
     
@@ -107,119 +124,121 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
      * @return
      */
     @Override
-    public String getPhrRole(User user) {
-        log.debug("PhrSecurityServiceImpl:igetPhrRole->" + user);
+    public String getPhrRole(final User user) {
+        this.log.debug("PhrSecurityServiceImpl:igetPhrRole->" + user);
         // TODO Auto-generated method stub
-        if(user.hasRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue(), true)) {
+        if (user.hasRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue(), true)) {
             return PhrBasicRole.PHR_ADMINISTRATOR.getValue();
-        } else if(user.hasRole(PhrBasicRole.PHR_PATIENT.getValue(), true)) {
+        } else if (user.hasRole(PhrBasicRole.PHR_PATIENT.getValue(), true)) {
             return PhrBasicRole.PHR_PATIENT.getValue();
-        } else if(user.hasRole(PhrBasicRole.PHR_RESTRICTED_USER.getValue(), true)) {
+        } else if (user.hasRole(PhrBasicRole.PHR_RESTRICTED_USER.getValue(), true)) {
             return PhrBasicRole.PHR_RESTRICTED_USER.getValue();
-        } else {            
+        } else {
             return null;
         }
     }
     
-
-    public boolean hasPrivilege(String privilege, 
-                                Patient requestedPatient, 
-                                Person requestedPerson, 
-                                User user) {
-        log.debug("PhrSecurityServiceImpl:hasPrivilege->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
+    @Override
+    public boolean hasPrivilege(final String privilege, final Patient requestedPatient, final Person requestedPerson,
+                                final User user) {
+        this.log.debug("PhrSecurityServiceImpl:hasPrivilege->" + privilege + "|" + requestedPatient + "|" + requestedPerson
+                + "|" + user);
         
-        if(user!=null && requestedPatient==null && requestedPerson==null) {
+        if ((user != null) && (requestedPatient == null) && (requestedPerson == null)) {
             return true;
         }
         
         //When url privilege is not specified, allow only owner, admin, and shareee to access
-        if(privilege==null || privilege.trim().isEmpty()) {
-            if(requestedPatient!=null || requestedPerson!=null) {
-                String reqRole="Owner,Administrator,Share Medical,Share Journal".toLowerCase(); 
-                List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
-                if(roles != null) {
-                    for(PhrDynamicRole role : roles) {
-                        if(reqRole.contains(role.getValue().toLowerCase())) {
-                          log.debug("hasPrivilege returns true ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
-                          return  true;                  
+        if ((privilege == null) || privilege.trim().isEmpty()) {
+            if ((requestedPatient != null) || (requestedPerson != null)) {
+                final String reqRole = "Owner,Administrator,Share Medical,Share Journal".toLowerCase();
+                final List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
+                if (roles != null) {
+                    for (final PhrDynamicRole role : roles) {
+                        if (reqRole.contains(role.getValue().toLowerCase())) {
+                            this.log.debug("hasPrivilege returns true ->" + privilege + "|" + requestedPatient + "|"
+                                    + requestedPerson + "|" + user);
+                            return true;
                         }
                     }
                 }
-                log.debug("PhrSecurityServiceImpl:hasPrivilege returns false ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
+                this.log.debug("PhrSecurityServiceImpl:hasPrivilege returns false ->" + privilege + "|" + requestedPatient
+                        + "|" + requestedPerson + "|" + user);
                 return false;
-            }  else {
-               log.debug("PhrSecurityServiceImpl:hasPrivilege returns true ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
-               return true; 
-            } 
+            } else {
+                this.log.debug("PhrSecurityServiceImpl:hasPrivilege returns true ->" + privilege + "|" + requestedPatient
+                        + "|" + requestedPerson + "|" + user);
+                return true;
+            }
         }
         
         //When url privilege is specified, check the database for authorized roles
-        List<PhrSecurityRule> rules  = securityRuleDao.getByPrivilege(privilege);
-        List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
-        if(rules != null) {
-            for(PhrSecurityRule rule : rules) {
-                if(rule != null) {
-                    String reqRole = rule.getRequiredRole().toLowerCase();
+        final List<PhrSecurityRule> rules = this.securityRuleDao.getByPrivilege(privilege);
+        final List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
+        if (rules != null) {
+            for (final PhrSecurityRule rule : rules) {
+                if (rule != null) {
+                    final String reqRole = rule.getRequiredRole().toLowerCase();
                     
-                    if(roles != null) {
-                        for(PhrDynamicRole role : roles) {
-                          if(reqRole.contains(role.getValue().toLowerCase())) {
-                            log.debug("hasPrivilege returns true ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
-                            return  true;                  
-                          }
+                    if (roles != null) {
+                        for (final PhrDynamicRole role : roles) {
+                            if (reqRole.contains(role.getValue().toLowerCase())) {
+                                this.log.debug("hasPrivilege returns true ->" + privilege + "|" + requestedPatient + "|"
+                                        + requestedPerson + "|" + user);
+                                return true;
+                            }
                         }
                     }
-                }
-            } 
-        }
-        
-        log.debug("hasPrivilege returns false ->" + privilege + "|"+requestedPatient+"|"+requestedPerson+"|"+user);
-        return false;
-    }
-    
-    public List<PhrDynamicRole> getDynamicRoles(Patient requestedPatient, 
-                                                Person requestedPerson, 
-                                                User user) {
-        log.debug("PhrSecurityServiceImpl:getDynamicRoles->" + requestedPatient+"|"+requestedPerson+"|"+user);
-        List<PhrDynamicRole> roles = new ArrayList<PhrDynamicRole>();
-        
-        //check for administrator privilege
-        if(user.hasRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue(), true)) {
-            roles.add(PhrSecurityService.PhrDynamicRole.ADMINISTRATOR);
-            log.debug("getDynamicRoles->ADMINISTRATOR");
-        } 
-        
-        //check for owner status
-        if(isSamePerson(user, requestedPatient) || isSamePerson(user, requestedPerson)) {
-            roles.add(PhrSecurityService.PhrDynamicRole.OWNER);
-            log.debug("getDynamicRoles->OWNER");
-        } else {               
-            //check for sharing authorization
-            PhrSharingToken token = sharingTokenDao.getSharingToken(requestedPatient, requestedPerson, user);
-            
-            if(token != null) {
-                String shareType = token.getShareType();
-                if(shareType != null && !shareType.trim().isEmpty()) {
-                   log.debug("getDynamicRoles for shareType: " + shareType);
-                   if(PhrSecurityService.PhrSharingType.SHARE_ALL.getValue().equals(shareType)) {
-                       roles.add(PhrSecurityService.PhrDynamicRole.SHARE_JOURNAL);
-                       roles.add(PhrSecurityService.PhrDynamicRole.SHARE_MEDICAL);                       
-                   } else {
-                       roles.add(PhrSecurityService.PhrDynamicRole.getRole(shareType));
-                   }
                 }
             }
         }
         
-        if(roles.isEmpty()) {
-            log.debug("getDynamicRoles returns null -> " + requestedPatient+"|"+requestedPerson+"|"+user);
+        this.log.debug("hasPrivilege returns false ->" + privilege + "|" + requestedPatient + "|" + requestedPerson + "|"
+                + user);
+        return false;
+    }
+    
+    @Override
+    public List<PhrDynamicRole> getDynamicRoles(final Patient requestedPatient, final Person requestedPerson, final User user) {
+        this.log.debug("PhrSecurityServiceImpl:getDynamicRoles->" + requestedPatient + "|" + requestedPerson + "|" + user);
+        final List<PhrDynamicRole> roles = new ArrayList<PhrDynamicRole>();
+        
+        //check for administrator privilege
+        if (user.hasRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue(), true)) {
+            roles.add(PhrSecurityService.PhrDynamicRole.ADMINISTRATOR);
+            this.log.debug("getDynamicRoles->ADMINISTRATOR");
+        }
+        
+        //check for owner status
+        if (isSamePerson(user, requestedPatient) || isSamePerson(user, requestedPerson)) {
+            roles.add(PhrSecurityService.PhrDynamicRole.OWNER);
+            this.log.debug("getDynamicRoles->OWNER");
+        } else {
+            //check for sharing authorization
+            final PhrSharingToken token = this.sharingTokenDao.getSharingToken(requestedPatient, requestedPerson, user);
+            
+            if (token != null) {
+                final String shareType = token.getShareType();
+                if ((shareType != null) && !shareType.trim().isEmpty()) {
+                    this.log.debug("getDynamicRoles for shareType: " + shareType);
+                    if (PhrSecurityService.PhrSharingType.SHARE_ALL.getValue().equals(shareType)) {
+                        roles.add(PhrSecurityService.PhrDynamicRole.SHARE_JOURNAL);
+                        roles.add(PhrSecurityService.PhrDynamicRole.SHARE_MEDICAL);
+                    } else {
+                        roles.add(PhrSecurityService.PhrDynamicRole.getRole(shareType));
+                    }
+                }
+            }
+        }
+        
+        if (roles.isEmpty()) {
+            this.log.debug("getDynamicRoles returns null -> " + requestedPatient + "|" + requestedPerson + "|" + user);
             return null;
         }
         
         return roles;
         
     }
-
     
     /**
      * Auto generated method comment
@@ -228,17 +247,17 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
      * @param requestedPerson
      * @return
      */
-    private boolean isSamePerson(User user, Person requestedPerson) {
-        log.debug("PhrSecurityServiceImpl:isSamePerson->" + user+"|"+requestedPerson);
+    private boolean isSamePerson(final User user, final Person requestedPerson) {
+        this.log.debug("PhrSecurityServiceImpl:isSamePerson->" + user + "|" + requestedPerson);
         // TODO Auto-generated method stub
-        if(user == null || requestedPerson==null) {
-            log.debug("isSamePerson(Person)=false ->" + user + "|" + requestedPerson);
+        if ((user == null) || (requestedPerson == null)) {
+            this.log.debug("isSamePerson(Person)=false ->" + user + "|" + requestedPerson);
             return false;
         }
         
         return user.getPerson().getPersonId().equals(requestedPerson.getPersonId());
     }
-
+    
     /**
      * Auto generated method comment
      * 
@@ -246,87 +265,89 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
      * @param requestedPatient
      * @return
      */
-    private boolean isSamePerson(User user, Patient requestedPatient) {
-        log.debug("PhrSecurityServiceImpl:isSamePerson->" + user+"|"+requestedPatient);
-       // TODO Auto-generated method stub
-        if(user == null || requestedPatient==null) {
-            log.debug("isSamePerson(Patient)=false ->" + user + "|" + requestedPatient);
+    private boolean isSamePerson(final User user, final Patient requestedPatient) {
+        this.log.debug("PhrSecurityServiceImpl:isSamePerson->" + user + "|" + requestedPatient);
+        // TODO Auto-generated method stub
+        if ((user == null) || (requestedPatient == null)) {
+            this.log.debug("isSamePerson(Patient)=false ->" + user + "|" + requestedPatient);
             return false;
         }
         
         return user.getPerson().getPersonId().equals(requestedPatient.getPersonId());
     }
-
-    public PhrSecurityRuleDAO getSecurityRuleDao() {
-        return securityRuleDao;
-    }
-
     
-    public void setSecurityRuleDao(PhrSecurityRuleDAO securityRuleDao) {
+    @Override
+    public PhrSecurityRuleDAO getSecurityRuleDao() {
+        return this.securityRuleDao;
+    }
+    
+    @Override
+    public void setSecurityRuleDao(final PhrSecurityRuleDAO securityRuleDao) {
         this.securityRuleDao = securityRuleDao;
     }
-
     
+    @Override
     public PhrAllowedUrlDAO getAllowedUrlDao() {
-        return allowedUrlDao;
+        return this.allowedUrlDao;
     }
-
     
-    public void setAllowedUrlDao(PhrAllowedUrlDAO allowedUrlDao) {
+    @Override
+    public void setAllowedUrlDao(final PhrAllowedUrlDAO allowedUrlDao) {
         this.allowedUrlDao = allowedUrlDao;
     }
-
     
+    @Override
     public PhrSharingTokenDAO getSharingTokenDao() {
-        return sharingTokenDao;
+        return this.sharingTokenDao;
     }
-
     
-    public void setSharingTokenDao(PhrSharingTokenDAO sharingTokenDao) {
+    @Override
+    public void setSharingTokenDao(final PhrSharingTokenDAO sharingTokenDao) {
         this.sharingTokenDao = sharingTokenDao;
     }
-
+    
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.PhrSecurityService#getRelatedPersons(org.openmrs.Person)
      */
     @Override
-    public List<Person> getRelatedPersons(Person person) {
+    public List<Person> getRelatedPersons(final Person person) {
         // TODO Auto-generated method stub
-        Patient pat = getPatient(person);
-        if(pat!=null) {
-            return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPatient(pat));         
-        }  else {
-            return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPerson(person));         
+        final Patient pat = getPatient(person);
+        if (pat != null) {
+            return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPatient(pat));
+        } else {
+            return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPerson(person));
         }
     }
-
+    
     /**
      * Auto generated method comment
      * 
      * @param sharingTokenByPatient
      * @return
      */
-    private List<Person> getRelatedPersons(List<PhrSharingToken> tokens) {
+    private List<Person> getRelatedPersons(final List<PhrSharingToken> tokens) {
         // TODO Auto-generated method stub
-        List<Person> persons = new ArrayList<Person>();
-        for(PhrSharingToken token : tokens) {
-           persons.add(token.getRelatedPerson());
+        final List<Person> persons = new ArrayList<Person>();
+        for (final PhrSharingToken token : tokens) {
+            persons.add(token.getRelatedPerson());
         }
         return persons;
     }
-
+    
     /**
      * Auto generated method comment
      * 
      * @param person
      * @return
      */
-    private Patient getPatient(Person person) {
+    private Patient getPatient(final Person person) {
         // TODO Auto-generated method stub
-        if(person != null)
-          return Context.getPatientService().getPatient(person.getPersonId());
-        else
-          return null;
+        if (person != null) {
+            return Context.getPatientService().getPatient(person.getPersonId());
+        } else {
+            return null;
+        }
     }
-
+    
 }

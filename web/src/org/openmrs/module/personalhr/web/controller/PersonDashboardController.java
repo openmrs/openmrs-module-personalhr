@@ -21,38 +21,37 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
  *
  */
 public class PersonDashboardController extends SimpleFormController {
-	
-	protected final Log log = LogFactory.getLog(getClass());
-	
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		log.debug("Entering PersonDashboardController.formBackingObject");
-		if (!Context.isAuthenticated()) {
-			log.debug("Not authenticated");
-			return new Person();
-		}
-		else {
+    
+    protected final Log log = LogFactory.getLog(getClass());
+    
+    @Override
+    protected Object formBackingObject(final HttpServletRequest request) throws ServletException {
+        this.log.debug("Entering PersonDashboardController.formBackingObject");
+        if (!Context.isAuthenticated()) {
+            this.log.debug("Not authenticated");
+            return new Person();
+        } else {
             //Add temporary privilege
             PersonalhrUtil.addTemporayPrivileges();
-
-			Person person = null;
-			String personId = request.getParameter("personId");
-			if(personId!= null && personId.trim().length()>0) {
-			    person = Context.getPersonService().getPerson(Integer.valueOf(personId));			
-			} else {
-			    person = Context.getAuthenticatedUser().getPerson();
-			}
-			if(person!=null) {
-			   log.debug("personId="+person.getPersonId());
-			   request.setAttribute("personId", person.getPersonId());
-			}
-			return person;
-		}
-	}
+            
+            Person person = null;
+            final String personId = request.getParameter("personId");
+            if ((personId != null) && (personId.trim().length() > 0)) {
+                person = Context.getPersonService().getPerson(Integer.valueOf(personId));
+            } else {
+                person = Context.getAuthenticatedUser().getPerson();
+            }
+            if (person != null) {
+                this.log.debug("personId=" + person.getPersonId());
+                request.setAttribute("personId", person.getPersonId());
+            }
+            return person;
+        }
+    }
 }

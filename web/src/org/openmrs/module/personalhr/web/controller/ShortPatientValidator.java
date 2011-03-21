@@ -19,8 +19,6 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.PersonAttribute;
-import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.validator.PersonNameValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -31,64 +29,68 @@ import org.springframework.validation.Validator;
  * This class validates a Short Patient Model object in the {@link NewPatientFormController}
  */
 public class ShortPatientValidator implements Validator {
-	
-	private static Log log = LogFactory.getLog(PersonNameValidator.class);
-
-	@Autowired
-	private PersonNameValidator personNameValidator;
-
-	/**
-	 * Returns whether or not this validator supports validating a given class.
-	 * 
-	 * @param c The class to check for support.
-	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
-		return ShortPatientModel.class.isAssignableFrom(c);
-	}
-	
-	/**
-	 * Validates the given Patient.
-	 * 
-	 * @param obj The patient to validate.
-	 * @param errors The patient to validate.
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 * @should fail validation if gender is blank
-	 * @should fail validation if birthdate is blank
-	 * @should fail validation if birthdate makes patient older that 120 years old
-	 * @should fail validation if birthdate is a future date
-	 * @should fail validation if voidReason is blank when patient is voided
-	 * @should fail validation if causeOfDeath is blank when patient is dead
-	 */
-	public void validate(Object obj, Errors errors) {
-		
-		ShortPatientModel shortPatientModel = (ShortPatientModel) obj;
-		
-		personNameValidator.validatePersonName(shortPatientModel.getName(), errors, false, false);
-
-		// Make sure they choose a gender
-		if (StringUtils.isBlank(shortPatientModel.getGender())) errors.rejectValue("gender", "Person.gender.required");
-
-		// check patients birthdate against future dates and really old dates
-		if (shortPatientModel.getBirthdate() != null) {
-			if (shortPatientModel.getBirthdate().after(new Date()))
-				errors.rejectValue("birthdate", "error.date.future");
-			else {
-				Calendar c = Calendar.getInstance();
-				c.setTime(new Date());
-				c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
-				if (shortPatientModel.getBirthdate().before(c.getTime())) {
-					errors.rejectValue("birthdate", "error.date.nonsensical");
-				}
-			}
-		} else {
-			errors.rejectValue("birthdate", "error.required", new Object[]{"Birthdate"}, "");
-		}
-		
-		/*
-		PersonAttribute emailAttr = shortPatientModel.getAttributeMap().get("Email");
+    
+    private static Log log = LogFactory.getLog(PersonNameValidator.class);
+    
+    @Autowired
+    private PersonNameValidator personNameValidator;
+    
+    /**
+     * Returns whether or not this validator supports validating a given class.
+     * 
+     * @param c The class to check for support.
+     * @see org.springframework.validation.Validator#supports(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean supports(final Class c) {
+        return ShortPatientModel.class.isAssignableFrom(c);
+    }
+    
+    /**
+     * Validates the given Patient.
+     * 
+     * @param obj The patient to validate.
+     * @param errors The patient to validate.
+     * @see org.springframework.validation.Validator#validate(java.lang.Object,
+     *      org.springframework.validation.Errors)
+     * @should fail validation if gender is blank
+     * @should fail validation if birthdate is blank
+     * @should fail validation if birthdate makes patient older that 120 years old
+     * @should fail validation if birthdate is a future date
+     * @should fail validation if voidReason is blank when patient is voided
+     * @should fail validation if causeOfDeath is blank when patient is dead
+     */
+    @Override
+    public void validate(final Object obj, final Errors errors) {
+        
+        final ShortPatientModel shortPatientModel = (ShortPatientModel) obj;
+        
+        this.personNameValidator.validatePersonName(shortPatientModel.getName(), errors, false, false);
+        
+        // Make sure they choose a gender
+        if (StringUtils.isBlank(shortPatientModel.getGender())) {
+            errors.rejectValue("gender", "Person.gender.required");
+        }
+        
+        // check patients birthdate against future dates and really old dates
+        if (shortPatientModel.getBirthdate() != null) {
+            if (shortPatientModel.getBirthdate().after(new Date())) {
+                errors.rejectValue("birthdate", "error.date.future");
+            } else {
+                final Calendar c = Calendar.getInstance();
+                c.setTime(new Date());
+                c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
+                if (shortPatientModel.getBirthdate().before(c.getTime())) {
+                    errors.rejectValue("birthdate", "error.date.nonsensical");
+                }
+            }
+        } else {
+            errors.rejectValue("birthdate", "error.required", new Object[] { "Birthdate" }, "");
+        }
+        
+        /*
+        PersonAttribute emailAttr = shortPatientModel.getAttributeMap().get("Email");
         if (emailAttr != null && !PersonalhrUtil.isNullOrEmpty((String) emailAttr.getHydratedObject())) {
            if(!PersonalhrUtil.isValidEmail(emailAttr.getValue())) {
                errors.reject("Invalid email address: |" + emailAttr.getHydratedObject() + "|" + emailAttr);               
@@ -96,13 +98,15 @@ public class ShortPatientValidator implements Validator {
         } else {
             errors.reject("Email address cannot be empty! |" + emailAttr.getHydratedObject() + "|" + emailAttr);
         }		
-		*/
-		
-		//	 Patient Info 
-		if (shortPatientModel.getVoided())
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
-		if (shortPatientModel.isDead() && (shortPatientModel.getCauseOfDeath() == null))
-			errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
+        */
 
-	}
+        //	 Patient Info 
+        if (shortPatientModel.getVoided()) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
+        }
+        if (shortPatientModel.isDead() && (shortPatientModel.getCauseOfDeath() == null)) {
+            errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
+        }
+        
+    }
 }

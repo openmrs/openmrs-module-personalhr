@@ -30,109 +30,110 @@ import org.openmrs.logic.LogicService;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.notification.Alert;
-import org.openmrs.notification.AlertService;
 
 public class ForEachAlertTag extends LoopTagSupport {
-	
-	public static final long serialVersionUID = 1232300L;
-	
-	private final Log log = LogFactory.getLog(getClass());
-	
-	private User user = null;
-	
-	private Boolean includeRead = false;
-	
-	private Boolean includeExpired = false;
-	
-	private Iterator<?> alerts;
-	
-	public void prepare() throws JspTagException {
-		
-		alerts = null;
-		
-		try {
-			LogicService ls = Context.getLogicService();
-			
-			if(user == null) {
-			    user = Context.getAuthenticatedUser();
-			}
-			
-			if(user!=null) {
-    			Patient pat = Context.getPatientService().getPatient(user.getPerson().getId());
-    			
-    			log.debug("Parsing logic rule...");
-    			Result result = ls.eval(pat, ls.parse("\"Follow-up Care Alert\""));
-    			
-    			if(result != null) {
-        			List<Alert> alertList = new ArrayList<Alert>();
-        			ListIterator<Result> iter = result.listIterator();
-        			while(iter.hasNext()) {
-        			    Result res = iter.next();
-        			    Alert alert = new Alert();
-        			    Datatype dataType = res.getDatatype();
-        			    if(Datatype.CODED==dataType) {
-                            log.debug("Alert found: " + res.toConcept().getRetireReason());
-        			        alert.setText(res.toConcept().getRetireReason());
-        			        alertList.add(alert);
-        			    } else {
-        			        log.debug("Non coded datatype: " + dataType);
-        			    }
-        			}
-        			
-                    alerts = alertList.iterator();
-    			}
-			}
-			setVar("alert");
-			setVarStatus("varStatus");
-		}
-		catch (Exception e) {
-			log.error(e);
-		}
-	}
-	
-	@Override
-	protected boolean hasNext() throws JspTagException {
-		if (alerts == null)
-			return false;
-		return alerts.hasNext();
-	}
-	
-	@Override
-	protected Object next() throws JspTagException {
-		if (alerts == null)
-			throw new JspTagException("The alert iterator is null");
-		return alerts.next();
-	}
-	
-	@Override
-	public void release() {
-		// Clean out the variables
-		user = null;
-		includeRead = false;
-		includeExpired = false;
-	}
-	
-	public Boolean getIncludeExpired() {
-		return includeExpired;
-	}
-	
-	public void setIncludeExpired(Boolean includeExpired) {
-		this.includeExpired = includeExpired;
-	}
-	
-	public Boolean getIncludeRead() {
-		return includeRead;
-	}
-	
-	public void setIncludeRead(Boolean includeRead) {
-		this.includeRead = includeRead;
-	}
-	
-	public User getUser() {
-		return user;
-	}
-	
-	public void setUser(User user) {
-		this.user = user;
-	}
+    
+    public static final long serialVersionUID = 1232300L;
+    
+    private final Log log = LogFactory.getLog(getClass());
+    
+    private User user = null;
+    
+    private Boolean includeRead = false;
+    
+    private Boolean includeExpired = false;
+    
+    private Iterator<?> alerts;
+    
+    @Override
+    public void prepare() throws JspTagException {
+        
+        this.alerts = null;
+        
+        try {
+            final LogicService ls = Context.getLogicService();
+            
+            if (this.user == null) {
+                this.user = Context.getAuthenticatedUser();
+            }
+            
+            if (this.user != null) {
+                final Patient pat = Context.getPatientService().getPatient(this.user.getPerson().getId());
+                
+                this.log.debug("Parsing logic rule...");
+                final Result result = ls.eval(pat, ls.parse("\"Follow-up Care Alert\""));
+                
+                if (result != null) {
+                    final List<Alert> alertList = new ArrayList<Alert>();
+                    final ListIterator<Result> iter = result.listIterator();
+                    while (iter.hasNext()) {
+                        final Result res = iter.next();
+                        final Alert alert = new Alert();
+                        final Datatype dataType = res.getDatatype();
+                        if (Datatype.CODED == dataType) {
+                            this.log.debug("Alert found: " + res.toConcept().getRetireReason());
+                            alert.setText(res.toConcept().getRetireReason());
+                            alertList.add(alert);
+                        } else {
+                            this.log.debug("Non coded datatype: " + dataType);
+                        }
+                    }
+                    
+                    this.alerts = alertList.iterator();
+                }
+            }
+            setVar("alert");
+            setVarStatus("varStatus");
+        } catch (final Exception e) {
+            this.log.error(e);
+        }
+    }
+    
+    @Override
+    protected boolean hasNext() throws JspTagException {
+        if (this.alerts == null) {
+            return false;
+        }
+        return this.alerts.hasNext();
+    }
+    
+    @Override
+    protected Object next() throws JspTagException {
+        if (this.alerts == null) {
+            throw new JspTagException("The alert iterator is null");
+        }
+        return this.alerts.next();
+    }
+    
+    @Override
+    public void release() {
+        // Clean out the variables
+        this.user = null;
+        this.includeRead = false;
+        this.includeExpired = false;
+    }
+    
+    public Boolean getIncludeExpired() {
+        return this.includeExpired;
+    }
+    
+    public void setIncludeExpired(final Boolean includeExpired) {
+        this.includeExpired = includeExpired;
+    }
+    
+    public Boolean getIncludeRead() {
+        return this.includeRead;
+    }
+    
+    public void setIncludeRead(final Boolean includeRead) {
+        this.includeRead = includeRead;
+    }
+    
+    public User getUser() {
+        return this.user;
+    }
+    
+    public void setUser(final User user) {
+        this.user = user;
+    }
 }

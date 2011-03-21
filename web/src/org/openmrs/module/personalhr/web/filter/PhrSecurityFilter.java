@@ -33,7 +33,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrSecurityService.PhrBasicRole;
-import org.openmrs.web.user.UserProperties;
 
 /**
  * This filter checks if an authenticated user has been flagged by the admin to change his password
@@ -55,6 +54,7 @@ public class PhrSecurityFilter implements Filter {
     /**
      * @see javax.servlet.Filter#destroy()
      */
+    @Override
     public void destroy() {
     }
     
@@ -62,74 +62,82 @@ public class PhrSecurityFilter implements Filter {
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
      *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,                                                                                       ServletException {
-        String requestURI = ((HttpServletRequest) request).getRequestURI();
-        String patientId = ((HttpServletRequest) request).getParameter("patientId");
-        String personId = ((HttpServletRequest) request).getParameter("personId");
-        String encounterId = ((HttpServletRequest) request).getParameter("encounterId");
-
-        log.debug("Entering PhrSecurityFilter.doFilter: " + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
+    @Override
+    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
+                                                                                                               throws IOException,
+                                                                                                               ServletException {
+        final String requestURI = ((HttpServletRequest) request).getRequestURI();
+        final String patientId = ((HttpServletRequest) request).getParameter("patientId");
+        final String personId = ((HttpServletRequest) request).getParameter("personId");
+        final String encounterId = ((HttpServletRequest) request).getParameter("encounterId");
+        
+        this.log.debug("Entering PhrSecurityFilter.doFilter: " + requestURI + "|" + patientId + "|" + personId + "|"
+                + encounterId);
         
         if (Context.isAuthenticated() && shouldCheckAccessToUrl(requestURI)) {
-            User user = Context.getAuthenticatedUser();
+            final User user = Context.getAuthenticatedUser();
             
-            Integer patId = PersonalhrUtil.getParamAsInteger(patientId); 
+            final Integer patId = PersonalhrUtil.getParamAsInteger(patientId);
             
-            Patient pat = patId==null? null : Context.getPatientService().getPatient(patId);
-                        
-            Integer perId = PersonalhrUtil.getParamAsInteger(personId);
-            Person per = perId==null? null : Context.getPersonService().getPerson(perId); 
+            Patient pat = patId == null ? null : Context.getPatientService().getPatient(patId);
             
-            Integer encId = PersonalhrUtil.getParamAsInteger(encounterId);
-            Encounter enc = encId==null? null : Context.getEncounterService().getEncounter(encId);
-            if(enc != null) {
+            final Integer perId = PersonalhrUtil.getParamAsInteger(personId);
+            final Person per = perId == null ? null : Context.getPersonService().getPerson(perId);
+            
+            final Integer encId = PersonalhrUtil.getParamAsInteger(encounterId);
+            final Encounter enc = encId == null ? null : Context.getEncounterService().getEncounter(encId);
+            if (enc != null) {
                 pat = enc.getPatient();
             }
-                       
-           if(!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
-               log.debug("***URL access not allowed!!! " + requestURI + "|" + pat + "|" + per + "|" + Context.getAuthenticatedUser());
-               config.getServletContext().getRequestDispatcher(loginForm).forward(request, response);
+            
+            if (!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
+                this.log.debug("***URL access not allowed!!! " + requestURI + "|" + pat + "|" + per + "|"
+                        + Context.getAuthenticatedUser());
+                this.config.getServletContext().getRequestDispatcher(this.loginForm).forward(request, response);
             } else {
-                if(requestURI.toLowerCase().contains("index.htm") && !requestURI.toLowerCase().contains("/phr/")) {
+                if (requestURI.toLowerCase().contains("index.htm") && !requestURI.toLowerCase().contains("/phr/")) {
                     String redirect = requestURI;
-                    String phrRole = PersonalhrUtil.getService().getPhrRole(user);
-                    if(phrRole!=null) {                    
-                        Integer userPersonId = (user==null? null : user.getPerson().getId());
-                        if(PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
-                            if(userPersonId != null) {
+                    final String phrRole = PersonalhrUtil.getService().getPhrRole(user);
+                    if (phrRole != null) {
+                        final Integer userPersonId = (user == null ? null : user.getPerson().getId());
+                        if (PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
+                            if (userPersonId != null) {
                                 redirect = "/phr/patientDashboard.form?patientId=" + userPersonId;
                             } else {
-                                log.error("Error: PHR Patient's person id is null!");
+                                this.log.error("Error: PHR Patient's person id is null!");
                             }
                             PersonalhrUtil.addTemporayPrivileges();
-                       } else if(PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
-                            if(userPersonId != null) {
-                                redirect = "/phr/restrictedUserDashboard.form?personId=" + userPersonId;  
-                           } else {
-                                log.error("Error: PHR Restricted user's person id is null!");
+                        } else if (PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
+                            if (userPersonId != null) {
+                                redirect = "/phr/restrictedUserDashboard.form?personId=" + userPersonId;
+                            } else {
+                                this.log.error("Error: PHR Restricted user's person id is null!");
                             }
                             PersonalhrUtil.addTemporayPrivileges();
-                        } else if(PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)){
+                        } else if (PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)) {
                             redirect = "/phr/findPatient.htm";
                             PersonalhrUtil.addTemporayPrivileges();
                         }
                         
-                        log.debug("***URL access is redirected to " + redirect + " for user " + user + "|" + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
-                        ((HttpServletResponse) response).sendRedirect(((HttpServletRequest)request).getContextPath()+redirect);
+                        this.log.debug("***URL access is redirected to " + redirect + " for user " + user + "|" + requestURI
+                                + "|" + patientId + "|" + personId + "|" + encounterId);
+                        ((HttpServletResponse) response).sendRedirect(((HttpServletRequest) request).getContextPath()
+                                + redirect);
                         return;
-                  }
-               }                     
+                    }
+                }
             }
-           
-           log.debug("***URL access is allowed for this authenticated user!!! " + user + "|" + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
+            
+            this.log.debug("***URL access is allowed for this authenticated user!!! " + user + "|" + requestURI + "|"
+                    + patientId + "|" + personId + "|" + encounterId);
         } else {
-            log.debug("***URL access is allowed for all unauthenticated users!!! " + requestURI + "|" + patientId + "|" + personId + "|" + encounterId);
+            this.log.debug("***URL access is allowed for all unauthenticated users!!! " + requestURI + "|" + patientId + "|"
+                    + personId + "|" + encounterId);
         }
         
-        chain.doFilter(request, response);       
+        chain.doFilter(request, response);
     }
     
-
     /**
      * Method to check if the request url is an excluded url.
      * 
@@ -137,26 +145,27 @@ public class PhrSecurityFilter implements Filter {
      * @param excludeURL
      * @return
      */
-    private boolean shouldCheckAccessToUrl(String requestURI) {        
-        for (String url : excludedURLs) {
+    private boolean shouldCheckAccessToUrl(final String requestURI) {
+        for (final String url : this.excludedURLs) {
             if (requestURI.contains(url)) {
-                log.debug("shouldCheckAccessToUrl: " + false + " for " + requestURI + " due to " + url);
+                this.log.debug("shouldCheckAccessToUrl: " + false + " for " + requestURI + " due to " + url);
                 return false;
             }
         }
         
-        log.debug("shouldCheckAccessToUrl: " + true + " for " + requestURI);
+        this.log.debug("shouldCheckAccessToUrl: " + true + " for " + requestURI);
         return true;
     }
     
     /**
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
-    public void init(FilterConfig config) throws ServletException {
+    @Override
+    public void init(final FilterConfig config) throws ServletException {
         this.config = config;
-        excludeURL = config.getInitParameter("excludeURL");
-        excludedURLs = excludeURL.split(",");
-        loginForm = config.getInitParameter("loginForm");
+        this.excludeURL = config.getInitParameter("excludeURL");
+        this.excludedURLs = this.excludeURL.split(",");
+        this.loginForm = config.getInitParameter("loginForm");
     }
     
 }

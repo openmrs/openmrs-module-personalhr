@@ -30,24 +30,25 @@ import org.openmrs.api.context.Context;
  * @see Context#logout()
  */
 public class LogoutServlet extends HttpServlet {
-	
-	public static final long serialVersionUID = 123423L;
-	
-	/**
-	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse)
-	 */
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		HttpSession httpSession = request.getSession();
-		
-		Context.logout();
-		
-		response.sendRedirect(request.getContextPath() + "/phr/index.htm?noredirect=true");
-		
-		// clears attributes and makes sure that no one can access this session
-		httpSession.invalidate();
-	}
-	
+    
+    public static final long serialVersionUID = 123423L;
+    
+    /**
+     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
+     *      javax.servlet.http.HttpServletResponse)
+     */
+    @Override
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,
+                                                                                              IOException {
+        
+        final HttpSession httpSession = request.getSession();
+        
+        Context.logout();
+        
+        response.sendRedirect(request.getContextPath() + "/phr/index.htm?noredirect=true");
+        
+        // clears attributes and makes sure that no one can access this session
+        httpSession.invalidate();
+    }
+    
 }

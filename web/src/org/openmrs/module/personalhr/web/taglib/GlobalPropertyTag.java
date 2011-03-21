@@ -25,92 +25,97 @@ import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.springframework.util.StringUtils;
 
 public class GlobalPropertyTag extends TagSupport {
-	
-	/**
+    
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	
-	private final Log log = LogFactory.getLog(getClass());
-	
-	private String key = "";
-	
-	private String defaultValue = "";
-	
-	private String var = null;
-	
-	private String listSeparator = null;
-	
-	public int doStartTag() {
-		log.debug("Entering GlobalPropertyTag.doStartTag");
-		try {
-			//Add temporary privilege
-			PersonalhrUtil.addTemporayPrivileges();
-				
-			Object value;
-			if (StringUtils.hasText(listSeparator))
-				value = Collections.singletonList(defaultValue);
-			else
-				value = defaultValue;
-			
-			// If user is logged in
-			if (Context.isAuthenticated()) {
-				if (StringUtils.hasText(listSeparator)) {
-					String stringVal = (String) Context.getAdministrationService().getGlobalProperty(key, defaultValue);
-					if(stringVal.trim().length() == 0)
-						value = Collections.emptyList();
-					else
-						value = Arrays.asList(stringVal.split(listSeparator));
-				} else
-					value = (String) Context.getAdministrationService().getGlobalProperty(key, defaultValue);
-			}
-			
-			try {
-				if (var != null)
-					pageContext.setAttribute(var, value);
-				else
-					pageContext.getOut().write(value.toString());
-				
-			}
-			catch (Exception e) {
-				log.error("error getting global property", e);
-			}
-		} finally{
-			PersonalhrUtil.removeTemporayPrivileges();
-		}
-		return SKIP_BODY;
-	}
-	
-	public String getKey() {
-		return this.key;
-	}
-	
-	public void setKey(String key) {
-		this.key = key;
-	}
-	
-	public String getDefaultValue() {
-		return this.defaultValue;
-	}
-	
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-	
-	public String getVar() {
-		return var;
-	}
-	
-	public void setVar(String var) {
-		this.var = var;
-	}
-	
-	public String getListSeparator() {
-		return listSeparator;
-	}
-	
-	public void setListSeparator(String listSeparator) {
-		this.listSeparator = listSeparator;
-	}
-	
+    private static final long serialVersionUID = 1L;
+    
+    private final Log log = LogFactory.getLog(getClass());
+    
+    private String key = "";
+    
+    private String defaultValue = "";
+    
+    private String var = null;
+    
+    private String listSeparator = null;
+    
+    @Override
+    public int doStartTag() {
+        this.log.debug("Entering GlobalPropertyTag.doStartTag");
+        try {
+            //Add temporary privilege
+            PersonalhrUtil.addTemporayPrivileges();
+            
+            Object value;
+            if (StringUtils.hasText(this.listSeparator)) {
+                value = Collections.singletonList(this.defaultValue);
+            } else {
+                value = this.defaultValue;
+            }
+            
+            // If user is logged in
+            if (Context.isAuthenticated()) {
+                if (StringUtils.hasText(this.listSeparator)) {
+                    final String stringVal = Context.getAdministrationService().getGlobalProperty(this.key,
+                        this.defaultValue);
+                    if (stringVal.trim().length() == 0) {
+                        value = Collections.emptyList();
+                    } else {
+                        value = Arrays.asList(stringVal.split(this.listSeparator));
+                    }
+                } else {
+                    value = Context.getAdministrationService().getGlobalProperty(this.key, this.defaultValue);
+                }
+            }
+            
+            try {
+                if (this.var != null) {
+                    this.pageContext.setAttribute(this.var, value);
+                } else {
+                    this.pageContext.getOut().write(value.toString());
+                }
+                
+            } catch (final Exception e) {
+                this.log.error("error getting global property", e);
+            }
+        } finally {
+            PersonalhrUtil.removeTemporayPrivileges();
+        }
+        return SKIP_BODY;
+    }
+    
+    public String getKey() {
+        return this.key;
+    }
+    
+    public void setKey(final String key) {
+        this.key = key;
+    }
+    
+    public String getDefaultValue() {
+        return this.defaultValue;
+    }
+    
+    public void setDefaultValue(final String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+    
+    public String getVar() {
+        return this.var;
+    }
+    
+    public void setVar(final String var) {
+        this.var = var;
+    }
+    
+    public String getListSeparator() {
+        return this.listSeparator;
+    }
+    
+    public void setListSeparator(final String listSeparator) {
+        this.listSeparator = listSeparator;
+    }
+    
 }

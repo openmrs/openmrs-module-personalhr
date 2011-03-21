@@ -1,14 +1,21 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.personalhr.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.Patient;
-import org.openmrs.Person;
-import org.openmrs.User;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.personalhr.PhrSharingToken;
-import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -18,28 +25,37 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.personalhr.PhrSharingToken;
+import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
 /**
  * Hibernate implementation of the Data Access Object
  */
 public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
-
+    
     protected final Log log = LogFactory.getLog(getClass());
     
     private SessionFactory sessionFactory;
     
-    public void setSessionFactory(SessionFactory sessionFactory) {
+    @Override
+    public void setSessionFactory(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
     
-    public PhrSharingToken getPhrSharingToken(Integer id) {
-        return (PhrSharingToken) sessionFactory.getCurrentSession().get(PhrSharingToken.class, id);
+    @Override
+    public PhrSharingToken getPhrSharingToken(final Integer id) {
+        return (PhrSharingToken) this.sessionFactory.getCurrentSession().get(PhrSharingToken.class, id);
     }
-       
-    public PhrSharingToken savePhrSharingToken(PhrSharingToken token) {
+    
+    @Override
+    public PhrSharingToken savePhrSharingToken(final PhrSharingToken token) {
         //sessionFactory.getCurrentSession().close();
-        Session sess = sessionFactory.openSession();
-        Transaction tx = sess.beginTransaction();
+        final Session sess = this.sessionFactory.openSession();
+        final Transaction tx = sess.beginTransaction();
         sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
         sess.saveOrUpdate(token);
         tx.commit();
@@ -47,142 +63,154 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         sess.close();
         //sessionFactory.getCurrentSession().saveOrUpdate(token);
         return token;
-    }    
+    }
     
-    public void deletePhrSharingToken(PhrSharingToken token) {
+    @Override
+    public void deletePhrSharingToken(final PhrSharingToken token) {
         //sessionFactory.getCurrentSession().delete(token);
         //sessionFactory.getCurrentSession().close();
-        Session sess = sessionFactory.openSession();
-        Transaction tx = sess.beginTransaction();
+        final Session sess = this.sessionFactory.openSession();
+        final Transaction tx = sess.beginTransaction();
         sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
         sess.delete(token);
         tx.commit();
         sess.close();
     }
-
+    
+    @Override
     @SuppressWarnings("unchecked")
     public List<PhrSharingToken> getAllPhrSharingTokens() {
-        Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
+        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
         crit.addOrder(Order.asc("patient_id"));
-        log.debug("HibernatePhrSharingTokenDAO:getAllPhrSharingTokens->" + " | token count=" + crit.list().size());
-        return (List<PhrSharingToken>) crit.list();
+        this.log.debug("HibernatePhrSharingTokenDAO:getAllPhrSharingTokens->" + " | token count=" + crit.list().size());
+        return crit.list();
     }
-
+    
+    @Override
     @SuppressWarnings("unchecked")
-    public List<PhrSharingToken> getSharingTokenByPatient(Patient pat) {
-        Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
+    public List<PhrSharingToken> getSharingTokenByPatient(final Patient pat) {
+        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
         crit.add(Restrictions.eq("patient", pat));
         crit.addOrder(Order.desc("dateCreated"));
-        List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
-        log.debug("HibernatePhrSharingTokenDAO:getSharingTokenByPatient->" + pat + " | token count=" + list.size());
-        if (list.size() >= 1)
+        final List<PhrSharingToken> list = crit.list();
+        this.log.debug("HibernatePhrSharingTokenDAO:getSharingTokenByPatient->" + pat + " | token count=" + list.size());
+        if (list.size() >= 1) {
             return list;
-        else
+        } else {
             return null;
+        }
     }
-
+    
+    @Override
     @SuppressWarnings("unchecked")
-    public List<PhrSharingToken> getSharingTokenByPerson(Person per) {
-        if(per instanceof Patient) {
+    public List<PhrSharingToken> getSharingTokenByPerson(final Person per) {
+        if (per instanceof Patient) {
             return getSharingTokenByPatient((Patient) per);
         }
         
-        Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
+        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
         crit.add(Restrictions.eq("relatedPerson", per));
         crit.addOrder(Order.desc("dateCreated"));
-        List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
-        log.debug("HibernatePhrSharingTokenDAO:getSharingTokenByPerson->" + per + " | token count=" + list.size());
-        if (list.size() >= 1)
+        final List<PhrSharingToken> list = crit.list();
+        this.log.debug("HibernatePhrSharingTokenDAO:getSharingTokenByPerson->" + per + " | token count=" + list.size());
+        if (list.size() >= 1) {
             return list;
-        else
+        } else {
             return null;
+        }
     }
-
+    
     /**
-     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingToken(org.openmrs.Patient, org.openmrs.Person, org.openmrs.User)
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingToken(org.openmrs.Patient,
+     *      org.openmrs.Person, org.openmrs.User)
      */
     @Override
-    public PhrSharingToken getSharingToken(Patient requestedPatient, Person requestedPerson, User requestingUser) {
+    public PhrSharingToken getSharingToken(final Patient requestedPatient, final Person requestedPerson,
+                                           final User requestingUser) {
         Patient pat = requestedPatient;
-        if(pat == null && requestedPerson != null) {
+        if ((pat == null) && (requestedPerson != null)) {
             //pat = requestedPerson.getPatient();            
             pat = Context.getPatientService().getPatient(requestedPerson.getPersonId()); //patient_id=person_id
-            log.debug("getSharingToken for person|patient->"+requestedPerson+"|"+pat);
+            this.log.debug("getSharingToken for person|patient->" + requestedPerson + "|" + pat);
         }
         
-        Person per = requestingUser.getPerson();
+        final Person per = requestingUser.getPerson();
         
         //sessionFactory.getCurrentSession().createQuery("from PhrSharingToken").list();
-        Criteria crit = sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);        
+        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
         crit.add(Restrictions.eq("relatedPerson", per));
         crit.add(Restrictions.eq("patient", pat));
         crit.addOrder(Order.desc("dateCreated"));
-        List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();
-        log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + requestedPatient+"|"+requestedPerson+"|"+requestingUser + "|token count=" + list.size());
-        if (list.size() >= 1)
+        final List<PhrSharingToken> list = crit.list();
+        this.log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + requestedPatient + "|" + requestedPerson + "|"
+                + requestingUser + "|token count=" + list.size());
+        if (list.size() >= 1) {
             return list.get(0);
-        else
+        } else {
             return null;
+        }
     }
-
+    
     /**
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#deletePhrSharingToken(java.lang.Integer)
      */
     @Override
-    public void deletePhrSharingToken(Integer id) {
+    public void deletePhrSharingToken(final Integer id) {
         //sessionFactory.getCurrentSession().close();
-        Session sess = sessionFactory.openSession();
-        Transaction tx = sess.beginTransaction();
+        final Session sess = this.sessionFactory.openSession();
+        final Transaction tx = sess.beginTransaction();
         sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
         sess.delete(getPhrSharingToken(id));
         tx.commit();
         sess.close();
         //sessionFactory.getCurrentSession().delete(getPhrSharingToken(id));        
     }
-
+    
     /**
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingToken(java.lang.String)
      */
     @Override
-    public PhrSharingToken getSharingToken(String tokenString) {
+    public PhrSharingToken getSharingToken(final String tokenString) {
         //sessionFactory.getCurrentSession().createQuery("from PhrSharingToken").list();
-        Session sess = sessionFactory.getCurrentSession();
-        Criteria crit = sess.createCriteria(PhrSharingToken.class);        
+        final Session sess = this.sessionFactory.getCurrentSession();
+        final Criteria crit = sess.createCriteria(PhrSharingToken.class);
         crit.add(Restrictions.eq("sharingToken", tokenString));
-        List<PhrSharingToken> list = (List<PhrSharingToken>) crit.list();        
-        log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + tokenString + "|token count=" + list.size());
-        if (list.size() >= 1)
+        final List<PhrSharingToken> list = crit.list();
+        this.log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + tokenString + "|token count=" + list.size());
+        if (list.size() >= 1) {
             return list.get(0);
-        else
+        } else {
             return null;
+        }
     }
-
+    
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#updateSharingToken(org.openmrs.Person, java.lang.String)
      */
     @Override
-    public void updateSharingToken(User user, Person person, String sharingToken) {
+    public void updateSharingToken(final User user, final Person person, final String sharingToken) {
         // TODO Auto-generated method stub
-        PhrSharingToken token = getSharingToken(sharingToken);
-        if(token != null) {
-            Date date = new Date();
-
-            if(token.getExpireDate().after(date)){
-                if( token.getRelatedPerson()==null) {
+        final PhrSharingToken token = getSharingToken(sharingToken);
+        if (token != null) {
+            final Date date = new Date();
+            
+            if (token.getExpireDate().after(date)) {
+                if (token.getRelatedPerson() == null) {
                     token.setRelatedPerson(person);
-                    token.setChangedBy(user);                  
+                    token.setChangedBy(user);
                     token.setDateChanged(date);
                     token.setActivateDate(date);
                     savePhrSharingToken(token);
-                    log.debug("Sharing token updated: " + token.getId());
+                    this.log.debug("Sharing token updated: " + token.getId());
                 } else {
-                    log.debug("Sharing token is igored because it was activated before by: " + token.getChangedBy() + " at " + token.getActivateDate());
-                }               
+                    this.log.debug("Sharing token is igored because it was activated before by: " + token.getChangedBy()
+                            + " at " + token.getActivateDate());
+                }
             } else {
-                log.debug("Sharing token is ignored because it expired at " + token.getExpireDate());
+                this.log.debug("Sharing token is ignored because it expired at " + token.getExpireDate());
             }
         } else {
-            log.debug("Sharing token is ignored because it is invalid: " + sharingToken);
+            this.log.debug("Sharing token is ignored because it is invalid: " + sharingToken);
         }
         
     }

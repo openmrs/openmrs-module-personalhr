@@ -29,212 +29,218 @@ import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 public class PortletTag extends ImportSupport {
-	
-	public static final long serialVersionUID = 21L;
-	
-	private final Log log = LogFactory.getLog(getClass());
-	
-	private String size = "";
-	
-	private String id = "";
-	
-	private String parameters = "";
-	
-	private Map<String, Object> parameterMap = null;
-	
-	private Integer patientId = null;
-	
-	private Integer personId = null;
-	
-	private Integer encounterId = null;
-	
-	private Integer userId = null;
-	
-	private String patientIds = "";
-	
-	private String moduleId = "";
-	
-	public PageContext getPageContext() {
-		return this.pageContext;
-	}
-	
-	public int doStartTag() throws JspException {
-		log.debug("Entering PortletTag.doStartTag");
-		
-		if (url == null) {
-			log.warn("URL came through as NULL to PortletTag - this is a big problem");
-			url = "";
-		}
-		if (id == null)
-			id = "";
-		
-		try {
-			//Add temporary privilege
-			PersonalhrUtil.addTemporayPrivileges();
-			
-			if (url.equals(""))
-				pageContext.getOut().print("Every portlet must be defined with a URI");
-			else {
-				// all portlets are contained in the /WEB-INF/view/portlets/ folder and end with .portlet
-				//if (!url.endsWith("portlet"))
-				//	url += ".portlet";
-				
-				// module specific portlets are in /WEB-INF/view/module/*/portlets/
-				if (moduleId != null && moduleId.length() > 0) {
-					Module mod = ModuleFactory.getModuleById(moduleId);
-					if (mod == null)
-						log.warn("no module found with id: " + moduleId);
-					else
-						url = "/module/" + moduleId + "/portlets/" + url;
-				} else
-					url = "/portlets/" + url;
-				
-				// opening portlet tag
-				if (moduleId != null && moduleId.length() > 0)
-					pageContext.getOut().print("<div class='portlet' id='" + moduleId + "." + id + "'>");
-				else
-					pageContext.getOut().print("<div class='portlet' id='" + id + "'>");
-				
-				// add attrs to request so that the controller (and portlet) can see/use them
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.id", id);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.size", size);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameters",
-				    OpenmrsUtil.parseParameterList(parameters));
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientId", patientId);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.personId", personId);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.encounterId", encounterId);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.userId", userId);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientIds", patientIds);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameterMap", parameterMap);
-			}
-		}
-		catch (IOException e) {
-			log.error("Error while starting portlet tag", e);
-		} finally{
-			PersonalhrUtil.removeTemporayPrivileges();
-		}
-		
-		return super.doStartTag();
-	}
-	
-	public int doEndTag() throws JspException {
-		log.debug("Entering PortletTag.doStartTag");
-		
-		int i = -1;
-		
-		try {
-			//Add temporary privilege
-			PersonalhrUtil.addTemporayPrivileges();
-			
-			i = super.doEndTag();
-			// closing portlet tag
-			pageContext.getOut().print("</div>");
-		}
-		catch (IOException e) {
-			log.error("Error while closing portlet tag", e);
-		} finally{
-			PersonalhrUtil.removeTemporayPrivileges();
-		}
-		
-		resetValues();
-		
-		return i;
-	}
-	
-	private void resetValues() {
-		id = "";
-		parameters = "";
-		patientIds = "";
-		moduleId = "";
-		personId = null;
-		patientId = null;
-		encounterId = null;
-		userId = null;
-		parameterMap = null;
-	}
-	
-	public void setUrl(String url) throws JspTagException {
-		this.url = url;
-	}
-	
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	public String getParameters() {
-		return parameters;
-	}
-	
-	public void setParameters(String parameters) {
-		this.parameters = parameters;
-	}
-	
-	public String getSize() {
-		return size;
-	}
-	
-	public void setSize(String size) {
-		this.size = size;
-	}
-	
-	public Integer getEncounterId() {
-		return encounterId;
-	}
-	
-	public void setEncounterId(Integer encounterId) {
-		this.encounterId = encounterId;
-	}
-	
-	public Integer getPatientId() {
-		return patientId;
-	}
-	
-	public void setPatientId(Integer patientId) {
-		this.patientId = patientId;
-	}
-	
-	public Integer getPersonId() {
-		return personId;
-	}
-	
-	public void setPersonId(Integer personId) {
-		this.personId = personId;
-	}
-	
-	public String getPatientIds() {
-		return patientIds;
-	}
-	
-	public void setPatientIds(String patientIds) {
-		this.patientIds = patientIds;
-	}
-	
-	public Integer getUserId() {
-		return userId;
-	}
-	
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-	
-	public Map<String, Object> getParameterMap() {
-		return parameterMap;
-	}
-	
-	public void setParameterMap(Map<String, Object> parameterMap) {
-		this.parameterMap = parameterMap;
-	}
-	
-	public String getModuleId() {
-		return moduleId;
-	}
-	
-	public void setModuleId(String moduleId) {
-		this.moduleId = moduleId;
-	}
-	
+    
+    public static final long serialVersionUID = 21L;
+    
+    private final Log log = LogFactory.getLog(getClass());
+    
+    private String size = "";
+    
+    private String id = "";
+    
+    private String parameters = "";
+    
+    private Map<String, Object> parameterMap = null;
+    
+    private Integer patientId = null;
+    
+    private Integer personId = null;
+    
+    private Integer encounterId = null;
+    
+    private Integer userId = null;
+    
+    private String patientIds = "";
+    
+    private String moduleId = "";
+    
+    public PageContext getPageContext() {
+        return this.pageContext;
+    }
+    
+    @Override
+    public int doStartTag() throws JspException {
+        this.log.debug("Entering PortletTag.doStartTag");
+        
+        if (this.url == null) {
+            this.log.warn("URL came through as NULL to PortletTag - this is a big problem");
+            this.url = "";
+        }
+        if (this.id == null) {
+            this.id = "";
+        }
+        
+        try {
+            //Add temporary privilege
+            PersonalhrUtil.addTemporayPrivileges();
+            
+            if (this.url.equals("")) {
+                this.pageContext.getOut().print("Every portlet must be defined with a URI");
+            } else {
+                // all portlets are contained in the /WEB-INF/view/portlets/ folder and end with .portlet
+                //if (!url.endsWith("portlet"))
+                //	url += ".portlet";
+                
+                // module specific portlets are in /WEB-INF/view/module/*/portlets/
+                if ((this.moduleId != null) && (this.moduleId.length() > 0)) {
+                    final Module mod = ModuleFactory.getModuleById(this.moduleId);
+                    if (mod == null) {
+                        this.log.warn("no module found with id: " + this.moduleId);
+                    } else {
+                        this.url = "/module/" + this.moduleId + "/portlets/" + this.url;
+                    }
+                } else {
+                    this.url = "/portlets/" + this.url;
+                }
+                
+                // opening portlet tag
+                if ((this.moduleId != null) && (this.moduleId.length() > 0)) {
+                    this.pageContext.getOut().print("<div class='portlet' id='" + this.moduleId + "." + this.id + "'>");
+                } else {
+                    this.pageContext.getOut().print("<div class='portlet' id='" + this.id + "'>");
+                }
+                
+                // add attrs to request so that the controller (and portlet) can see/use them
+                this.pageContext.getRequest().setAttribute("org.openmrs.portlet.id", this.id);
+                this.pageContext.getRequest().setAttribute("org.openmrs.portlet.size", this.size);
+                this.pageContext.getRequest().setAttribute("org.openmrs.portlet.parameters",
+                    OpenmrsUtil.parseParameterList(this.parameters));
+                this.pageContext.getRequest().setAttribute("org.openmrs.portlet.patientId", this.patientId);
+                this.pageContext.getRequest().setAttribute("org.openmrs.portlet.personId", this.personId);
+                this.pageContext.getRequest().setAttribute("org.openmrs.portlet.encounterId", this.encounterId);
+                this.pageContext.getRequest().setAttribute("org.openmrs.portlet.userId", this.userId);
+                this.pageContext.getRequest().setAttribute("org.openmrs.portlet.patientIds", this.patientIds);
+                this.pageContext.getRequest().setAttribute("org.openmrs.portlet.parameterMap", this.parameterMap);
+            }
+        } catch (final IOException e) {
+            this.log.error("Error while starting portlet tag", e);
+        } finally {
+            PersonalhrUtil.removeTemporayPrivileges();
+        }
+        
+        return super.doStartTag();
+    }
+    
+    @Override
+    public int doEndTag() throws JspException {
+        this.log.debug("Entering PortletTag.doStartTag");
+        
+        int i = -1;
+        
+        try {
+            //Add temporary privilege
+            PersonalhrUtil.addTemporayPrivileges();
+            
+            i = super.doEndTag();
+            // closing portlet tag
+            this.pageContext.getOut().print("</div>");
+        } catch (final IOException e) {
+            this.log.error("Error while closing portlet tag", e);
+        } finally {
+            PersonalhrUtil.removeTemporayPrivileges();
+        }
+        
+        resetValues();
+        
+        return i;
+    }
+    
+    private void resetValues() {
+        this.id = "";
+        this.parameters = "";
+        this.patientIds = "";
+        this.moduleId = "";
+        this.personId = null;
+        this.patientId = null;
+        this.encounterId = null;
+        this.userId = null;
+        this.parameterMap = null;
+    }
+    
+    public void setUrl(final String url) throws JspTagException {
+        this.url = url;
+    }
+    
+    @Override
+    public String getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(final String id) {
+        this.id = id;
+    }
+    
+    public String getParameters() {
+        return this.parameters;
+    }
+    
+    public void setParameters(final String parameters) {
+        this.parameters = parameters;
+    }
+    
+    public String getSize() {
+        return this.size;
+    }
+    
+    public void setSize(final String size) {
+        this.size = size;
+    }
+    
+    public Integer getEncounterId() {
+        return this.encounterId;
+    }
+    
+    public void setEncounterId(final Integer encounterId) {
+        this.encounterId = encounterId;
+    }
+    
+    public Integer getPatientId() {
+        return this.patientId;
+    }
+    
+    public void setPatientId(final Integer patientId) {
+        this.patientId = patientId;
+    }
+    
+    public Integer getPersonId() {
+        return this.personId;
+    }
+    
+    public void setPersonId(final Integer personId) {
+        this.personId = personId;
+    }
+    
+    public String getPatientIds() {
+        return this.patientIds;
+    }
+    
+    public void setPatientIds(final String patientIds) {
+        this.patientIds = patientIds;
+    }
+    
+    public Integer getUserId() {
+        return this.userId;
+    }
+    
+    public void setUserId(final Integer userId) {
+        this.userId = userId;
+    }
+    
+    public Map<String, Object> getParameterMap() {
+        return this.parameterMap;
+    }
+    
+    public void setParameterMap(final Map<String, Object> parameterMap) {
+        this.parameterMap = parameterMap;
+    }
+    
+    public String getModuleId() {
+        return this.moduleId;
+    }
+    
+    public void setModuleId(final String moduleId) {
+        this.moduleId = moduleId;
+    }
+    
 }

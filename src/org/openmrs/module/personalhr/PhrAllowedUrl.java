@@ -1,10 +1,19 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.personalhr;
-import java.util.Date;
 
 import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.Form;
-import org.openmrs.Patient;
-import org.openmrs.Person;
 
 /**
  * The basic Sharing Token data object
@@ -14,7 +23,7 @@ public class PhrAllowedUrl extends BaseOpenmrsMetadata {
     
     /** Unique identifying id */
     private Integer id;
-          
+    
     private String privilege;
     
     private String allowedUrl;
@@ -27,34 +36,30 @@ public class PhrAllowedUrl extends BaseOpenmrsMetadata {
         // TODO Auto-generated method stub
         return this.id;
     }
-
+    
     /**
      * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
      */
     @Override
-    public void setId(Integer id) {
-        this.id=id;
+    public void setId(final Integer id) {
+        this.id = id;
         
     }
-
     
     public String getPrivilege() {
-        return privilege;
+        return this.privilege;
     }
-
     
-    public void setPrivilege(String privilege) {
+    public void setPrivilege(final String privilege) {
         this.privilege = privilege;
     }
-
     
     public String getAllowedUrl() {
-        return allowedUrl;
+        return this.allowedUrl;
     }
-
     
-    public void setAllowedUrl(String allowedUrl) {
+    public void setAllowedUrl(final String allowedUrl) {
         this.allowedUrl = allowedUrl;
     }
-  
+    
 }

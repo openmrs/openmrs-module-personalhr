@@ -1,8 +1,21 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.personalhr;
+
 import java.util.Date;
 
 import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 
@@ -28,13 +41,13 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
     private String relationType;
     
     private Date startDate;
-        
+    
     private Date activateDate;
-        
+    
     private Date expireDate;
     
     private String shareType;
-
+    
     /**
      * @see org.openmrs.OpenmrsObject#getId()
      */
@@ -43,106 +56,88 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
         // TODO Auto-generated method stub
         return this.id;
     }
-
+    
     /**
      * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
      */
     @Override
-    public void setId(Integer id) {
-        this.id=id;
+    public void setId(final Integer id) {
+        this.id = id;
         
     }
-
     
     public String getSharingToken() {
-        return sharingToken;
+        return this.sharingToken;
     }
-
     
-    public void setSharingToken(String sharingToken) {
+    public void setSharingToken(final String sharingToken) {
         this.sharingToken = sharingToken;
     }
-
     
     public Patient getPatient() {
-        return patient;
+        return this.patient;
     }
-
     
-    public void setPatient(Patient patient) {
+    public void setPatient(final Patient patient) {
         this.patient = patient;
     }
-
     
     public Person getRelatedPerson() {
-        return relatedPerson;
+        return this.relatedPerson;
     }
-
     
-    public void setRelatedPerson(Person relatedPerson) {
+    public void setRelatedPerson(final Person relatedPerson) {
         this.relatedPerson = relatedPerson;
     }
-
     
     public String getRelatedPersonName() {
-        return relatedPersonName;
+        return this.relatedPersonName;
     }
-
     
-    public void setRelatedPersonName(String relatedPersonName) {
+    public void setRelatedPersonName(final String relatedPersonName) {
         this.relatedPersonName = relatedPersonName;
     }
-
     
     public String getRelatedPersonEmail() {
-        return relatedPersonEmail;
+        return this.relatedPersonEmail;
     }
-
     
-    public void setRelatedPersonEmail(String relatedPersonEmail) {
+    public void setRelatedPersonEmail(final String relatedPersonEmail) {
         this.relatedPersonEmail = relatedPersonEmail;
     }
-
     
     public String getRelationType() {
-        return relationType;
+        return this.relationType;
     }
-
     
-    public void setRelationType(String relationType) {
+    public void setRelationType(final String relationType) {
         this.relationType = relationType;
     }
-
     
     public Date getStartDate() {
-        return startDate;
+        return this.startDate;
     }
-
     
-    public void setStartDate(Date startDate) {
+    public void setStartDate(final Date startDate) {
         this.startDate = startDate;
     }
-
     
     public Date getActivateDate() {
-        return activateDate;
+        return this.activateDate;
     }
-
     
-    public void setActivateDate(Date activateDate) {
+    public void setActivateDate(final Date activateDate) {
         this.activateDate = activateDate;
     }
-
     
     public Date getExpireDate() {
-        return expireDate;
+        return this.expireDate;
     }
-
     
-    public void setExpireDate(Date expireDate) {
+    public void setExpireDate(final Date expireDate) {
         this.expireDate = expireDate;
     }
-
+    
     /**
      * Auto generated method comment
      * 
@@ -150,22 +145,20 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
      */
     public String getShareType() {
         // TODO Auto-generated method stub
-        return shareType;
+        return this.shareType;
     }
-
     
-    public void setShareType(String shareType) {
+    public void setShareType(final String shareType) {
         this.shareType = shareType;
     }
-
+    
     /**
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
-    public int compareTo(PhrSharingToken newToken) {
+    public int compareTo(final PhrSharingToken newToken) {
         // TODO Auto-generated method stub
         return newToken.getId().compareTo(this.id);
     }
     
- 
 }

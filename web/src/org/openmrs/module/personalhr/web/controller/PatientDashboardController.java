@@ -30,7 +30,6 @@ import org.openmrs.Form;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
-import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.User;
@@ -43,164 +42,170 @@ import org.springframework.validation.Errors;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class PatientDashboardController extends SimpleFormController {
-	
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
-	
-	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
-	 * 
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {		
-		log.debug("Entering PatientDashboardController.formBackingObject");
-				
-		if (!Context.isAuthenticated())
-			return new Patient();
-		
-		Patient patient = null;
-		try{
-			String patientId = request.getParameter("patientId");
-			log.debug("patientId: " + patientId);
-			if (patientId == null) {
-				patientId = getPatientId(Context.getAuthenticatedUser());
-				if(patientId == null) {
-					//throw new ServletException("Integer 'patientId' is a required parameter");
-				    log.error("Integer 'patientId' is a required parameter");
-				    return new Patient();				    
-				}
-			}
-            request.setAttribute("patientId", patientId);		
-
-			//Add temporary privilege
-			PersonalhrUtil.addTemporayPrivileges();
-						
-			PatientService ps = Context.getPatientService();
-			Integer id = null;
-			
-			try {
-				id = Integer.valueOf(patientId);
-				patient = ps.getPatient(id);
-			}
-			catch (NumberFormatException numberError) {
-				log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
-			}
-			catch (ObjectRetrievalFailureException noPatientEx) {
-				log.warn("There is no patient with id: '" + patientId + "'", noPatientEx);
-			}
-			
-			if (patient == null)
-				throw new ServletException("There is no patient with id: '" + patientId + "'");
-		} finally {
-			PersonalhrUtil.removeTemporayPrivileges();
-		}
-
-		return patient;
-	}
-	
-	/**
+    
+    /** Logger for this class and subclasses */
+    protected final Log log = LogFactory.getLog(getClass());
+    
+    /**
+     * This is called prior to displaying a form for the first time. It tells Spring the
+     * form/command object to load into the request
+     * 
+     * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+     */
+    @Override
+    protected Object formBackingObject(final HttpServletRequest request) throws ServletException {
+        this.log.debug("Entering PatientDashboardController.formBackingObject");
+        
+        if (!Context.isAuthenticated()) {
+            return new Patient();
+        }
+        
+        Patient patient = null;
+        try {
+            String patientId = request.getParameter("patientId");
+            this.log.debug("patientId: " + patientId);
+            if (patientId == null) {
+                patientId = getPatientId(Context.getAuthenticatedUser());
+                if (patientId == null) {
+                    //throw new ServletException("Integer 'patientId' is a required parameter");
+                    this.log.error("Integer 'patientId' is a required parameter");
+                    return new Patient();
+                }
+            }
+            request.setAttribute("patientId", patientId);
+            
+            //Add temporary privilege
+            PersonalhrUtil.addTemporayPrivileges();
+            
+            final PatientService ps = Context.getPatientService();
+            Integer id = null;
+            
+            try {
+                id = Integer.valueOf(patientId);
+                patient = ps.getPatient(id);
+            } catch (final NumberFormatException numberError) {
+                this.log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
+            } catch (final ObjectRetrievalFailureException noPatientEx) {
+                this.log.warn("There is no patient with id: '" + patientId + "'", noPatientEx);
+            }
+            
+            if (patient == null) {
+                throw new ServletException("There is no patient with id: '" + patientId + "'");
+            }
+        } finally {
+            PersonalhrUtil.removeTemporayPrivileges();
+        }
+        
+        return patient;
+    }
+    
+    /**
      * Get a person's patient ID
      * 
      * @param person a given person object
      * @return null if no patient is assoicated with this person
      */
-    private String getPatientId(User user) {    	
-   	    log.debug("Finding a matching patient for user:" + user);
-	    return user==null ? null : user.getPerson().getId().toString();
+    private String getPatientId(final User user) {
+        this.log.debug("Finding a matching patient for user:" + user);
+        return user == null ? null : user.getPerson().getId().toString();
     }
-
-	/**
-	 * Called prior to form display. Allows for data to be put in the request to be used in the view
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
-	 */
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
-		
-		log.debug("Entering PatientDashboardController.referenceData");
-		
-		Patient patient = (Patient) obj;
-		
-		log.debug("patient: '" + patient + "'");
-		
-		List<Form> forms = new Vector<Form>();
-		Map<String, Object> map = new HashMap<String, Object>();
-		List<Encounter> encounters = new Vector<Encounter>();
-		String causeOfDeathOther = "";
-		
-		try {
-			//Add temporary privilege
-			PersonalhrUtil.addTemporayPrivileges();
-			
-			if (Context.isAuthenticated()) {
-				if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS))
-					forms.addAll(Context.getFormService().getAllForms());
-				else
-					forms.addAll(Context.getFormService().getPublishedForms());
-				
-				List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(patient);
-				if (encs != null && encs.size() > 0)
-					encounters.addAll(encs);
-				
-				String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-				Concept conceptCause = Context.getConceptService().getConcept(propCause);
-				
-				if (conceptCause != null) {
-					List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, conceptCause);
-					if (obssDeath.size() == 1) {
-						Obs obsDeath = obssDeath.iterator().next();
-						causeOfDeathOther = obsDeath.getValueText();
-						if (causeOfDeathOther == null) {
-							log.debug("cod is null, so setting to empty string");
-							causeOfDeathOther = "";
-						} else {
-							log.debug("cod is valid: " + causeOfDeathOther);
-						}
-					} else {
-						log.debug("obssDeath is wrong size: " + obssDeath.size());
-					}
-				} else {
-					log.debug("No concept cause found");
-				}
-			}
-			
-			String patientVariation = "";
-			
-			Concept reasonForExitConcept = Context.getConceptService().getConcept(
-			    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
-			if (reasonForExitConcept != null) {
-				List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
-				    reasonForExitConcept);
-				if (patientExitObs != null) {
-					log.debug("Exit obs is size " + patientExitObs.size());
-					if (patientExitObs.size() == 1) {
-						Obs exitObs = patientExitObs.iterator().next();
-						Concept exitReason = exitObs.getValueCoded();
-						Date exitDate = exitObs.getObsDatetime();
-						if (exitReason != null && exitDate != null) {
-							patientVariation = "Exited";
-						}
-					} else if (patientExitObs.size() > 1) {
-						log.error("Too many reasons for exit - not putting data into model");
-					}
-				}
-			}
-	 
-			map.put("patientVariation", patientVariation);
-		} finally {
-			PersonalhrUtil.removeTemporayPrivileges();
-		}	
-		
-		map.put("forms", forms);
-		
-		// empty objects used to create blank template in the view
-		map.put("emptyIdentifier", new PatientIdentifier());
-		map.put("emptyName", new PersonName());
-		map.put("emptyAddress", new PersonAddress());
-		map.put("encounters", encounters);
-		map.put("causeOfDeathOther", causeOfDeathOther);
-		
-		return map;
-	}
-	
+    
+    /**
+     * Called prior to form display. Allows for data to be put in the request to be used in the view
+     * 
+     * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+     */
+    @Override
+    protected Map<String, Object> referenceData(final HttpServletRequest request, final Object obj, final Errors err)
+                                                                                                                     throws Exception {
+        
+        this.log.debug("Entering PatientDashboardController.referenceData");
+        
+        final Patient patient = (Patient) obj;
+        
+        this.log.debug("patient: '" + patient + "'");
+        
+        final List<Form> forms = new Vector<Form>();
+        final Map<String, Object> map = new HashMap<String, Object>();
+        final List<Encounter> encounters = new Vector<Encounter>();
+        String causeOfDeathOther = "";
+        
+        try {
+            //Add temporary privilege
+            PersonalhrUtil.addTemporayPrivileges();
+            
+            if (Context.isAuthenticated()) {
+                if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS)) {
+                    forms.addAll(Context.getFormService().getAllForms());
+                } else {
+                    forms.addAll(Context.getFormService().getPublishedForms());
+                }
+                
+                final List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(patient);
+                if ((encs != null) && (encs.size() > 0)) {
+                    encounters.addAll(encs);
+                }
+                
+                final String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+                final Concept conceptCause = Context.getConceptService().getConcept(propCause);
+                
+                if (conceptCause != null) {
+                    final List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient,
+                        conceptCause);
+                    if (obssDeath.size() == 1) {
+                        final Obs obsDeath = obssDeath.iterator().next();
+                        causeOfDeathOther = obsDeath.getValueText();
+                        if (causeOfDeathOther == null) {
+                            this.log.debug("cod is null, so setting to empty string");
+                            causeOfDeathOther = "";
+                        } else {
+                            this.log.debug("cod is valid: " + causeOfDeathOther);
+                        }
+                    } else {
+                        this.log.debug("obssDeath is wrong size: " + obssDeath.size());
+                    }
+                } else {
+                    this.log.debug("No concept cause found");
+                }
+            }
+            
+            String patientVariation = "";
+            
+            final Concept reasonForExitConcept = Context.getConceptService().getConcept(
+                Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
+            if (reasonForExitConcept != null) {
+                final List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
+                    reasonForExitConcept);
+                if (patientExitObs != null) {
+                    this.log.debug("Exit obs is size " + patientExitObs.size());
+                    if (patientExitObs.size() == 1) {
+                        final Obs exitObs = patientExitObs.iterator().next();
+                        final Concept exitReason = exitObs.getValueCoded();
+                        final Date exitDate = exitObs.getObsDatetime();
+                        if ((exitReason != null) && (exitDate != null)) {
+                            patientVariation = "Exited";
+                        }
+                    } else if (patientExitObs.size() > 1) {
+                        this.log.error("Too many reasons for exit - not putting data into model");
+                    }
+                }
+            }
+            
+            map.put("patientVariation", patientVariation);
+        } finally {
+            PersonalhrUtil.removeTemporayPrivileges();
+        }
+        
+        map.put("forms", forms);
+        
+        // empty objects used to create blank template in the view
+        map.put("emptyIdentifier", new PatientIdentifier());
+        map.put("emptyName", new PersonName());
+        map.put("emptyAddress", new PersonAddress());
+        map.put("encounters", encounters);
+        map.put("causeOfDeathOther", causeOfDeathOther);
+        
+        return map;
+    }
+    
 }

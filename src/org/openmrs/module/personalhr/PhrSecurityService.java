@@ -24,20 +24,17 @@ import org.openmrs.module.personalhr.db.PhrAllowedUrlDAO;
 import org.openmrs.module.personalhr.db.PhrSecurityRuleDAO;
 import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
-
 /**
  *
  */
 public interface PhrSecurityService {
+    
     public enum PhrSharingType {
-        SHARE_NOTHING ("Select One"),
-        SHARE_JOURNAL ("Share Journal"),
-        SHARE_MEDICAL ("Share Medical"),
-        SHARE_ALL ("Share All");
+        SHARE_NOTHING("Select One"), SHARE_JOURNAL("Share Journal"), SHARE_MEDICAL("Share Medical"), SHARE_ALL("Share All");
         
-        private String value;
+        private final String value;
         
-        PhrSharingType(String type) {
+        PhrSharingType(final String type) {
             this.value = type;
         }
         
@@ -47,15 +44,11 @@ public interface PhrSecurityService {
     };
     
     public enum PhrRelationType {
-        DOCTOR ("Doctor"),
-        CAREGIVER("Caregiver"),        
-        SIBLING ("Sibling"),
-        CHILD ("Child"),
-        OTHER("Other");
+        DOCTOR("Doctor"), CAREGIVER("Caregiver"), SIBLING("Sibling"), CHILD("Child"), OTHER("Other");
         
-        private String value;
+        private final String value;
         
-        PhrRelationType(String type) {
+        PhrRelationType(final String type) {
             this.value = type;
         }
         
@@ -63,25 +56,21 @@ public interface PhrSecurityService {
             return value;
         }
     };
-        
     
     public enum PhrDynamicRole {
-        ADMINISTRATOR ("Administrator"),
-        OWNER ("Owner"),
-        SHARE_JOURNAL ("Share Journal"),
-        SHARE_MEDICAL ("Share Medical");
+        ADMINISTRATOR("Administrator"), OWNER("Owner"), SHARE_JOURNAL("Share Journal"), SHARE_MEDICAL("Share Medical");
         
-        private String value;
-
-        private static final Map<String,PhrDynamicRole> lookup 
-        = new HashMap<String,PhrDynamicRole>();
-
+        private final String value;
+        
+        private static final Map<String, PhrDynamicRole> lookup = new HashMap<String, PhrDynamicRole>();
+        
         static {
-            for(PhrDynamicRole s : EnumSet.allOf(PhrDynamicRole.class))
-                 lookup.put(s.getValue(), s);
+            for (final PhrDynamicRole s : EnumSet.allOf(PhrDynamicRole.class)) {
+                lookup.put(s.getValue(), s);
+            }
         }
         
-        PhrDynamicRole(String role) {
+        PhrDynamicRole(final String role) {
             this.value = role;
         }
         
@@ -89,73 +78,60 @@ public interface PhrSecurityService {
             return value;
         }
         
-        public static PhrDynamicRole getRole(String value) { 
-            return lookup.get(value); 
-       }        
+        public static PhrDynamicRole getRole(final String value) {
+            return lookup.get(value);
+        }
     };
     
     public enum PhrBasicRole {
-        PHR_ADMINISTRATOR ("PHR Administrator"),
-        PHR_PATIENT ("PHR Patient"),
-        PHR_RESTRICTED_USER ("PHR Restricted User");
-         
-        private String value;
+        PHR_ADMINISTRATOR("PHR Administrator"), PHR_PATIENT("PHR Patient"), PHR_RESTRICTED_USER("PHR Restricted User");
         
-        PhrBasicRole(String role) {
+        private final String value;
+        
+        PhrBasicRole(final String role) {
             this.value = role;
         }
         
         public String getValue() {
             return value;
         }
-    };   
+    };
     
     public enum PhrBasicPrivilege {
-        PHR_ADMINISTRATOR_PRIV ("PHR All Patients Access"),
-        PHR_PATIENT_PRIV ("PHR Single Patient Access"),
-        PHR_RESTRICTED_USER_PRIV ("PHR Restricted Patient Access");
-         
-        private String value;
+        PHR_ADMINISTRATOR_PRIV("PHR All Patients Access"), PHR_PATIENT_PRIV("PHR Single Patient Access"), PHR_RESTRICTED_USER_PRIV(
+                "PHR Restricted Patient Access");
         
-        PhrBasicPrivilege(String priv) {
+        private final String value;
+        
+        PhrBasicPrivilege(final String priv) {
             this.value = priv;
         }
         
         public String getValue() {
             return value;
         }
-    };      
+    };
     
-    public boolean isUrlAllowed(String requestedUrl, 
-                                Patient requestedPatient, 
-                                Person requestedPerson, 
-                                User requestingUser);
+    public boolean isUrlAllowed(String requestedUrl, Patient requestedPatient, Person requestedPerson, User requestingUser);
     
-    public boolean hasPrivilege(String privilege, 
-                                Patient requestedPatient, 
-                                Person requestedPerson, 
-                                User requestingUser);
+    public boolean hasPrivilege(String privilege, Patient requestedPatient, Person requestedPerson, User requestingUser);
     
-    public List<PhrDynamicRole> getDynamicRoles(Patient requestedPatient, 
-                                                Person requestedPerson, 
-                                                User requestingUser);
+    public List<PhrDynamicRole> getDynamicRoles(Patient requestedPatient, Person requestedPerson, User requestingUser);
     
     public List<Person> getRelatedPersons(Person person);
     
     public PhrSecurityRuleDAO getSecurityRuleDao();
-
+    
     public void setSecurityRuleDao(PhrSecurityRuleDAO securityRuleDao);
     
     public PhrAllowedUrlDAO getAllowedUrlDao();
     
     public void setAllowedUrlDao(PhrAllowedUrlDAO allowedUrlDao);
-
     
     public PhrSharingTokenDAO getSharingTokenDao();
-
     
     public void setSharingTokenDao(PhrSharingTokenDAO sharingTokenDao);
-
+    
     /**
      * Auto generated method comment
      * 
@@ -163,5 +139,5 @@ public interface PhrSecurityService {
      * @return
      */
     public String getPhrRole(User user);
-
+    
 }

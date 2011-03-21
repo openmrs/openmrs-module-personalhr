@@ -18,9 +18,7 @@ import org.hibernate.SessionFactory;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
-import org.openmrs.module.personalhr.PhrSecurityRule;
 import org.openmrs.module.personalhr.PhrSharingToken;
-
 
 /**
  *
@@ -33,14 +31,14 @@ public interface PhrSharingTokenDAO {
     
     public PhrSharingToken savePhrSharingToken(PhrSharingToken token);
     
-    public void deletePhrSharingToken(PhrSharingToken token) ;
-
-    public List<PhrSharingToken> getAllPhrSharingTokens() ;
-
+    public void deletePhrSharingToken(PhrSharingToken token);
+    
+    public List<PhrSharingToken> getAllPhrSharingTokens();
+    
     public List<PhrSharingToken> getSharingTokenByPatient(Patient pat);
     
-    public List<PhrSharingToken> getSharingTokenByPerson(Person per) ;
-
+    public List<PhrSharingToken> getSharingTokenByPerson(Person per);
+    
     /**
      * Auto generated method comment
      * 
@@ -50,14 +48,14 @@ public interface PhrSharingTokenDAO {
      * @return
      */
     public PhrSharingToken getSharingToken(Patient requestedPatient, Person requestedPerson, User requestingUser);
-
+    
     /**
      * Auto generated method comment
      * 
      * @param id
      */
     public void deletePhrSharingToken(Integer id);
-
+    
     /**
      * Auto generated method comment
      * 
@@ -65,7 +63,7 @@ public interface PhrSharingTokenDAO {
      * @return
      */
     public PhrSharingToken getSharingToken(String tokenString);
-
+    
     /**
      * Auto generated method comment
      * 

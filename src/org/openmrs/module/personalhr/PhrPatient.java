@@ -1,4 +1,18 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.personalhr;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -14,8 +28,9 @@ import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
  */
 
 public class PhrPatient {
+    
     protected final Log log = LogFactory.getLog(getClass());
-   
+    
     private List<PhrSharingToken> sharingTokens;
     
     private String personName;
@@ -36,20 +51,21 @@ public class PhrPatient {
     
     private int numberDeleted;
     
-
-    public PhrPatient(Integer patId) {
+    public PhrPatient(final Integer patId) {
         this.patientId = patId;
         
-        this.patient = (patId==null ? null : Context.getPatientService().getPatient(patId));
+        this.patient = (patId == null ? null : Context.getPatientService().getPatient(patId));
         
-        if(this.patient != null) {
-            this.sharingTokens = PersonalhrUtil.getService().getSharingTokenDao().getSharingTokenByPatient(this.patient); 
-        } 
+        if (this.patient != null) {
+            this.sharingTokens = PersonalhrUtil.getService().getSharingTokenDao().getSharingTokenByPatient(this.patient);
+        }
         
-        if(this.sharingTokens != null) {
-            log.debug("Constructing PhrPatient: patId|patent|sharingTokens.szie="+patId+"|"+patient+"|" +sharingTokens.size());            
+        if (this.sharingTokens != null) {
+            this.log.debug("Constructing PhrPatient: patId|patent|sharingTokens.szie=" + patId + "|" + this.patient + "|"
+                    + this.sharingTokens.size());
         } else {
-            log.debug("Constructing PhrPatient: patId|patent|sharingTokens="+patId+"|"+patient+"|" +sharingTokens);
+            this.log.debug("Constructing PhrPatient: patId|patent|sharingTokens=" + patId + "|" + this.patient + "|"
+                    + this.sharingTokens);
         }
         
         this.sharingTypes = PhrSecurityService.PhrSharingType.values();
@@ -66,130 +82,119 @@ public class PhrPatient {
         this.numberAdded = 0;
         this.numberDeleted = 0;
         this.personName = null;
-       
+        
     }
     
     public List<PhrSharingToken> getSharingTokens() {
-        return sharingTokens;
+        return this.sharingTokens;
     }
-
     
-    public void setSharingTokens(List<PhrSharingToken> sharingTokens) {
+    public void setSharingTokens(final List<PhrSharingToken> sharingTokens) {
         this.sharingTokens = sharingTokens;
     }
-
     
     public Patient getPatient() {
-        return patient;
+        return this.patient;
     }
-
     
-    public void setPatient(Patient patient) {
+    public void setPatient(final Patient patient) {
         this.patient = patient;
     }
-
     
     public Integer getPatientId() {
-        return patientId;
+        return this.patientId;
     }
-
     
-    public void setPatientId(Integer patientId) {
+    public void setPatientId(final Integer patientId) {
         this.patientId = patientId;
     }
-
     
     public PhrSecurityService.PhrSharingType[] getSharingTypes() {
-        return sharingTypes;
+        return this.sharingTypes;
     }
-
     
-    public void setSharingTypes(PhrSecurityService.PhrSharingType[] sharingTypes) {
+    public void setSharingTypes(final PhrSecurityService.PhrSharingType[] sharingTypes) {
         this.sharingTypes = sharingTypes;
     }
-
     
     public PhrSecurityService.PhrRelationType[] getRelationTypes() {
-        return relationTypes;
+        return this.relationTypes;
     }
-
     
-    public void setRelationTypes(PhrSecurityService.PhrRelationType[] relationTypes) {
+    public void setRelationTypes(final PhrSecurityService.PhrRelationType[] relationTypes) {
         this.relationTypes = relationTypes;
     }
-
     
     public PhrSharingToken getNewSharingToken() {
-        return newSharingToken;
+        return this.newSharingToken;
     }
-
     
-    public void setNewSharingToken(PhrSharingToken newSharingToken) {
+    public void setNewSharingToken(final PhrSharingToken newSharingToken) {
         this.newSharingToken = newSharingToken;
     }
-
+    
     /**
      * Save relationship changes into database
-     * 
      */
     public void save() {
-        List<PhrSharingToken> oldTokens =PersonalhrUtil.getService().getSharingTokenDao().getSharingTokenByPatient(this.patient);
-        PhrSharingTokenDAO dao = PersonalhrUtil.getService().getSharingTokenDao();
+        final List<PhrSharingToken> oldTokens = PersonalhrUtil.getService().getSharingTokenDao()
+                .getSharingTokenByPatient(this.patient);
+        final PhrSharingTokenDAO dao = PersonalhrUtil.getService().getSharingTokenDao();
         
         //check non-deleted relationships
-        for(PhrSharingToken token : this.sharingTokens) {            
-           if(token.getId() > 0) {  //check changed relationship
-               boolean isChanged = false;
-               PhrSharingToken oldToken = dao.getPhrSharingToken(token.getId());
-               if(!oldToken.getRelatedPersonEmail().equals(token.getRelatedPersonEmail())) {
-                   oldToken.setRelatedPersonEmail(token.getRelatedPersonEmail());
-                   isChanged = true;
-               }
-               if(!oldToken.getRelatedPersonName().equals(token.getRelatedPersonName())) {
-                   oldToken.setRelatedPersonName(token.getRelatedPersonName());
-                   isChanged = true;
-               }
-               if(!oldToken.getRelationType().equals(token.getRelationType())) {
-                   oldToken.setRelationType(token.getRelationType());
-                   isChanged = true;
-               }  
-               if(!oldToken.getShareType().equals(token.getShareType())) {
-                   oldToken.setShareType(token.getShareType());
-                   isChanged = true;
-               }   
-               if(isChanged) {  //save changed relationship
-                   this.numberChanged ++;
-                   dao.savePhrSharingToken(token);
-                   log.debug("Changed token id: " + token.getId());
-               }
-           } else { //save added relationship
-               this.numberAdded ++;
-               PhrSharingToken addedToken = dao.savePhrSharingToken(token);
-               log.debug("Newly added token id: " + addedToken.getId());               
-           }
+        for (final PhrSharingToken token : this.sharingTokens) {
+            if (token.getId() > 0) { //check changed relationship
+                boolean isChanged = false;
+                final PhrSharingToken oldToken = dao.getPhrSharingToken(token.getId());
+                if (!oldToken.getRelatedPersonEmail().equals(token.getRelatedPersonEmail())) {
+                    oldToken.setRelatedPersonEmail(token.getRelatedPersonEmail());
+                    isChanged = true;
+                }
+                if (!oldToken.getRelatedPersonName().equals(token.getRelatedPersonName())) {
+                    oldToken.setRelatedPersonName(token.getRelatedPersonName());
+                    isChanged = true;
+                }
+                if (!oldToken.getRelationType().equals(token.getRelationType())) {
+                    oldToken.setRelationType(token.getRelationType());
+                    isChanged = true;
+                }
+                if (!oldToken.getShareType().equals(token.getShareType())) {
+                    oldToken.setShareType(token.getShareType());
+                    isChanged = true;
+                }
+                if (isChanged) { //save changed relationship
+                    this.numberChanged++;
+                    dao.savePhrSharingToken(token);
+                    this.log.debug("Changed token id: " + token.getId());
+                }
+            } else { //save added relationship
+                this.numberAdded++;
+                final PhrSharingToken addedToken = dao.savePhrSharingToken(token);
+                this.log.debug("Newly added token id: " + addedToken.getId());
+            }
         }
         
         //check deleted relationships
         Collections.sort(this.sharingTokens);
-        for(PhrSharingToken token : oldTokens) {
-            if(Collections.binarySearch(this.sharingTokens, token)<0) {
-                dao.deletePhrSharingToken(token); 
-                this.numberDeleted ++;
-                log.debug("Deleted token id: " + token.getId());                       
+        for (final PhrSharingToken token : oldTokens) {
+            if (Collections.binarySearch(this.sharingTokens, token) < 0) {
+                dao.deletePhrSharingToken(token);
+                this.numberDeleted++;
+                this.log.debug("Deleted token id: " + token.getId());
             }
-        } 
+        }
         
         //check newly added relationship
-        if(this.newSharingToken != null && this.newSharingToken.getRelatedPersonName() != null) {
-            PhrSharingToken token = this.newSharingToken;
-
-            String tokenString = PersonalhrUtil.getRandomToken();
+        if ((this.newSharingToken != null) && (this.newSharingToken.getRelatedPersonName() != null)) {
+            final PhrSharingToken token = this.newSharingToken;
+            
+            final String tokenString = PersonalhrUtil.getRandomToken();
             token.setSharingToken(tokenString);
             token.setRelatedPersonEmail(token.getRelatedPersonEmail());
             token.setRelatedPersonName(token.getRelatedPersonName());
             token.setShareType(token.getShareType());
             token.setRelationType(token.getRelationType());
-            Date startDate = new Date();
+            final Date startDate = new Date();
             token.setStartDate(startDate);
             token.setDateCreated(startDate);
             token.setExpireDate(PersonalhrUtil.getExpireDate(startDate));
@@ -197,63 +202,55 @@ public class PhrPatient {
             
             dao.savePhrSharingToken(token);
             
-            this.numberAdded ++;
+            this.numberAdded++;
             
-            if(log.isDebugEnabled()) {
-                log.debug("Newly added token id: " + dao.getSharingToken(tokenString).getId());
+            if (this.log.isDebugEnabled()) {
+                this.log.debug("Newly added token id: " + dao.getSharingToken(tokenString).getId());
             }
         }
         
     }
-
     
     public int getNumberChanged() {
-        return numberChanged;
+        return this.numberChanged;
     }
-
     
-    public void setNumberChanged(int numberChanged) {
+    public void setNumberChanged(final int numberChanged) {
         this.numberChanged = numberChanged;
     }
-
     
     public int getNumberAdded() {
-        return numberAdded;
+        return this.numberAdded;
     }
-
     
-    public void setNumberAdded(int numberAdded) {
+    public void setNumberAdded(final int numberAdded) {
         this.numberAdded = numberAdded;
     }
-
     
     public int getNumberDeleted() {
-        return numberDeleted;
+        return this.numberDeleted;
     }
-
     
-    public void setNumberDeleted(int numberDeleted) {
+    public void setNumberDeleted(final int numberDeleted) {
         this.numberDeleted = numberDeleted;
     }
-
     
     public String getPersonName() {
-        return personName;
+        return this.personName;
     }
-
     
-    public void setPersonName(String personName) {
+    public void setPersonName(final String personName) {
         this.personName = personName;
     }
-
+    
     /**
      * Auto generated method comment
      * 
      * @param id
      */
-    public void delete(Integer id) {
-        PhrSharingTokenDAO dao = PersonalhrUtil.getService().getSharingTokenDao();
+    public void delete(final Integer id) {
+        final PhrSharingTokenDAO dao = PersonalhrUtil.getService().getSharingTokenDao();
         dao.deletePhrSharingToken(id);
         this.numberDeleted++;
-    }         
+    }
 }

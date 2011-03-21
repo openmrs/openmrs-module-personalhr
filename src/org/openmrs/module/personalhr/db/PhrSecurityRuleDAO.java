@@ -15,11 +15,7 @@ package org.openmrs.module.personalhr.db;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
-import org.openmrs.Patient;
-import org.openmrs.Person;
 import org.openmrs.module.personalhr.PhrSecurityRule;
-import org.openmrs.module.personalhr.PhrSharingToken;
-
 
 /**
  *
@@ -34,10 +30,10 @@ public interface PhrSecurityRuleDAO {
     public PhrSecurityRule savePhrSecurityRule(PhrSecurityRule rule);
     
     public void deletePhrSecurityRule(PhrSecurityRule rule);
-
-    public List<PhrSecurityRule> getAllPhrSecurityRules() ;
-
+    
+    public List<PhrSecurityRule> getAllPhrSecurityRules();
+    
     public List<PhrSecurityRule> getByPrivilege(String priv);
     
-    public List<PhrSecurityRule> getByRole(String role) ;
+    public List<PhrSecurityRule> getByRole(String role);
 }
