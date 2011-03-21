@@ -28,6 +28,13 @@
 						<spring:message code="User.manage"/>
 					</a>
 				</li>
+				<openmrs:extensionPoint pointId="org.openmrs.personalhr.gutter.tools" type="html">
+					<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+						<li>
+						<a href="${pageContext.request.contextPath}/${extension.url}"><spring:message code="${extension.label}"/></a>
+						</li>
+					</openmrs:hasPrivilege>
+				</openmrs:extensionPoint>				
 			</openmrs:hasPrivilege>
 		</openmrs:hasPrivilege>
 		

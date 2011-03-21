@@ -21,7 +21,6 @@
 			   <prop key="phr/newPatientForm.form">phrNewPatientForm</prop>
 				<prop key="**/personalhr/portlets/phrNameLayout.portlet">phrNameLayoutPortletController</prop>
 				<prop key="**/personalhr/portlets/personFormEntry.portlet">personFormEntryPortletController</prop>
-			    <prop key="phr/module/htmlformentry/htmlFormEntry.form">htmlFormEntryController</prop>			   
 			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 			   <prop key="**/personalhr/portlets/restrictedUserRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   

@@ -107,6 +107,7 @@
 			insert into phr_security_rule (privilege, required_role, creator) values ('Create Message','Administrator, Owner',1);
 			insert into phr_security_rule (privilege, required_role, creator) values ('View Message','Administrator, Owner',1);			
 			insert into phr_security_rule (privilege, required_role, creator) values ('PHR Authenticated','Administrator, Owner, Share Medical, Share Journal',1);			
+			insert into phr_security_rule (privilege, required_role, creator) values ('View Messages','Administrator, Owner, Share Journal',1);
 		</sql>
 	</diff>
 	

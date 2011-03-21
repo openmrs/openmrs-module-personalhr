@@ -38,6 +38,9 @@
 				c = tabs[0].id;
 		}
 		//changeTab("patientTreatmentSummaryTab");
+		if(!summaryTabLoaded){
+			c="patientTreatmentSummaryTab";
+		}
 		if(c=="patientTreatmentSummaryTab") {
 			summaryTabLoaded = true;
 		}

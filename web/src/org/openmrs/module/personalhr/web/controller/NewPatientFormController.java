@@ -56,6 +56,9 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.messaging.MessagingAddressService;
+import org.openmrs.module.messaging.MessagingService;
+import org.openmrs.module.messaging.domain.MessagingAddress;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
@@ -331,6 +334,7 @@ public class NewPatientFormController extends SimpleFormController {
 				pi.setPreferred(pref.equals(pi.getIdentifier() + pi.getIdentifierType().getPatientIdentifierTypeId()));
 			}
 			
+			String email = null;
 			// look for person attributes in the request and save to patient
 			for (PersonAttributeType type : personService.getPersonAttributeTypes(PERSON_TYPE.PATIENT,
 			    ATTR_VIEW_TYPE.VIEWING)) {
@@ -347,6 +351,9 @@ public class NewPatientFormController extends SimpleFormController {
 				        //errors.reject("Invalid email address: " + value);
                         httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Invalid email address: " + value);
 				        isError = true;
+				    } else {
+				        //store email address to messaging_addresses table
+				        email = value;
 				    }
 				}
 				
@@ -582,6 +589,9 @@ public class NewPatientFormController extends SimpleFormController {
 					if (relationship.getPersonA() != null && relationship.getPersonB() != null)
 						personService.saveRelationship(relationship);
 				}
+				
+				//save email to messaging_addresses table
+				saveEmail(newPatient, email);
 			}
 			
 			// redirect if an error occurred
@@ -607,6 +617,26 @@ public class NewPatientFormController extends SimpleFormController {
 	}
 	
 	/**
+     * Auto generated method comment
+     * 
+     * @param newPatient
+     * @param email
+     */
+    private void saveEmail(Patient newPatient, String email) {
+        // TODO Auto-generated method stub
+        // TODO Auto-generated method stub
+        try{
+            MessagingAddressService mas = Context.getService(MessagingAddressService.class);
+            MessagingAddress ma = new MessagingAddress(email, newPatient);
+            ma.setProtocol(org.openmrs.module.messaging.email.EmailProtocol.class);
+            mas.saveMessagingAddress(ma);
+        } catch (Exception e) {
+            log.debug("Unable to save email address to messaging_addresses table " + email, e);
+        }
+        
+    }
+
+    /**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
 	 * 
