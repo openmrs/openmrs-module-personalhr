@@ -38,9 +38,9 @@
 				c = tabs[0].id;
 		}
 		//changeTab("patientTreatmentSummaryTab");
-		if(!summaryTabLoaded){
-			c="patientTreatmentSummaryTab";
-		}
+		//if(!summaryTabLoaded){
+        //	c="patientTreatmentSummaryTab";
+		//}
 		if(c=="patientTreatmentSummaryTab") {
 			summaryTabLoaded = true;
 		}
@@ -161,10 +161,7 @@
 			<div class="boxHeader"><spring:message code="Relationship.relationships" /></div>
 			<div class="box">
 				<div class="tooltip">
-				Below is a list of your existing relationships. To add a new relationship, click on the 'Add New Relationship' button.
-				To change an existing relationship, modify the corresponding fields and click on the "Save Change" button. 
-				To delete an existing relationship, click on the corresponding "x" icon at the right end.  
-				</div>
+				<spring:message code="personalhr.tooltip.patient.relationships"/>				</div>
 				<iframe src ="${pageContext.request.contextPath}/phr/patientRelationshipsForm.form?patientId=${patient.patientId}" width="100%" height="500">
 				Loading relationships ...
 				</iframe>
@@ -175,7 +172,7 @@
 			<div class="boxHeader"><spring:message code="patientDashboard.demographics" /></div>
 			<div class="box">
 				<div class="tooltip">
-				Below is a list of your personal information. Please update this information if anything has changed.  
+				<spring:message code="personalhr.tooltip.patient.demographics"/>				</div>
 				</div>
 				<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" patientId="${patient.patientId}" />
 			</div>						

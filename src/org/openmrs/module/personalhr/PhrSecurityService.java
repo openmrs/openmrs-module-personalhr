@@ -44,7 +44,7 @@ public interface PhrSecurityService {
     };
     
     public enum PhrRelationType {
-        DOCTOR("Doctor"), CAREGIVER("Caregiver"), SIBLING("Sibling"), CHILD("Child"), OTHER("Other");
+        DOCTOR("Doctor"), CAREGIVER("Caregiver"), SPOUSE("Spouse"), SIBLING("Sibling"), CHILD("Child"), OTHER("Other");
         
         private final String value;
         
