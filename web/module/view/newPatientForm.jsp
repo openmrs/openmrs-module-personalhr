@@ -145,7 +145,6 @@
 		<c:set var="isPhrAdministrator" value="true" />
 	</openmrs:hasPrivilege>
     
-	<b class="boxHeader"><spring:message code="Patient.addNew"/></b>
 	<table cellspacing="0" cellpadding="7">
 	<tr>
 		<th class="headerCell"><spring:message code="Person.name"/></th>

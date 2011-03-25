@@ -158,10 +158,9 @@
 	--%>
 	<personalhr:hasPrivilege privilege="View Relationships">	
 		<div id="patientRelationships" style="display:none;">
-			<div class="boxHeader"><spring:message code="Relationship.relationships" /></div>
-			<div class="box">
 				<div class="tooltip">
-				<spring:message code="personalhr.tooltip.patient.relationships"/>				</div>
+				<spring:message code="personalhr.tooltip.patient.relationships"/>		
+				</div>
 				<iframe src ="${pageContext.request.contextPath}/phr/patientRelationshipsForm.form?patientId=${patient.patientId}" width="100%" height="500">
 				Loading relationships ...
 				</iframe>
@@ -169,13 +168,10 @@
 		</div>
 		
 		<div id="patientDemographics" style="display:none;">
-			<div class="boxHeader"><spring:message code="patientDashboard.demographics" /></div>
-			<div class="box">
 				<div class="tooltip">
-				<spring:message code="personalhr.tooltip.patient.demographics"/>				</div>
+				<spring:message code="personalhr.tooltip.patient.demographics"/>
 				</div>
 				<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" patientId="${patient.patientId}" />
-			</div>						
 		</div>
 
 	</personalhr:hasPrivilege>
