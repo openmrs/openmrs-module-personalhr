@@ -41,26 +41,61 @@ public class PersonalhrUtil {
             OpenmrsConstants.PRIV_DELETE_OBS, OpenmrsConstants.PRIV_VIEW_PERSONS, OpenmrsConstants.PRIV_ADD_PERSONS,
             OpenmrsConstants.PRIV_EDIT_PERSONS, OpenmrsConstants.PRIV_ADD_PATIENTS, OpenmrsConstants.PRIV_EDIT_PATIENTS,
             OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS };
+ 
+    private final static String temporaryPrivilegesMin[] = {
+        OpenmrsConstants.PRIV_VIEW_CONCEPTS,
+        OpenmrsConstants.PRIV_VIEW_GLOBAL_PROPERTIES,
+        OpenmrsConstants.PRIV_VIEW_PATIENTS,
+        OpenmrsConstants.PRIV_VIEW_PERSONS,
+        OpenmrsConstants.PRIV_VIEW_ENCOUNTERS
+   };   
+    
+    private static int privCount = 0;
     
     //Make the comparison case-insensitive.   
     static Pattern pattern = Pattern.compile(
         "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", Pattern.CASE_INSENSITIVE);
     
-    public static void addTemporayPrivileges() {
+    public static void addTemporaryPrivileges() {
         //Add temporary privilege
         for (final String priv : temporaryPrivileges) {
             //log.debug("Adding tempary privilege: " + priv);
             Context.addProxyPrivilege(priv);
+            privCount++;
         }
+        log.debug("addTemporayPrivileges called: privCount=" + privCount);
     }
     
-    public static void removeTemporayPrivileges() {
+    public static void removeTemporaryPrivileges() {
         //Remove temporary privilege
         for (final String priv : temporaryPrivileges) {
             //log.debug("Removing tempary privilege: " + priv);
-            //Context.removeProxyPrivilege(priv);
+            Context.removeProxyPrivilege(priv);
+            privCount--;
         }
+        log.debug("removeTemporayPrivileges called: privCount=" + privCount);
     }
+    
+    public static void addMinimumTemporaryPrivileges() {
+        //Add temporary privilege
+        log.debug("Adding minimum tempary privilege... ");
+        for(String priv : temporaryPrivilegesMin) {
+            //log.debug("Adding tempary privilege: " + priv);
+            Context.addProxyPrivilege(priv);
+            privCount++;
+        }
+        log.debug("addMinimumTemporayPrivileges called: privCount=" + privCount);
+    }
+
+    public static void removeMinimumTemporaryPrivileges() {
+        //Remove temporary privilege
+        for(String priv : temporaryPrivilegesMin) {
+            //log.debug("Removing tempary privilege: " + priv);
+            Context.removeProxyPrivilege(priv);
+            privCount--;
+        }
+        log.debug("removeMinimumTemporayPrivileges called: privCount=" + privCount);
+    }       
     
     /**
      * Generate a random text token of a given length

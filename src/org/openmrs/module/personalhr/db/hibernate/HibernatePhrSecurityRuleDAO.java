@@ -18,7 +18,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.module.personalhr.PhrSecurityRule;
@@ -45,13 +48,25 @@ public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
     
     @Override
     public PhrSecurityRule savePhrSecurityRule(final PhrSecurityRule rule) {
-        this.sessionFactory.getCurrentSession().saveOrUpdate(rule);
+        Session sess = sessionFactory.openSession();
+        Transaction tx = sess.beginTransaction();
+        sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
+        sess.saveOrUpdate(rule);
+        tx.commit();
+        //sess.flush();
+        sess.close();
+        
         return rule;
     }
     
     @Override
     public void deletePhrSecurityRule(final PhrSecurityRule rule) {
-        this.sessionFactory.getCurrentSession().delete(rule);
+        Session sess = sessionFactory.openSession();
+        Transaction tx = sess.beginTransaction();
+        sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
+        sess.delete(rule);
+        tx.commit();
+        sess.close();
     }
     
     @Override

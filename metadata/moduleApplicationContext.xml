@@ -25,6 +25,7 @@
 			   <prop key="**/personalhr/portlets/restrictedUserRelationships.portlet">phrPersonRelationshipsPortletController</prop>
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
 				<prop key="phr/user.list">phrUserList</prop>
+				<prop key="admin/phr/manageAllowedUrl.form">phrManageAllowedUrlController</prop>
 			</props>
 		</property>
     </bean>
@@ -143,5 +144,12 @@
 		<property name="formView"><value>/module/personalhr/view/addPerson</value></property>
 		<property name="successView"><value>newPatient.htm</value></property>
 	</bean>
+	
+	<bean id="phrManageAllowedUrlController" class="org.openmrs.module.personalhr.web.controller.ManageAllowedUrlFormController">
+		<property name="commandName"><value>phrSecurity</value></property>
+		<property name="commandClass"><value>org.openmrs.module.personalhr.PhrSecurityConfig</value></property>
+		<property name="formView"><value>/module/personalhr/view/manageAllowedUrlForm</value></property>
+		<property name="successView"><value>manageAllowedUrl.form</value></property>
+	</bean>	
 	
 </beans>

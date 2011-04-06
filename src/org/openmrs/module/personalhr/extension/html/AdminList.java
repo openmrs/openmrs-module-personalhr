@@ -50,8 +50,10 @@ public class AdminList extends AdministrationSectionExt {
         
         final Map<String, String> map = new HashMap<String, String>();
         
-        map.put("module/personalhr/manageSecurity.form", "Manage Security Rules");
-        
+        map.put("phr/managePhrPrivileges.form", "Manage PHR Privileges");
+
+        map.put("phr/manageAllowedUrl.form", "Manage Allowed URL");
+         
         return map;
     }
     

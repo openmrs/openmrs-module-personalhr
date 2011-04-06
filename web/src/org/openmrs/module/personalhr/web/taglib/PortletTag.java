@@ -72,7 +72,7 @@ public class PortletTag extends ImportSupport {
         
         try {
             //Add temporary privilege
-            PersonalhrUtil.addTemporayPrivileges();
+            //PersonalhrUtil.addTemporaryPrivileges();
             
             if (this.url.equals("")) {
                 this.pageContext.getOut().print("Every portlet must be defined with a URI");
@@ -115,7 +115,7 @@ public class PortletTag extends ImportSupport {
         } catch (final IOException e) {
             this.log.error("Error while starting portlet tag", e);
         } finally {
-            PersonalhrUtil.removeTemporayPrivileges();
+            //PersonalhrUtil.removeTemporaryPrivileges();
         }
         
         return super.doStartTag();
@@ -129,7 +129,7 @@ public class PortletTag extends ImportSupport {
         
         try {
             //Add temporary privilege
-            PersonalhrUtil.addTemporayPrivileges();
+            //PersonalhrUtil.addTemporaryPrivileges();
             
             i = super.doEndTag();
             // closing portlet tag
@@ -137,7 +137,7 @@ public class PortletTag extends ImportSupport {
         } catch (final IOException e) {
             this.log.error("Error while closing portlet tag", e);
         } finally {
-            PersonalhrUtil.removeTemporayPrivileges();
+            //PersonalhrUtil.removeTemporaryPrivileges();
         }
         
         resetValues();

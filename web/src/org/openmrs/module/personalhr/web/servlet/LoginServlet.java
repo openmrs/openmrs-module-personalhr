@@ -179,20 +179,20 @@ public class LoginServlet extends HttpServlet {
                     if (PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
                         if (personId != null) {
                             redirect = request.getContextPath() + "/phr/patientDashboard.form?patientId=" + personId;
-                            PersonalhrUtil.addTemporayPrivileges();
+                            //PersonalhrUtil.addTemporayPrivileges();
                         } else {
                             log.error("Error: PHR Patient's person id is null!");
                         }
                     } else if (PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
                         if (personId != null) {
                             redirect = request.getContextPath() + "/phr/restrictedUserDashboard.form?personId=" + personId;
-                            PersonalhrUtil.addTemporayPrivileges();
+                            //PersonalhrUtil.addTemporayPrivileges();
                         } else {
                             log.error("Error: PHR Restricted user's person id is null!");
                         }
                     } else if (PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)) {
                         redirect = request.getContextPath() + "/phr/findPatient.htm";
-                        PersonalhrUtil.addTemporayPrivileges();
+                        //PersonalhrUtil.addTemporayPrivileges();
                     }
                     
                     log.debug("PHR LoginServlet redirect to " + redirect);

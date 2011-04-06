@@ -1,0 +1,24 @@
+#addUrlDetailDiv{
+	display:none;
+	margin-top:10px;
+}
+
+#addUrlDiv{
+	margin-top:10px;
+}
+
+#cancelAddUrl{
+	display:none;
+}
+
+#saveAddUrl{
+	display:none;
+}
+
+.sub_title{
+	font-weight:bold;
+	margin-top:7px;
+	margin-bottom:7px;	
+}
+
+

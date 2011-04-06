@@ -19,11 +19,9 @@
 	<!-- /Base Module Properties -->
 	
 	<require_version>1.2.0.3400</require_version>
-	<!-- 
 	<require_modules>  	
 	     <require_module>org.openmrs.module.messaging</require_module>  	
 	</require_modules> 
-	-->
 	
 	<!-- Extensions -->
 	<extension>
@@ -48,35 +46,25 @@
 	 /Required Privileges -->
 
 
-	<!-- Required Global Properties 
+	<!-- Required Global Properties
 	<globalProperty>
-		<property>@MODULE_ID@.someProperty</property>
-		<defaultValue></defaultValue>
+		<property>@MODULE_ID@.ENABLE_PHR</property>
+		<defaultValue>false</defaultValue>
 		<description>
-			A description of the global property goes here.  The description
-			should explain enough for administrators to understand the purpose
-			and possible values for the global property.
+		   Set to true when personalhr module is started, false when shutdown 
 		</description>
 	</globalProperty>
 	/Required Global Properties -->
 	
-	<!--
 	<dwr>
 		<allow>
-			<create creator="new" javascript="DWRFormEntryService">
-				<param name="class" value="org.openmrs.module.@MODULE_ID@.web.DWRFormEntryService"/>
-				<include method="enterForm"/>
+			<create creator="new" javascript="DWRPersonalhrService">
+				<param name="class" value="org.openmrs.module.personalhr.web.DWRPersonalhrService"/>
+				<include method="addAllowedUrl"/>
+				<include method="addPhrPrivilege"/>
 			</create>
 		</allow>
-
-		<signatures>
-			<![CDATA[
-			import @MODULE_PACKAGE@.web.DWRFormEntryService;
-			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
-			]]>
-		</signatures>	
 	</dwr>
-	-->
 	
 	<!-- Servlets -->
 	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> 

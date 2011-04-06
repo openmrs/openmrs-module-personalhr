@@ -66,7 +66,7 @@
 	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/spring-framework/org.springframework.beans-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/spring-framework/org.springframework.context-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/spring-framework/org.springframework.context.support-3.0.2.RELEASE.jar"/>
-	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/spring-framework/org.springframework.core-3.0.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/spring-framework/org.springframework.core-3.0.2.RELEASE.jar" sourcepath="C:/Documents and Settings/hxiao/.m2/repository/org/springframework/spring-core/3.0.2.RELEASE/spring-core-3.0.2.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/spring-framework/org.springframework.expression-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/spring-framework/org.springframework.jdbc-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/lib/spring-framework/org.springframework.orm-3.0.2.RELEASE.jar"/>
@@ -92,8 +92,9 @@
 	<classpathentry kind="lib" path="/openmrs-1.7.x/metadata/api/log4j"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/metadata/api/spring"/>
 	<classpathentry kind="lib" path="/openmrs-1.7.x/metadata/model"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.7.2.18048-dev.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.7.2.18048-dev.jar" sourcepath="/openmrs-1.7.x/src/api"/>
 	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.7.2.18048-dev.jar"/>
 	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.7.2.18048-dev.jar"/>
+	<classpathentry kind="lib" path="lib-common/messaging-api-0.9.0-beta.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

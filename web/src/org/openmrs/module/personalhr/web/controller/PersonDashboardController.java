@@ -36,10 +36,7 @@ public class PersonDashboardController extends SimpleFormController {
         if (!Context.isAuthenticated()) {
             this.log.debug("Not authenticated");
             return new Person();
-        } else {
-            //Add temporary privilege
-            PersonalhrUtil.addTemporayPrivileges();
-            
+        } else {            
             Person person = null;
             final String personId = request.getParameter("personId");
             if ((personId != null) && (personId.trim().length() > 0)) {

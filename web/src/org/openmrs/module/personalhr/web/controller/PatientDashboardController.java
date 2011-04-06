@@ -75,7 +75,7 @@ public class PatientDashboardController extends SimpleFormController {
             request.setAttribute("patientId", patientId);
             
             //Add temporary privilege
-            PersonalhrUtil.addTemporayPrivileges();
+            //PersonalhrUtil.addTemporayPrivileges();
             
             final PatientService ps = Context.getPatientService();
             Integer id = null;
@@ -93,7 +93,7 @@ public class PatientDashboardController extends SimpleFormController {
                 throw new ServletException("There is no patient with id: '" + patientId + "'");
             }
         } finally {
-            PersonalhrUtil.removeTemporayPrivileges();
+            //PersonalhrUtil.removeTemporayPrivileges();
         }
         
         return patient;
@@ -132,7 +132,7 @@ public class PatientDashboardController extends SimpleFormController {
         
         try {
             //Add temporary privilege
-            PersonalhrUtil.addTemporayPrivileges();
+            //PersonalhrUtil.addTemporayPrivileges();
             
             if (Context.isAuthenticated()) {
                 if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS)) {
@@ -193,7 +193,7 @@ public class PatientDashboardController extends SimpleFormController {
             
             map.put("patientVariation", patientVariation);
         } finally {
-            PersonalhrUtil.removeTemporayPrivileges();
+            //PersonalhrUtil.removeTemporayPrivileges();
         }
         
         map.put("forms", forms);

@@ -114,7 +114,7 @@ public class PortletController implements Controller {
         Map<String, Object> model = null;
         try {
             //Add temporary privilege
-            PersonalhrUtil.addTemporayPrivileges();
+            //PersonalhrUtil.addTemporayPrivileges();
             
             final AdministrationService as = Context.getAdministrationService();
             final ConceptService cs = Context.getConceptService();
@@ -449,7 +449,7 @@ public class PortletController implements Controller {
                 this.log.debug(portletPath + " took " + (System.currentTimeMillis() - timeAtStart) + " ms");
             }
         } finally {
-            PersonalhrUtil.removeTemporayPrivileges();
+           //PersonalhrUtil.removeTemporayPrivileges();
         }
         return new ModelAndView(portletPath, "model", model);
         

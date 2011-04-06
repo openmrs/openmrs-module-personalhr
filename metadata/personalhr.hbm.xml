@@ -46,7 +46,7 @@
 		<property name="dateChanged" type="java.util.Date" column="date_changed" not-null="false"
 			length="19" />
 
-		<property name="retired" type="boolean" not-null="true" />
+		<property name="retired" type="boolean" not-null="false" />
 						
 		<property name="uuid" type="string" length="38" not-null="false" />
 				
@@ -81,9 +81,9 @@
 		<property name="dateChanged" type="java.util.Date" column="date_changed" not-null="false"
 			length="19" />
 
-		<property name="retired" type="boolean" not-null="true" />
+		<property name="retired" type="boolean" not-null="false" />
 						
-		<property name="uuid" type="string" length="38" not-null="true" />
+		<property name="uuid" type="string" length="38" not-null="false" />
 				
 		<many-to-one name="retiredBy" class="org.openmrs.User" column="retired_by" />
 	
@@ -116,9 +116,9 @@
 		<property name="dateChanged" type="java.util.Date" column="date_changed" not-null="false"
 			length="19" />
 
-		<property name="retired" type="boolean" not-null="true" />
+		<property name="retired" type="boolean" not-null="false" />
 						
-		<property name="uuid" type="string" length="38" not-null="true" />
+		<property name="uuid" type="string" length="38" not-null="false" />
 				
 		<many-to-one name="retiredBy" class="org.openmrs.User" column="retired_by" />
 	

@@ -70,72 +70,97 @@ public class PhrSecurityFilter implements Filter {
         final String patientId = ((HttpServletRequest) request).getParameter("patientId");
         final String personId = ((HttpServletRequest) request).getParameter("personId");
         final String encounterId = ((HttpServletRequest) request).getParameter("encounterId");
+        String phrRole = null;
         
         this.log.debug("Entering PhrSecurityFilter.doFilter: " + requestURI + "|" + patientId + "|" + personId + "|"
                 + encounterId);
         
-        if (Context.isAuthenticated() && shouldCheckAccessToUrl(requestURI)) {
+        if (Context.isAuthenticated()) {
             final User user = Context.getAuthenticatedUser();
+            phrRole = PersonalhrUtil.getService().getPhrRole(user);
             
-            final Integer patId = PersonalhrUtil.getParamAsInteger(patientId);
-            
-            Patient pat = patId == null ? null : Context.getPatientService().getPatient(patId);
-            
-            final Integer perId = PersonalhrUtil.getParamAsInteger(personId);
-            final Person per = perId == null ? null : Context.getPersonService().getPerson(perId);
-            
-            final Integer encId = PersonalhrUtil.getParamAsInteger(encounterId);
-            final Encounter enc = encId == null ? null : Context.getEncounterService().getEncounter(encId);
-            if (enc != null) {
-                pat = enc.getPatient();
-            }
-            
-            if (!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
-                this.log.debug("***URL access not allowed!!! " + requestURI + "|" + pat + "|" + per + "|"
-                        + Context.getAuthenticatedUser());
-                this.config.getServletContext().getRequestDispatcher(this.loginForm).forward(request, response);
-            } else {
-                if (requestURI.toLowerCase().contains("index.htm") && !requestURI.toLowerCase().contains("/phr/")) {
-                    String redirect = requestURI;
-                    final String phrRole = PersonalhrUtil.getService().getPhrRole(user);
-                    if (phrRole != null) {
-                        final Integer userPersonId = (user == null ? null : user.getPerson().getId());
-                        if (PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
-                            if (userPersonId != null) {
-                                redirect = "/phr/patientDashboard.form?patientId=" + userPersonId;
-                            } else {
-                                this.log.error("Error: PHR Patient's person id is null!");
-                            }
-                            PersonalhrUtil.addTemporayPrivileges();
-                        } else if (PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
-                            if (userPersonId != null) {
-                                redirect = "/phr/restrictedUserDashboard.form?personId=" + userPersonId;
-                            } else {
-                                this.log.error("Error: PHR Restricted user's person id is null!");
-                            }
-                            PersonalhrUtil.addTemporayPrivileges();
-                        } else if (PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)) {
-                            redirect = "/phr/findPatient.htm";
-                            PersonalhrUtil.addTemporayPrivileges();
-                        }
-                        
-                        this.log.debug("***URL access is redirected to " + redirect + " for user " + user + "|" + requestURI
-                                + "|" + patientId + "|" + personId + "|" + encounterId);
-                        ((HttpServletResponse) response).sendRedirect(((HttpServletRequest) request).getContextPath()
-                                + redirect);
-                        return;
+            if(shouldCheckAccessToUrl(requestURI)) {
+                try{
+                    PersonalhrUtil.addMinimumTemporaryPrivileges();  
+             
+                    final Integer patId = PersonalhrUtil.getParamAsInteger(patientId);
+                    
+                    Patient pat = patId == null ? null : Context.getPatientService().getPatient(patId);
+                    
+                    final Integer perId = PersonalhrUtil.getParamAsInteger(personId);
+                    final Person per = perId == null ? null : Context.getPersonService().getPerson(perId);
+                    
+                    final Integer encId = PersonalhrUtil.getParamAsInteger(encounterId);
+                    final Encounter enc = encId == null ? null : Context.getEncounterService().getEncounter(encId);
+                    if (enc != null) {
+                        pat = enc.getPatient();
                     }
+                                
+                    if (!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
+                        this.log.debug("***URL access not allowed!!! " + requestURI + "|" + pat + "|" + per + "|"
+                                + Context.getAuthenticatedUser());
+                        this.config.getServletContext().getRequestDispatcher(this.loginForm).forward(request, response);
+                    } else {
+                        if (requestURI.toLowerCase().contains("index.htm") && !requestURI.toLowerCase().contains("/phr/")) {
+                            String redirect = requestURI;
+                            if (phrRole != null) {
+                                final Integer userPersonId = (user == null ? null : user.getPerson().getId());
+                                if (PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
+                                    if (userPersonId != null) {
+                                        redirect = "/phr/patientDashboard.form?patientId=" + userPersonId;
+                                    } else {
+                                        this.log.error("Error: PHR Patient's person id is null!");
+                                    }
+                                    //PersonalhrUtil.addTemporayPrivileges();
+                                } else if (PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
+                                    if (userPersonId != null) {
+                                        redirect = "/phr/restrictedUserDashboard.form?personId=" + userPersonId;
+                                    } else {
+                                        this.log.error("Error: PHR Restricted user's person id is null!");
+                                    }
+                                    //PersonalhrUtil.addTemporayPrivileges();
+                                } else if (PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)) {
+                                    redirect = "/phr/findPatient.htm";
+                                    //PersonalhrUtil.addTemporayPrivileges();
+                                }
+                                
+                                this.log.debug("***URL access is redirected to " + redirect + " for user " + user + "|" + requestURI
+                                        + "|" + pat + "|" + per);
+                                ((HttpServletResponse) response).sendRedirect(((HttpServletRequest) request).getContextPath()
+                                        + redirect);
+                                return;
+                            }
+                        }
+                    }
+                    
+                    this.log.debug("***URL access is checked and allowed for this authenticated user!!! " + user + "|" + requestURI + "|"
+                            + pat + "|" + per);
+            
+                } finally {
+                    PersonalhrUtil.removeMinimumTemporaryPrivileges();
                 }
             }
-            
-            this.log.debug("***URL access is allowed for this authenticated user!!! " + user + "|" + requestURI + "|"
+            else {
+                this.log.debug("***URL access is unchecked and allowed for this authenticated user!!! " + user + "|" + requestURI + "|"
                     + patientId + "|" + personId + "|" + encounterId);
+            }                            
         } else {
             this.log.debug("***URL access is allowed for all unauthenticated users!!! " + requestURI + "|" + patientId + "|"
                     + personId + "|" + encounterId);
         }
         
-        chain.doFilter(request, response);
+        try {
+            //Add temporary privilege
+            if (phrRole != null) {
+                PersonalhrUtil.addTemporaryPrivileges();  
+            }
+            
+            chain.doFilter(request, response);
+        } finally {
+            if (phrRole != null) {
+                PersonalhrUtil.removeTemporaryPrivileges();
+            }
+        }
     }
     
     /**

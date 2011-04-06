@@ -46,7 +46,7 @@ public class GlobalPropertyTag extends TagSupport {
         this.log.debug("Entering GlobalPropertyTag.doStartTag");
         try {
             //Add temporary privilege
-            PersonalhrUtil.addTemporayPrivileges();
+            //PersonalhrUtil.addTemporaryPrivileges();
             
             Object value;
             if (StringUtils.hasText(this.listSeparator)) {
@@ -81,7 +81,7 @@ public class GlobalPropertyTag extends TagSupport {
                 this.log.error("error getting global property", e);
             }
         } finally {
-            PersonalhrUtil.removeTemporayPrivileges();
+            //PersonalhrUtil.removeTemporaryPrivileges();
         }
         return SKIP_BODY;
     }
