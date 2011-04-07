@@ -26,6 +26,7 @@
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
 				<prop key="phr/user.list">phrUserList</prop>
 				<prop key="admin/phr/manageAllowedUrl.form">phrManageAllowedUrlController</prop>
+				<prop key="admin/phr/managePhrPrivilege.form">phrManagePhrPrivilegeController</prop>
 			</props>
 		</property>
     </bean>
@@ -150,6 +151,13 @@
 		<property name="commandClass"><value>org.openmrs.module.personalhr.PhrSecurityConfig</value></property>
 		<property name="formView"><value>/module/personalhr/view/manageAllowedUrlForm</value></property>
 		<property name="successView"><value>manageAllowedUrl.form</value></property>
+	</bean>	
+
+	<bean id="phrManagePhrPrivilegeController" class="org.openmrs.module.personalhr.web.controller.ManagePhrPrivilegeFormController">
+		<property name="commandName"><value>phrSecurity</value></property>
+		<property name="commandClass"><value>org.openmrs.module.personalhr.PhrSecurityConfig</value></property>
+		<property name="formView"><value>/module/personalhr/view/managePhrPrivilegeForm</value></property>
+		<property name="successView"><value>managePhrPrivilege.form</value></property>
 	</bean>	
 	
 </beans>

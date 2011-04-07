@@ -21,4 +21,27 @@
 	margin-bottom:7px;	
 }
 
+#addPrivilegeDetailDiv{
+	display:none;
+	margin-top:10px;
+}
+
+#addPrivilegeDiv{
+	margin-top:10px;
+}
+
+#cancelAddPrivilege{
+	display:none;
+}
+
+#saveAddPrivilege{
+	display:none;
+}
+
+.sub_title{
+	font-weight:bold;
+	margin-top:7px;
+	margin-bottom:7px;	
+}
+
 
