@@ -128,4 +128,24 @@
 
 	</class>
 
+	<class name="PhrEventLog" table="phr_event_log">
+
+		<id name="id" type="int" column="id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<property name="eventType" type="string" not-null="true" column="event_type" />
+	
+		<property name="eventDate" type="java.util.Date" column="event_date" not-null="true" length="19" />
+			
+		<property name="userId" type="int" column="user_id" not-null="false" />
+							
+		<property name="sessionId" type="string" column="session_id" length="38" not-null="false" />
+				
+		<property name="patientId" type="int" column="patient_id" length="38" not-null="false" />
+
+		<property name="eventContent" type="string" not-null="false" column="event_content" />
+
+	</class>
+
 </hibernate-mapping>

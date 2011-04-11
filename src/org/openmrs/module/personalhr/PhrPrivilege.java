@@ -19,7 +19,7 @@ import org.openmrs.BaseOpenmrsMetadata;
  * The basic Sharing Token data object
  */
 
-public class PhrSecurityRule extends BaseOpenmrsMetadata {
+public class PhrPrivilege extends BaseOpenmrsMetadata {
     
     /** Unique identifying id */
     private Integer id;

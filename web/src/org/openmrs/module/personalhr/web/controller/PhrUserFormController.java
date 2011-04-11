@@ -32,7 +32,8 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.personalhr.PersonalhrUtil;
-import org.openmrs.module.personalhr.PhrSecurityService;
+import org.openmrs.module.personalhr.PhrLogEvent;
+import org.openmrs.module.personalhr.PhrService;
 import org.openmrs.module.personalhr.PhrSharingToken;
 import org.openmrs.propertyeditor.RoleEditor;
 import org.openmrs.util.OpenmrsConstants;
@@ -137,7 +138,7 @@ public class PhrUserFormController {
             log.error("You're not allowed to view other user's information! user=" + user);
             return "redirect:/phr/index.htm?noredirect=true";
         } else if (Context.isAuthenticated()) {
-            if (!Context.hasPrivilege(PhrSecurityService.PhrBasicPrivilege.PHR_ADMINISTRATOR_PRIV.getValue())) {
+            if (!Context.hasPrivilege(PhrService.PhrBasicPrivilege.PHR_ADMINISTRATOR_PRIV.getValue())) {
                 //Already registered
                 session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, mss.getMessage("personalhr.error.already.registered"));
                 log.error("You've already registered!");
@@ -326,6 +327,10 @@ public class PhrUserFormController {
                     httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
                         "Failed to register without a valid sharing token");
                     log.error("Failed to register without a valid sharing token");
+                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
+                        httpSession.getId(), null, 
+                        "error=Failed to register without a valid sharing token; user_name=" + user.getName());
+
                     if (isTemporary) {
                         Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
                         Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
@@ -339,6 +344,9 @@ public class PhrUserFormController {
                     httpSession
                             .setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register with a used sharing token");
                     log.error("Failed to register with a used sharing token");
+                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
+                        httpSession.getId(), null, 
+                        "error=Failed to register with a used sharing token; user_name=" + user.getName() + "; sharingToken="+token);
                     if (isTemporary) {
                         Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
                         Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
@@ -364,6 +372,9 @@ public class PhrUserFormController {
                     PersonalhrUtil.getService().getSharingTokenDao().savePhrSharingToken(token);
                     httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
                     log.debug("New self-registered user created: " + user.getUsername());
+                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), user.getUserId(), 
+                        httpSession.getId(), null, 
+                        "info=New self-registered user created; user_name=" + user.getName() + "; sharingToken="+token);
                 } else {
                     httpSession.setAttribute(
                         WebConstants.OPENMRS_MSG_ATTR,
@@ -371,6 +382,9 @@ public class PhrUserFormController {
                                 + user.getGivenName());
                     log.debug("Failed to create new user due to name mismatch: " + token.getRelatedPersonName() + " vs "
                             + user.getFamilyName() + ", " + user.getGivenName());
+                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
+                        httpSession.getId(), null, 
+                        "info=Failed to create new user due to name mismatch; user_name=" + user.getName() + "; sharingToken="+token);
                 }
             } else {
                 us.saveUser(user, null);
@@ -383,6 +397,9 @@ public class PhrUserFormController {
                 }
                 log.debug("Existing user " + user.getUsername() + " changed by user "
                         + Context.getAuthenticatedUser().getUsername());
+                PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_UPDATE, new Date(), Context.getAuthenticatedUser().getUserId(), 
+                    httpSession.getId(), null, 
+                    "info=Existing user updated; user_name=" + user.getName());
                 httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
             }
             

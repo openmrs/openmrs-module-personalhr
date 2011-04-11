@@ -44,6 +44,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrLogEvent;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
@@ -112,6 +113,8 @@ public class PortletController implements Controller {
         this.log.debug("Entering PortletController.handleRequest");
         String portletPath = "";
         Map<String, Object> model = null;
+        Integer personId = null;
+        
         try {
             //Add temporary privilege
             //PersonalhrUtil.addTemporayPrivileges();
@@ -182,9 +185,7 @@ public class PortletController implements Controller {
                 if (Context.getAuthenticatedUser() != null) {
                     model.put("authenticatedUser", Context.getAuthenticatedUser());
                 }
-                
-                Integer personId = null;
-                
+                                
                 // if a patient id is available, put patient data documented above in the model
                 Object o = request.getAttribute("org.openmrs.portlet.patientId");
                 if (o != null) {
@@ -450,9 +451,11 @@ public class PortletController implements Controller {
             }
         } finally {
            //PersonalhrUtil.removeTemporayPrivileges();
+           PersonalhrUtil.getService().logEvent(PhrLogEvent.PORTLET_ACCESS, new Date(), Context.getAuthenticatedUser().getUserId(), 
+                request.getSession().getId(), personId, 
+                "portletPath="+portletPath);           
         }
-        return new ModelAndView(portletPath, "model", model);
-        
+        return new ModelAndView(portletPath, "model", model);        
     }
     
     /**

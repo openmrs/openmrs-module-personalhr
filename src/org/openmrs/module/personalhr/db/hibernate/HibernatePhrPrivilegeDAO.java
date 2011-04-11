@@ -24,13 +24,13 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.openmrs.module.personalhr.PhrSecurityRule;
-import org.openmrs.module.personalhr.db.PhrSecurityRuleDAO;
+import org.openmrs.module.personalhr.PhrPrivilege;
+import org.openmrs.module.personalhr.db.PhrPrivilegeDAO;
 
 /**
  * Hibernate implementation of the Data Access Object
  */
-public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
+public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     
     protected final Log log = LogFactory.getLog(getClass());
     
@@ -42,12 +42,12 @@ public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
     }
     
     @Override
-    public PhrSecurityRule getPhrSecurityRule(final Integer id) {
-        return (PhrSecurityRule) this.sessionFactory.getCurrentSession().get(PhrSecurityRule.class, id);
+    public PhrPrivilege getPhrSecurityRule(final Integer id) {
+        return (PhrPrivilege) this.sessionFactory.getCurrentSession().get(PhrPrivilege.class, id);
     }
     
     @Override
-    public PhrSecurityRule savePhrSecurityRule(final PhrSecurityRule rule) {
+    public PhrPrivilege savePhrSecurityRule(final PhrPrivilege rule) {
         Session sess = sessionFactory.openSession();
         Transaction tx = sess.beginTransaction();
         sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
@@ -60,7 +60,7 @@ public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
     }
     
     @Override
-    public void deletePhrSecurityRule(final PhrSecurityRule rule) {
+    public void deletePhrSecurityRule(final PhrPrivilege rule) {
         Session sess = sessionFactory.openSession();
         Transaction tx = sess.beginTransaction();
         sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
@@ -71,19 +71,19 @@ public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
     
     @Override
     @SuppressWarnings("unchecked")
-    public List<PhrSecurityRule> getAllPhrSecurityRules() {
-        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrSecurityRule.class);
+    public List<PhrPrivilege> getAllPhrSecurityRules() {
+        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrPrivilege.class);
         crit.addOrder(Order.asc("privilege"));
         return crit.list();
     }
     
     @Override
     @SuppressWarnings("unchecked")
-    public List<PhrSecurityRule> getByRole(final String role) {
-        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrSecurityRule.class);
+    public List<PhrPrivilege> getByRole(final String role) {
+        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrPrivilege.class);
         crit.add(Restrictions.like("requiredRole", "%" + role + "%"));
         crit.addOrder(Order.desc("requiredRole"));
-        final List<PhrSecurityRule> list = crit.list();
+        final List<PhrPrivilege> list = crit.list();
         if (list.size() >= 1) {
             return list;
         } else {
@@ -93,16 +93,16 @@ public class HibernatePhrSecurityRuleDAO implements PhrSecurityRuleDAO {
     
     @Override
     @SuppressWarnings("unchecked")
-    public List<PhrSecurityRule> getByPrivilege(final String priv) {
-        this.log.debug("PhrSecurityServiceImpl:isUrlAllowed->" + priv);
-        //sessionFactory.getCurrentSession().createQuery("from PhrSecurityRule where privilege = 'View Treatment Summary' ").list();
-        //Query query = sessionFactory.getCurrentSession().createQuery("from PhrSecurityRule where privilege = :url ");
+    public List<PhrPrivilege> getByPrivilege(final String priv) {
+        this.log.debug("PhrServiceImpl:isUrlAllowed->" + priv);
+        //sessionFactory.getCurrentSession().createQuery("from PhrPrivilege where privilege = 'View Treatment Summary' ").list();
+        //Query query = sessionFactory.getCurrentSession().createQuery("from PhrPrivilege where privilege = :url ");
         //query.setParameter("url", url);
         //List list0 = query.list();
-        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrSecurityRule.class);
+        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrPrivilege.class);
         crit.add(Restrictions.eq("privilege", priv));
         crit.addOrder(Order.desc("privilege"));
-        final List<PhrSecurityRule> list = crit.list();
+        final List<PhrPrivilege> list = crit.list();
         if (list.size() >= 1) {
             return list;
         } else {

@@ -37,9 +37,9 @@ public class PhrPatient {
     
     private PhrSharingToken newSharingToken;
     
-    private PhrSecurityService.PhrSharingType[] sharingTypes;
+    private PhrService.PhrSharingType[] sharingTypes;
     
-    private PhrSecurityService.PhrRelationType[] relationTypes;
+    private PhrService.PhrRelationType[] relationTypes;
     
     private Patient patient;
     
@@ -68,9 +68,9 @@ public class PhrPatient {
                     + this.sharingTokens);
         }
         
-        this.sharingTypes = PhrSecurityService.PhrSharingType.values();
+        this.sharingTypes = PhrService.PhrSharingType.values();
         
-        this.relationTypes = PhrSecurityService.PhrRelationType.values();
+        this.relationTypes = PhrService.PhrRelationType.values();
         
         this.newSharingToken = new PhrSharingToken();
         this.newSharingToken.setPatient(this.patient);
@@ -109,19 +109,19 @@ public class PhrPatient {
         this.patientId = patientId;
     }
     
-    public PhrSecurityService.PhrSharingType[] getSharingTypes() {
+    public PhrService.PhrSharingType[] getSharingTypes() {
         return this.sharingTypes;
     }
     
-    public void setSharingTypes(final PhrSecurityService.PhrSharingType[] sharingTypes) {
+    public void setSharingTypes(final PhrService.PhrSharingType[] sharingTypes) {
         this.sharingTypes = sharingTypes;
     }
     
-    public PhrSecurityService.PhrRelationType[] getRelationTypes() {
+    public PhrService.PhrRelationType[] getRelationTypes() {
         return this.relationTypes;
     }
     
-    public void setRelationTypes(final PhrSecurityService.PhrRelationType[] relationTypes) {
+    public void setRelationTypes(final PhrService.PhrRelationType[] relationTypes) {
         this.relationTypes = relationTypes;
     }
     

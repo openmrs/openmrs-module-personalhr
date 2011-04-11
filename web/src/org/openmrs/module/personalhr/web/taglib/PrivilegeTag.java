@@ -23,7 +23,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.module.personalhr.PersonalhrUtil;
-import org.openmrs.module.personalhr.PhrSecurityService;
+import org.openmrs.module.personalhr.PhrService;
 
 public class PrivilegeTag extends TagSupport {
     
@@ -94,7 +94,7 @@ public class PrivilegeTag extends TagSupport {
         }
         
         boolean hasPrivilege = false;
-        final PhrSecurityService serv = PersonalhrUtil.getService();
+        final PhrService serv = PersonalhrUtil.getService();
         if (this.privilege.contains(",")) {
             final String[] privs = this.privilege.split(",");
             for (final String p : privs) {

@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.module.personalhr.db.PhrSecurityRuleDAO;
+import org.openmrs.module.personalhr.db.PhrPrivilegeDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -29,7 +29,7 @@ public class PhrSecurityRuleDAOTest extends BaseModuleContextSensitiveTest {
     
     protected final Log log = LogFactory.getLog(getClass());
     
-    private PhrSecurityRuleDAO dao = null;
+    private PhrPrivilegeDAO dao = null;
     
     /**
      * Run this before each unit test in this class. The "@Before" method in
@@ -54,7 +54,7 @@ public class PhrSecurityRuleDAOTest extends BaseModuleContextSensitiveTest {
     @Test
     @Verifies(value = "should return security rules", method = "getByPrivilege(String)")
     public void testGetByPrivilege() throws Exception {
-        final List<PhrSecurityRule> rules = this.dao.getByPrivilege("View Treatment Summary");
+        final List<PhrPrivilege> rules = this.dao.getByPrivilege("View Treatment Summary");
         Assert.assertNotNull(rules);
         this.log.debug("Number of rules = " + rules.size());
         this.log.debug(rules);

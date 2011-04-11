@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrAllowedUrl;
-import org.openmrs.module.personalhr.PhrSecurityRule;
+import org.openmrs.module.personalhr.PhrPrivilege;
 
 /**
  *
@@ -42,7 +42,7 @@ public class DWRPersonalhrService {
 	
     public void addPhrPrivilege(String privilege, String requiredRole, String description) {
         log.debug("Calling DWRPersonalhrService.addPhrPrivilege...requiredRole=" + requiredRole + ", privilege=" + privilege);
-        PhrSecurityRule rule = new PhrSecurityRule();
+        PhrPrivilege rule = new PhrPrivilege();
         rule.setPrivilege(privilege);
         rule.setRequiredRole(requiredRole);
         rule.setDescription(description);

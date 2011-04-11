@@ -134,8 +134,8 @@ public class PersonalhrUtil {
         return new String(token);
     }
     
-    public static PhrSecurityService getService() {
-        return Context.getService(PhrSecurityService.class);
+    public static PhrService getService() {
+        return Context.getService(PhrService.class);
     }
     
     /**

@@ -32,7 +32,7 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
-import org.openmrs.module.personalhr.PhrSecurityService.PhrBasicRole;
+import org.openmrs.module.personalhr.PhrService.PhrBasicRole;
 
 /**
  * This filter checks if an authenticated user has been flagged by the admin to change his password

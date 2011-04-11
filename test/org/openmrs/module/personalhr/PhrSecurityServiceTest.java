@@ -25,7 +25,7 @@ import org.openmrs.test.Verifies;
 
 public class PhrSecurityServiceTest extends BaseModuleContextSensitiveTest {
     
-    private PhrSecurityService service = null;
+    private PhrService service = null;
     
     private UserDAO userDao = null;
     

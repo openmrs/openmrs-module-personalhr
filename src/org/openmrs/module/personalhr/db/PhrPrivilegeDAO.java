@@ -15,25 +15,25 @@ package org.openmrs.module.personalhr.db;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
-import org.openmrs.module.personalhr.PhrSecurityRule;
+import org.openmrs.module.personalhr.PhrPrivilege;
 
 /**
  *
  */
 
-public interface PhrSecurityRuleDAO {
+public interface PhrPrivilegeDAO {
     
     public void setSessionFactory(SessionFactory sessionFactory);
     
-    public PhrSecurityRule getPhrSecurityRule(Integer id);
+    public PhrPrivilege getPhrSecurityRule(Integer id);
     
-    public PhrSecurityRule savePhrSecurityRule(PhrSecurityRule rule);
+    public PhrPrivilege savePhrSecurityRule(PhrPrivilege rule);
     
-    public void deletePhrSecurityRule(PhrSecurityRule rule);
+    public void deletePhrSecurityRule(PhrPrivilege rule);
     
-    public List<PhrSecurityRule> getAllPhrSecurityRules();
+    public List<PhrPrivilege> getAllPhrSecurityRules();
     
-    public List<PhrSecurityRule> getByPrivilege(String priv);
+    public List<PhrPrivilege> getByPrivilege(String priv);
     
-    public List<PhrSecurityRule> getByRole(String role);
+    public List<PhrPrivilege> getByRole(String role);
 }

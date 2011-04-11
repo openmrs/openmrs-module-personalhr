@@ -14,6 +14,7 @@
 package org.openmrs.module.personalhr.web.servlet;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrLogEvent;
 
 /**
  * Servlet called by the logout link in the webapp. This will call Context.logout() and then make
@@ -43,6 +46,10 @@ public class LogoutServlet extends HttpServlet {
         
         final HttpSession httpSession = request.getSession();
         
+        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_LOGOUT, new Date(), null, 
+            httpSession.getId(), null, 
+            "user=" + Context.getAuthenticatedUser() + "; client_ip=" + request.getLocalAddr());
+
         Context.logout();
         
         response.sendRedirect(request.getContextPath() + "/phr/index.htm?noredirect=true");

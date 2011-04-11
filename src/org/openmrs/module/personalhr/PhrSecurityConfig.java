@@ -21,9 +21,9 @@ import java.util.List;
  */
 public class PhrSecurityConfig {
     private List<PhrAllowedUrl> allowedUrlList;
-    private List<PhrSecurityRule> phrPrivilegeList;
+    private List<PhrPrivilege> phrPrivilegeList;
     private PhrAllowedUrl newAllowedUrl;
-    private PhrSecurityRule newPrivilege;
+    private PhrPrivilege newPrivilege;
     
     
     public PhrSecurityConfig() {
@@ -38,11 +38,11 @@ public class PhrSecurityConfig {
         this.allowedUrlList = allowedUrlList;
     }
     
-    public List<PhrSecurityRule> getPhrPrivilegeList() {
+    public List<PhrPrivilege> getPhrPrivilegeList() {
         return phrPrivilegeList;
     }
     
-    public void setPhrPrivilegeList(List<PhrSecurityRule> phrPrivilegeLIst) {
+    public void setPhrPrivilegeList(List<PhrPrivilege> phrPrivilegeLIst) {
         this.phrPrivilegeList = phrPrivilegeLIst;
     }
     
@@ -54,11 +54,11 @@ public class PhrSecurityConfig {
         this.newAllowedUrl = newAllowedUrl;
     }
     
-    public PhrSecurityRule getNewPrivilege() {
+    public PhrPrivilege getNewPrivilege() {
         return newPrivilege;
     }
     
-    public void setNewPrivilege(PhrSecurityRule newPrivlege) {
+    public void setNewPrivilege(PhrPrivilege newPrivlege) {
         this.newPrivilege = newPrivlege;
     }       
 }  

@@ -80,7 +80,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     @Override
     @SuppressWarnings("unchecked")
     public List<PhrAllowedUrl> getByUrl(String url) {
-        this.log.debug("PhrSecurityServiceImpl:isUrlAllowed->" + url);
+        this.log.debug("PhrServiceImpl:isUrlAllowed->" + url);
         
         //Query query = sessionFactory.getCurrentSession().createQuery("from PhrAllowedUrl where allowedUrl = :url ");
         //query.setParameter("url", url);

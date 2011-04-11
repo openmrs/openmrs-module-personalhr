@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrAllowedUrl;
 import org.openmrs.module.personalhr.PhrSecurityConfig;
-import org.openmrs.module.personalhr.PhrSecurityRule;
+import org.openmrs.module.personalhr.PhrPrivilege;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -68,7 +68,7 @@ public class ManagePhrPrivilegeFormController extends SimpleFormController {
                                     final Object commandObject, final BindException errors) throws Exception {
         final String command = request.getParameter("command");
         this.log.debug("Entering ManagePhrPrivilegeFormController:onSubmit, command=" + command);
-        List<PhrSecurityRule> privilegeList = ((PhrSecurityConfig) commandObject).getPhrPrivilegeList();
+        List<PhrPrivilege> privilegeList = ((PhrSecurityConfig) commandObject).getPhrPrivilegeList();
   
         try {
             Integer id = PersonalhrUtil.getParamAsInteger(request.getParameter("privilegeIdField"));

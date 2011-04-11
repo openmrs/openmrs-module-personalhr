@@ -15,6 +15,7 @@ package org.openmrs.module.personalhr.web.controller;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,8 +26,9 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.messaging.MessagingService;
 import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrLogEvent;
 import org.openmrs.module.personalhr.PhrPatient;
-import org.openmrs.module.personalhr.PhrSecurityService;
+import org.openmrs.module.personalhr.PhrService;
 import org.openmrs.module.personalhr.PhrSharingToken;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -95,13 +97,13 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                         this.log.debug("token.getRelatedPersonEmail()=" + token.getRelatedPersonEmail());
                     }
                     //validate sharing type
-                    if (PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue().equals(token.getShareType())) {
+                    if (PhrService.PhrSharingType.SHARE_NOTHING.getValue().equals(token.getShareType())) {
                         errors.reject("Please select the type of information you want to share with the specified person: "
                                 + token.getRelatedPersonName());
                     } else {
                         this.log.debug("token.getShareType()=" + token.getShareType()
-                                + "; PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue()="
-                                + PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue());
+                                + "; PhrService.PhrSharingType.SHARE_NOTHING.getValue()="
+                                + PhrService.PhrSharingType.SHARE_NOTHING.getValue());
                     }
                     
                 }
@@ -124,13 +126,13 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                     this.log.debug("token.getRelatedPersonEmail()=" + token.getRelatedPersonEmail());
                 }
                 //validate sharing type
-                if (PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue().equals(token.getShareType())) {
+                if (PhrService.PhrSharingType.SHARE_NOTHING.getValue().equals(token.getShareType())) {
                     errors.reject("Please select the type of information you want to share with the specified person: "
                             + token.getRelatedPersonName());
                 } else {
                     this.log.debug("token.getShareType()=" + token.getShareType()
-                            + "; PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue()="
-                            + PhrSecurityService.PhrSharingType.SHARE_NOTHING.getValue());
+                            + "; PhrService.PhrSharingType.SHARE_NOTHING.getValue()="
+                            + PhrService.PhrSharingType.SHARE_NOTHING.getValue());
                 }
             }
         } catch (final Exception ex) {
@@ -152,6 +154,9 @@ public class PatientRelationshipsFormController extends SimpleFormController {
         this.log.debug("onSubmit: tokens.size=" + tokens.size() + "; new relationship with "
                 + newToken.getRelatedPersonName() + ";" + phrPat.getPersonName() + ";" + newToken.getShareType() + "; "
                 + newToken.getRelationType());
+        PersonalhrUtil.getService().logEvent(PhrLogEvent.RELATION_UPDATE, new Date(), Context.getAuthenticatedUser().getUserId(), 
+            request.getSession().getId(), phrPat.getPatientId(), 
+            "command=" + command + "; sharingToken="+newToken.getSharingToken());
         try {
             if ((command != null) && command.startsWith("Delete")) {
                 final Integer id = PersonalhrUtil.getParamAsInteger(command.substring(7));

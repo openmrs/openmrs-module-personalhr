@@ -35,11 +35,11 @@
 	<bean parent="serviceContext">
 		<property name="moduleService">
 			<list>
-				<value>org.openmrs.module.personalhr.PhrSecurityService</value>
+				<value>org.openmrs.module.personalhr.PhrService</value>
 				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 					<property name="transactionManager"><ref bean="transactionManager"/></property>
 					<property name="target">
-						<bean class="org.openmrs.module.personalhr.PhrSecurityServiceImpl">
+						<bean class="org.openmrs.module.personalhr.PhrServiceImpl">
 							<property name="allowedUrlDao">
 								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrAllowedUrlDAO">
 									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
@@ -51,7 +51,7 @@
 								</bean>
 							</property>	
 							<property name="securityRuleDao">
-								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrSecurityRuleDAO">
+								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrPrivilegeDAO">
 									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 								</bean>
 							</property>	

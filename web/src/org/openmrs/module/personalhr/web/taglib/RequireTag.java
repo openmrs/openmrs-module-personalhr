@@ -31,7 +31,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.module.personalhr.PersonalhrUtil;
-import org.openmrs.module.personalhr.PhrSecurityService;
+import org.openmrs.module.personalhr.PhrService;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.util.StringUtils;
@@ -262,7 +262,7 @@ public class RequireTag extends TagSupport {
             return false;
         }
         
-        final PhrSecurityService serv = PersonalhrUtil.getService();
+        final PhrService serv = PersonalhrUtil.getService();
         
         if ((privilege != null) && !serv.hasPrivilege(privilege.trim(), pat, per, user)) {
             return false;
@@ -284,7 +284,7 @@ public class RequireTag extends TagSupport {
      * @return true if user has all of the privileges
      */
     private boolean hasAllPrivileges(final User user, final Person per, final Patient pat, final String[] allPrivilegesArray) {
-        final PhrSecurityService serv = PersonalhrUtil.getService();
+        final PhrService serv = PersonalhrUtil.getService();
         for (final String p : allPrivilegesArray) {
             if (!serv.hasPrivilege(p.trim(), pat, per, user)) {
                 return false;
@@ -301,7 +301,7 @@ public class RequireTag extends TagSupport {
      * @return true if user has at least one of the privileges
      */
     private boolean hasAnyPrivilege(final User user, final Person per, final Patient pat, final String[] anyPriviegeArray) {
-        final PhrSecurityService serv = PersonalhrUtil.getService();
+        final PhrService serv = PersonalhrUtil.getService();
         for (final String p : anyPriviegeArray) {
             if (serv.hasPrivilege(p.trim(), pat, per, user)) {
                 return true;

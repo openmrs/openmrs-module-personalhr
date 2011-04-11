@@ -13,6 +13,7 @@
 package org.openmrs.module.personalhr;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -23,22 +24,24 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.personalhr.db.PhrAllowedUrlDAO;
-import org.openmrs.module.personalhr.db.PhrSecurityRuleDAO;
+import org.openmrs.module.personalhr.db.PhrLogEventDAO;
+import org.openmrs.module.personalhr.db.PhrPrivilegeDAO;
 import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
 /**
  *
  */
-public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSecurityService {
+public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     
     protected final Log log = LogFactory.getLog(getClass());
     
-    private PhrSecurityRuleDAO securityRuleDao;
+    private PhrPrivilegeDAO securityRuleDao;
     
     private PhrAllowedUrlDAO allowedUrlDao;
     
     private PhrSharingTokenDAO sharingTokenDao;
     
+    private PhrLogEventDAO logEventDao;
     /**
      * Called only after user has been authenticated (i.e. requestingUser != null) PHR URL level
      * security check rules: 1. Check user type: unauthenticated (null) user, PHR user, non PHR user
@@ -49,13 +52,13 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
      * Otherwise, allow all non PHR users, or 9. Allow only registered non /phr/ or /personalhr/
      * URL's to be accessed by only authorized PHR users
      * 
-     * @see org.openmrs.module.personalhr.PhrSecurityService#isUrlAllowed(java.lang.String,
+     * @see org.openmrs.module.personalhr.PhrService#isUrlAllowed(java.lang.String,
      *      org.openmrs.Patient, org.openmrs.Person, org.openmrs.User)
      */
     @Override
     public boolean isUrlAllowed(final String requestedUrl, final Patient requestedPatient, final Person requestedPerson,
                                 final User requestingUser) {
-        this.log.debug("PhrSecurityServiceImpl:isUrlAllowed->" + requestedUrl + "|" + requestedPatient + "|"
+        this.log.debug("PhrServiceImpl:isUrlAllowed->" + requestedUrl + "|" + requestedPatient + "|"
                 + requestedPerson + "|" + requestingUser);
         if (requestingUser == null) {
             this.log.warn("Allowed -> User not authenticated yet: " + requestedUrl + "|" + requestedPatient + "|"
@@ -125,7 +128,7 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
      */
     @Override
     public String getPhrRole(final User user) {
-        this.log.debug("PhrSecurityServiceImpl:igetPhrRole->" + user);
+        this.log.debug("PhrServiceImpl:igetPhrRole->" + user);
         // TODO Auto-generated method stub
         if (user.hasRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue(), true)) {
             return PhrBasicRole.PHR_ADMINISTRATOR.getValue();
@@ -141,7 +144,7 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
     @Override
     public boolean hasPrivilege(final String privilege, final Patient requestedPatient, final Person requestedPerson,
                                 final User user) {
-        this.log.debug("PhrSecurityServiceImpl:hasPrivilege->" + privilege + "|" + requestedPatient + "|" + requestedPerson
+        this.log.debug("PhrServiceImpl:hasPrivilege->" + privilege + "|" + requestedPatient + "|" + requestedPerson
                 + "|" + user);
         
         if ((user != null) && (requestedPatient == null) && (requestedPerson == null)) {
@@ -162,21 +165,21 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
                         }
                     }
                 }
-                this.log.debug("PhrSecurityServiceImpl:hasPrivilege returns false ->" + privilege + "|" + requestedPatient
+                this.log.debug("PhrServiceImpl:hasPrivilege returns false ->" + privilege + "|" + requestedPatient
                         + "|" + requestedPerson + "|" + user);
                 return false;
             } else {
-                this.log.debug("PhrSecurityServiceImpl:hasPrivilege returns true ->" + privilege + "|" + requestedPatient
+                this.log.debug("PhrServiceImpl:hasPrivilege returns true ->" + privilege + "|" + requestedPatient
                         + "|" + requestedPerson + "|" + user);
                 return true;
             }
         }
         
         //When url privilege is specified, check the database for authorized roles
-        final List<PhrSecurityRule> rules = this.securityRuleDao.getByPrivilege(privilege);
+        final List<PhrPrivilege> rules = this.securityRuleDao.getByPrivilege(privilege);
         final List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
         if (rules != null) {
-            for (final PhrSecurityRule rule : rules) {
+            for (final PhrPrivilege rule : rules) {
                 if (rule != null) {
                     final String reqRole = rule.getRequiredRole().toLowerCase();
                     
@@ -200,18 +203,18 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
     
     @Override
     public List<PhrDynamicRole> getDynamicRoles(final Patient requestedPatient, final Person requestedPerson, final User user) {
-        this.log.debug("PhrSecurityServiceImpl:getDynamicRoles->" + requestedPatient + "|" + requestedPerson + "|" + user);
+        this.log.debug("PhrServiceImpl:getDynamicRoles->" + requestedPatient + "|" + requestedPerson + "|" + user);
         final List<PhrDynamicRole> roles = new ArrayList<PhrDynamicRole>();
         
         //check for administrator privilege
         if (user.hasRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue(), true)) {
-            roles.add(PhrSecurityService.PhrDynamicRole.ADMINISTRATOR);
+            roles.add(PhrService.PhrDynamicRole.ADMINISTRATOR);
             this.log.debug("getDynamicRoles->ADMINISTRATOR");
         }
         
         //check for owner status
         if (isSamePerson(user, requestedPatient) || isSamePerson(user, requestedPerson)) {
-            roles.add(PhrSecurityService.PhrDynamicRole.OWNER);
+            roles.add(PhrService.PhrDynamicRole.OWNER);
             this.log.debug("getDynamicRoles->OWNER");
         } else {
             //check for sharing authorization
@@ -221,11 +224,11 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
                 final String shareType = token.getShareType();
                 if ((shareType != null) && !shareType.trim().isEmpty()) {
                     this.log.debug("getDynamicRoles for shareType: " + shareType);
-                    if (PhrSecurityService.PhrSharingType.SHARE_ALL.getValue().equals(shareType)) {
-                        roles.add(PhrSecurityService.PhrDynamicRole.SHARE_JOURNAL);
-                        roles.add(PhrSecurityService.PhrDynamicRole.SHARE_MEDICAL);
+                    if (PhrService.PhrSharingType.SHARE_ALL.getValue().equals(shareType)) {
+                        roles.add(PhrService.PhrDynamicRole.SHARE_JOURNAL);
+                        roles.add(PhrService.PhrDynamicRole.SHARE_MEDICAL);
                     } else {
-                        roles.add(PhrSecurityService.PhrDynamicRole.getRole(shareType));
+                        roles.add(PhrService.PhrDynamicRole.getRole(shareType));
                     }
                 }
             }
@@ -248,7 +251,7 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
      * @return
      */
     private boolean isSamePerson(final User user, final Person requestedPerson) {
-        this.log.debug("PhrSecurityServiceImpl:isSamePerson->" + user + "|" + requestedPerson);
+        this.log.debug("PhrServiceImpl:isSamePerson->" + user + "|" + requestedPerson);
         // TODO Auto-generated method stub
         if ((user == null) || (requestedPerson == null)) {
             this.log.debug("isSamePerson(Person)=false ->" + user + "|" + requestedPerson);
@@ -266,7 +269,7 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
      * @return
      */
     private boolean isSamePerson(final User user, final Patient requestedPatient) {
-        this.log.debug("PhrSecurityServiceImpl:isSamePerson->" + user + "|" + requestedPatient);
+        this.log.debug("PhrServiceImpl:isSamePerson->" + user + "|" + requestedPatient);
         // TODO Auto-generated method stub
         if ((user == null) || (requestedPatient == null)) {
             this.log.debug("isSamePerson(Patient)=false ->" + user + "|" + requestedPatient);
@@ -277,12 +280,12 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
     }
     
     @Override
-    public PhrSecurityRuleDAO getSecurityRuleDao() {
+    public PhrPrivilegeDAO getSecurityRuleDao() {
         return this.securityRuleDao;
     }
     
     @Override
-    public void setSecurityRuleDao(final PhrSecurityRuleDAO securityRuleDao) {
+    public void setSecurityRuleDao(final PhrPrivilegeDAO securityRuleDao) {
         this.securityRuleDao = securityRuleDao;
     }
     
@@ -307,7 +310,7 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
     }
     
     /* (non-Jsdoc)
-     * @see org.openmrs.module.personalhr.PhrSecurityService#getRelatedPersons(org.openmrs.Person)
+     * @see org.openmrs.module.personalhr.PhrService#getRelatedPersons(org.openmrs.Person)
      */
     @Override
     public List<Person> getRelatedPersons(final Person person) {
@@ -348,6 +351,17 @@ public class PhrSecurityServiceImpl extends BaseOpenmrsService implements PhrSec
         } else {
             return null;
         }
+    }
+
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.PhrService#logEvent(java.lang.String, java.util.Date, int, java.lang.String, int, java.lang.String)
+     */
+    @Override
+    public void logEvent(String eventType, Date eventDate, Integer userId, String sessionId, Integer patientId, String eventContent) {
+        // TODO Auto-generated method stub
+        PhrLogEvent eventLog = new PhrLogEvent(eventType, eventDate, userId,
+                                   sessionId, patientId, eventContent);
+        logEventDao.savePhrEventLog(eventLog);
     }
     
 }

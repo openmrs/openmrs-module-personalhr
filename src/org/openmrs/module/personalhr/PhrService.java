@@ -12,6 +12,7 @@
  */
 package org.openmrs.module.personalhr;
 
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +22,13 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.module.personalhr.db.PhrAllowedUrlDAO;
-import org.openmrs.module.personalhr.db.PhrSecurityRuleDAO;
+import org.openmrs.module.personalhr.db.PhrPrivilegeDAO;
 import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
 /**
  *
  */
-public interface PhrSecurityService {
+public interface PhrService {
     
     public enum PhrSharingType {
         SHARE_NOTHING("Select One"), SHARE_JOURNAL("Share Journal"), SHARE_MEDICAL("Share Medical"), SHARE_ALL("Share All");
@@ -120,9 +121,14 @@ public interface PhrSecurityService {
     
     public List<Person> getRelatedPersons(Person person);
     
-    public PhrSecurityRuleDAO getSecurityRuleDao();
+    public void logEvent(String eventType, Date eventDate, Integer userId, 
+                         String sessionId, Integer patientId, String eventContent);
+   
+    //DAO access
     
-    public void setSecurityRuleDao(PhrSecurityRuleDAO securityRuleDao);
+    public PhrPrivilegeDAO getSecurityRuleDao();
+    
+    public void setSecurityRuleDao(PhrPrivilegeDAO securityRuleDao);
     
     public PhrAllowedUrlDAO getAllowedUrlDao();
     
