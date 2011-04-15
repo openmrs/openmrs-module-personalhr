@@ -197,9 +197,9 @@ public class LoginServlet extends HttpServlet {
                     }
                     
                     log.debug("PHR LoginServlet redirect to " + redirect);
-                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_LOGIN, new Date(), user.getUserId(), 
-                            httpSession.getId(), personId, 
-                            "redirect="+redirect+"; client_id=" + request.getLocalAddr());
+                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_LOGIN, new Date(), user, 
+                            httpSession.getId(), null, 
+                            "redirect="+redirect+"; client_ip=" + request.getLocalAddr());
                     response.sendRedirect(redirect);
                     
                     httpSession.setAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR, request.getLocalAddr());

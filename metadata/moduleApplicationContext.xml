@@ -50,8 +50,13 @@
 									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 								</bean>
 							</property>	
-							<property name="securityRuleDao">
+							<property name="privilegeDao">
 								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrPrivilegeDAO">
+									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+								</bean>
+							</property>	
+							<property name="logEventDao">
+								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrLogEventDAO">
 									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 								</bean>
 							</property>	

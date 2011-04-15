@@ -121,14 +121,14 @@ public interface PhrService {
     
     public List<Person> getRelatedPersons(Person person);
     
-    public void logEvent(String eventType, Date eventDate, Integer userId, 
-                         String sessionId, Integer patientId, String eventContent);
+    public void logEvent(String eventType, Date eventDate, User user, 
+                         String sessionId, Patient patient, String eventContent);
    
     //DAO access
     
-    public PhrPrivilegeDAO getSecurityRuleDao();
+    public PhrPrivilegeDAO getPrivilegeDao();
     
-    public void setSecurityRuleDao(PhrPrivilegeDAO securityRuleDao);
+    public void setPrivilegeDao(PhrPrivilegeDAO privilegeDao);
     
     public PhrAllowedUrlDAO getAllowedUrlDao();
     

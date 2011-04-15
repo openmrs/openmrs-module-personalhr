@@ -20,11 +20,12 @@ import java.util.Date;
  *
  */
 public class PhrLogEvent {
+    private Integer id;
     private String eventType; 
     private Date eventDate; 
-    private int userId; 
+    private Integer userId; 
     private String sessionId;
-    private int patientId; 
+    private Integer patientId; 
     private String eventContent;
 
     public static final String USER_LOGIN = "USER_LOGIN";
@@ -53,8 +54,11 @@ public class PhrLogEvent {
     public static final String USER_UPDATE = "USER_UPDATE";
     public static final String RELATION_UPDATE = "RELATION_UPDATE";
     public static final String PORTLET_ACCESS = "PORTLET_ACCESS";
+    public static final String ACCESS_NOT_ALLOWED = "ACCESS_NOT_ALLOWED";
+    public static final String ACCESS_REDIRECT = "ACCESS_REDIRECT";
+    public static final String SUBMIT_CHANGES = "SUBMIT_CHANGES";
     
-    public PhrLogEvent(String eventType, Date eventDate, int userId, String sessionId, int patientId, String eventContent) {
+    public PhrLogEvent(String eventType, Date eventDate, Integer userId, String sessionId, Integer patientId, String eventContent) {
         this.eventType = eventType;
         this.eventDate = eventDate;
         this.userId = userId;
@@ -79,11 +83,11 @@ public class PhrLogEvent {
         this.eventDate = eventDate;
     }
     
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
     
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
     
@@ -95,11 +99,11 @@ public class PhrLogEvent {
         this.sessionId = sessionId;
     }
     
-    public int getPatientId() {
+    public Integer getPatientId() {
         return patientId;
     }
     
-    public void setPatientId(int patientId) {
+    public void setPatientId(Integer patientId) {
         this.patientId = patientId;
     }
     
@@ -109,5 +113,15 @@ public class PhrLogEvent {
     
     public void setEventContent(String eventContent) {
         this.eventContent = eventContent;
+    }
+
+    
+    public Integer getId() {
+        return id;
+    }
+
+    
+    public void setId(Integer id) {
+        this.id = id;
     }    
 }

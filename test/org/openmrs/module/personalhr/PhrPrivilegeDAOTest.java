@@ -25,7 +25,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
-public class PhrSecurityRuleDAOTest extends BaseModuleContextSensitiveTest {
+public class PhrPrivilegeDAOTest extends BaseModuleContextSensitiveTest {
     
     protected final Log log = LogFactory.getLog(getClass());
     
@@ -47,7 +47,7 @@ public class PhrSecurityRuleDAOTest extends BaseModuleContextSensitiveTest {
         if (this.dao == null) {
             // fetch the dao from PhrSeucrity service, rather than from the spring application context
             // this bean name matches the name in /metadata/spring/applicationContext-service.xml
-            this.dao = PersonalhrUtil.getService().getSecurityRuleDao();
+            this.dao = PersonalhrUtil.getService().getPrivilegeDao();
         }
     }
     

@@ -74,14 +74,14 @@ public class ManagePhrPrivilegeFormController extends SimpleFormController {
             Integer id = PersonalhrUtil.getParamAsInteger(request.getParameter("privilegeIdField"));
             if(command != null && command.startsWith("Save")) {
                  if(id >= 0) {
-                    PersonalhrUtil.getService().getSecurityRuleDao().savePhrSecurityRule(privilegeList.get(id));                
+                    PersonalhrUtil.getService().getPrivilegeDao().savePhrPrivilege(privilegeList.get(id));                
                     log.debug("Allowed URL updated: " + privilegeList.get(id).getRequiredRole()+"/"+privilegeList.get(id).getPrivilege());
                 } else {
                     log.debug("Nothing is updated. command=" + command);
                 }
             } else if(command != null && command.startsWith("Delete")) {
                 if( id != null && id >= 0) {
-                    PersonalhrUtil.getService().getSecurityRuleDao().deletePhrSecurityRule(privilegeList.get(id));                
+                    PersonalhrUtil.getService().getPrivilegeDao().deletePhrPrivilege(privilegeList.get(id));                
                     log.debug("Allowed URL deleted: " + privilegeList.get(id).getRequiredRole()+"/"+privilegeList.get(id).getPrivilege());
                 } else {
                     log.debug("Nothing is deleted. command=" + command);

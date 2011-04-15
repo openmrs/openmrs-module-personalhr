@@ -35,7 +35,7 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     
     protected final Log log = LogFactory.getLog(getClass());
     
-    private PhrPrivilegeDAO securityRuleDao;
+    private PhrPrivilegeDAO privilegeDao;
     
     private PhrAllowedUrlDAO allowedUrlDao;
     
@@ -151,10 +151,10 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
             return true;
         }
         
-        //When url privilege is not specified, allow only owner, admin, and shareee to access
+        //When url privilege is not specified, allow only owner, admin, shareee and share all to access
         if ((privilege == null) || privilege.trim().isEmpty()) {
             if ((requestedPatient != null) || (requestedPerson != null)) {
-                final String reqRole = "Owner,Administrator,Share Medical,Share Journal".toLowerCase();
+                final String reqRole = "Owner,Administrator,Share Medical,Share Journal,Share All".toLowerCase();
                 final List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
                 if (roles != null) {
                     for (final PhrDynamicRole role : roles) {
@@ -176,7 +176,7 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         }
         
         //When url privilege is specified, check the database for authorized roles
-        final List<PhrPrivilege> rules = this.securityRuleDao.getByPrivilege(privilege);
+        final List<PhrPrivilege> rules = this.privilegeDao.getByPrivilege(privilege);
         final List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
         if (rules != null) {
             for (final PhrPrivilege rule : rules) {
@@ -280,13 +280,13 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     }
     
     @Override
-    public PhrPrivilegeDAO getSecurityRuleDao() {
-        return this.securityRuleDao;
+    public PhrPrivilegeDAO getPrivilegeDao() {
+        return this.privilegeDao;
     }
     
     @Override
-    public void setSecurityRuleDao(final PhrPrivilegeDAO securityRuleDao) {
-        this.securityRuleDao = securityRuleDao;
+    public void setPrivilegeDao(final PhrPrivilegeDAO privilegeDao) {
+        this.privilegeDao = privilegeDao;
     }
     
     @Override
@@ -357,11 +357,21 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
      * @see org.openmrs.module.personalhr.PhrService#logEvent(java.lang.String, java.util.Date, int, java.lang.String, int, java.lang.String)
      */
     @Override
-    public void logEvent(String eventType, Date eventDate, Integer userId, String sessionId, Integer patientId, String eventContent) {
+    public void logEvent(String eventType, Date eventDate, User user, String sessionId, Patient patient, String eventContent) {
         // TODO Auto-generated method stub
-        PhrLogEvent eventLog = new PhrLogEvent(eventType, eventDate, userId,
-                                   sessionId, patientId, eventContent);
+        PhrLogEvent eventLog = new PhrLogEvent(eventType, eventDate, (user==null ? null:user.getUserId()),
+                                   sessionId, (patient==null?null:patient.getPatientId()), eventContent);
         logEventDao.savePhrEventLog(eventLog);
+    }
+
+    
+    public PhrLogEventDAO getLogEventDao() {
+        return logEventDao;
+    }
+
+    
+    public void setLogEventDao(PhrLogEventDAO logEventDao) {
+        this.logEventDao = logEventDao;
     }
     
 }

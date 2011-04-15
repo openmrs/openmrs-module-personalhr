@@ -640,6 +640,8 @@ public class NewPatientFormController extends SimpleFormController {
             mas.saveMessagingAddress(ma);
         } catch (final Exception e) {
             this.log.debug("Unable to save email address to messaging_addresses table " + email, e);
+        } catch (final NoClassDefFoundError e) {
+            this.log.debug("Messaging module is not found, cannot save " + email, e);
         }
         
     }

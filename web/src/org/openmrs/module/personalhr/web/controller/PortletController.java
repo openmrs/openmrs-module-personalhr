@@ -451,9 +451,6 @@ public class PortletController implements Controller {
             }
         } finally {
            //PersonalhrUtil.removeTemporayPrivileges();
-           PersonalhrUtil.getService().logEvent(PhrLogEvent.PORTLET_ACCESS, new Date(), Context.getAuthenticatedUser().getUserId(), 
-                request.getSession().getId(), personId, 
-                "portletPath="+portletPath);           
         }
         return new ModelAndView(portletPath, "model", model);        
     }

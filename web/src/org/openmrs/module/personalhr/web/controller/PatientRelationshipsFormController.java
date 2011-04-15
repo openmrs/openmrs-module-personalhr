@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.messaging.MessagingService;
 import org.openmrs.module.personalhr.PersonalhrUtil;
-import org.openmrs.module.personalhr.PhrLogEvent;
 import org.openmrs.module.personalhr.PhrPatient;
 import org.openmrs.module.personalhr.PhrService;
 import org.openmrs.module.personalhr.PhrSharingToken;
@@ -154,9 +153,6 @@ public class PatientRelationshipsFormController extends SimpleFormController {
         this.log.debug("onSubmit: tokens.size=" + tokens.size() + "; new relationship with "
                 + newToken.getRelatedPersonName() + ";" + phrPat.getPersonName() + ";" + newToken.getShareType() + "; "
                 + newToken.getRelationType());
-        PersonalhrUtil.getService().logEvent(PhrLogEvent.RELATION_UPDATE, new Date(), Context.getAuthenticatedUser().getUserId(), 
-            request.getSession().getId(), phrPat.getPatientId(), 
-            "command=" + command + "; sharingToken="+newToken.getSharingToken());
         try {
             if ((command != null) && command.startsWith("Delete")) {
                 final Integer id = PersonalhrUtil.getParamAsInteger(command.substring(7));
@@ -211,6 +207,8 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                 org.openmrs.module.messaging.email.EmailProtocol.class);
         } catch (final Exception e) {
             this.log.debug("Unable to send message to " + emailAddress, e);
+        } catch (final NoClassDefFoundError e) {
+            this.log.debug("Messaging module is not found, unable to send message to " + emailAddress, e);           
         }
     }
     

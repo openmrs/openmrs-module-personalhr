@@ -48,6 +48,6 @@ public class DWRPersonalhrService {
         rule.setDescription(description);
         rule.setCreator(Context.getAuthenticatedUser());
         rule.setDateCreated(new Date());
-        PersonalhrUtil.getService().getSecurityRuleDao().savePhrSecurityRule(rule);
+        PersonalhrUtil.getService().getPrivilegeDao().savePhrPrivilege(rule);
     }	
 }

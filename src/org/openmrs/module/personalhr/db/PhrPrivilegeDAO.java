@@ -25,13 +25,13 @@ public interface PhrPrivilegeDAO {
     
     public void setSessionFactory(SessionFactory sessionFactory);
     
-    public PhrPrivilege getPhrSecurityRule(Integer id);
+    public PhrPrivilege getPhrPrivilege(Integer id);
     
-    public PhrPrivilege savePhrSecurityRule(PhrPrivilege rule);
+    public PhrPrivilege savePhrPrivilege(PhrPrivilege rule);
     
-    public void deletePhrSecurityRule(PhrPrivilege rule);
+    public void deletePhrPrivilege(PhrPrivilege rule);
     
-    public List<PhrPrivilege> getAllPhrSecurityRules();
+    public List<PhrPrivilege> getAllPhrPrivileges();
     
     public List<PhrPrivilege> getByPrivilege(String priv);
     

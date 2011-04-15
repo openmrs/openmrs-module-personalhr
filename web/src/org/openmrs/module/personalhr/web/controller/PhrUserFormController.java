@@ -372,7 +372,7 @@ public class PhrUserFormController {
                     PersonalhrUtil.getService().getSharingTokenDao().savePhrSharingToken(token);
                     httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
                     log.debug("New self-registered user created: " + user.getUsername());
-                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), user.getUserId(), 
+                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), user, 
                         httpSession.getId(), null, 
                         "info=New self-registered user created; user_name=" + user.getName() + "; sharingToken="+token);
                 } else {
@@ -397,7 +397,7 @@ public class PhrUserFormController {
                 }
                 log.debug("Existing user " + user.getUsername() + " changed by user "
                         + Context.getAuthenticatedUser().getUsername());
-                PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_UPDATE, new Date(), Context.getAuthenticatedUser().getUserId(), 
+                PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_UPDATE, new Date(), Context.getAuthenticatedUser(), 
                     httpSession.getId(), null, 
                     "info=Existing user updated; user_name=" + user.getName());
                 httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");

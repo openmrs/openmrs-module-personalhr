@@ -14,6 +14,7 @@
 package org.openmrs.module.personalhr.web.filter;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -32,6 +33,7 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrLogEvent;
 import org.openmrs.module.personalhr.PhrService.PhrBasicRole;
 
 /**
@@ -98,7 +100,10 @@ public class PhrSecurityFilter implements Filter {
                                 
                     if (!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
                         this.log.debug("***URL access not allowed!!! " + requestURI + "|" + pat + "|" + per + "|"
-                                + Context.getAuthenticatedUser());
+                                + user);
+                        PersonalhrUtil.getService().logEvent(PhrLogEvent.ACCESS_NOT_ALLOWED, new Date(), user, 
+                            ((HttpServletRequest) request).getSession().getId(), pat, 
+                            "requestURI="+requestURI+"; client_ip=" + request.getLocalAddr());
                         this.config.getServletContext().getRequestDispatcher(this.loginForm).forward(request, response);
                     } else {
                         if (requestURI.toLowerCase().contains("index.htm") && !requestURI.toLowerCase().contains("/phr/")) {
@@ -126,6 +131,11 @@ public class PhrSecurityFilter implements Filter {
                                 
                                 this.log.debug("***URL access is redirected to " + redirect + " for user " + user + "|" + requestURI
                                         + "|" + pat + "|" + per);
+                                
+                                PersonalhrUtil.getService().logEvent(PhrLogEvent.ACCESS_REDIRECT, new Date(), user, 
+                                    ((HttpServletRequest) request).getSession().getId(), pat, 
+                                    "redirect="+redirect+"; client_ip=" + request.getLocalAddr());
+                                
                                 ((HttpServletResponse) response).sendRedirect(((HttpServletRequest) request).getContextPath()
                                         + redirect);
                                 return;
@@ -135,7 +145,25 @@ public class PhrSecurityFilter implements Filter {
                     
                     this.log.debug("***URL access is checked and allowed for this authenticated user!!! " + user + "|" + requestURI + "|"
                             + pat + "|" + per);
-            
+                    
+                    if("POST".equalsIgnoreCase(((HttpServletRequest) request).getMethod())) {
+                        String command = request.getParameter("command");
+                        if(command != null) {
+                            PersonalhrUtil.getService().logEvent(PhrLogEvent.SUBMIT_CHANGES, new Date(), user, 
+                                ((HttpServletRequest) request).getSession().getId(), pat, 
+                                "requestURI="+requestURI+"; command=" + command +"; client_ip=" + request.getLocalAddr());
+                        }
+                        else if(!(requestURI.toLowerCase().contains("/admin")||
+                               requestURI.toLowerCase().contains("get")
+                                ||requestURI.toLowerCase().contains("find")
+                                ||requestURI.toLowerCase().contains("list")
+                                ||requestURI.toLowerCase().contains("check")
+                                ||requestURI.toLowerCase().contains("validate"))){
+                            PersonalhrUtil.getService().logEvent(PhrLogEvent.SUBMIT_CHANGES, new Date(), user, 
+                            ((HttpServletRequest) request).getSession().getId(), pat, 
+                            "requestURI="+requestURI+"; client_ip=" + request.getLocalAddr());
+                        }
+                    }
                 } finally {
                     PersonalhrUtil.removeMinimumTemporaryPrivileges();
                 }

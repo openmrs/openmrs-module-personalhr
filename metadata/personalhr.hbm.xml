@@ -58,7 +58,7 @@
 
 	</class>
 	
-	<class name="PhrSecurityRule" table="phr_security_rule">
+	<class name="PhrPrivilege" table="phr_security_rule">
 
 		<id name="id" type="int" column="id" unsaved-value="0">
 			<generator class="native" />
@@ -128,7 +128,7 @@
 
 	</class>
 
-	<class name="PhrEventLog" table="phr_event_log">
+	<class name="PhrLogEvent" table="phr_event_log">
 
 		<id name="id" type="int" column="id" unsaved-value="0">
 			<generator class="native" />

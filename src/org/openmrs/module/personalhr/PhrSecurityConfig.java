@@ -28,7 +28,7 @@ public class PhrSecurityConfig {
     
     public PhrSecurityConfig() {
         allowedUrlList=PersonalhrUtil.getService().getAllowedUrlDao().getAllPhrAllowedUrls();
-        phrPrivilegeList=PersonalhrUtil.getService().getSecurityRuleDao().getAllPhrSecurityRules(); 
+        phrPrivilegeList=PersonalhrUtil.getService().getPrivilegeDao().getAllPhrPrivileges(); 
     }
     public List<PhrAllowedUrl> getAllowedUrlList() {
         return allowedUrlList;

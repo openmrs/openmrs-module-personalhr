@@ -42,12 +42,12 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     }
     
     @Override
-    public PhrPrivilege getPhrSecurityRule(final Integer id) {
+    public PhrPrivilege getPhrPrivilege(final Integer id) {
         return (PhrPrivilege) this.sessionFactory.getCurrentSession().get(PhrPrivilege.class, id);
     }
     
     @Override
-    public PhrPrivilege savePhrSecurityRule(final PhrPrivilege rule) {
+    public PhrPrivilege savePhrPrivilege(final PhrPrivilege rule) {
         Session sess = sessionFactory.openSession();
         Transaction tx = sess.beginTransaction();
         sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
@@ -60,7 +60,7 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     }
     
     @Override
-    public void deletePhrSecurityRule(final PhrPrivilege rule) {
+    public void deletePhrPrivilege(final PhrPrivilege rule) {
         Session sess = sessionFactory.openSession();
         Transaction tx = sess.beginTransaction();
         sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
@@ -71,7 +71,7 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     
     @Override
     @SuppressWarnings("unchecked")
-    public List<PhrPrivilege> getAllPhrSecurityRules() {
+    public List<PhrPrivilege> getAllPhrPrivileges() {
         final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrPrivilege.class);
         crit.addOrder(Order.asc("privilege"));
         return crit.list();
