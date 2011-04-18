@@ -96,13 +96,11 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                         this.log.debug("token.getRelatedPersonEmail()=" + token.getRelatedPersonEmail());
                     }
                     //validate sharing type
-                    if (PhrService.PhrSharingType.SHARE_NOTHING.getValue().equals(token.getShareType())) {
+                    if ("Select One".equalsIgnoreCase(token.getShareType())) {
                         errors.reject("Please select the type of information you want to share with the specified person: "
                                 + token.getRelatedPersonName());
                     } else {
-                        this.log.debug("token.getShareType()=" + token.getShareType()
-                                + "; PhrService.PhrSharingType.SHARE_NOTHING.getValue()="
-                                + PhrService.PhrSharingType.SHARE_NOTHING.getValue());
+                        this.log.debug("token.getShareType()=" + token.getShareType());
                     }
                     
                 }
@@ -125,13 +123,11 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                     this.log.debug("token.getRelatedPersonEmail()=" + token.getRelatedPersonEmail());
                 }
                 //validate sharing type
-                if (PhrService.PhrSharingType.SHARE_NOTHING.getValue().equals(token.getShareType())) {
+                if ("Select One".equalsIgnoreCase(token.getShareType())) {
                     errors.reject("Please select the type of information you want to share with the specified person: "
                             + token.getRelatedPersonName());
                 } else {
-                    this.log.debug("token.getShareType()=" + token.getShareType()
-                            + "; PhrService.PhrSharingType.SHARE_NOTHING.getValue()="
-                            + PhrService.PhrSharingType.SHARE_NOTHING.getValue());
+                    this.log.debug("token.getShareType()=" + token.getShareType());
                 }
             }
         } catch (final Exception ex) {

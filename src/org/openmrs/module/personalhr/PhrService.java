@@ -17,6 +17,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -30,12 +31,12 @@ import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
  */
 public interface PhrService {
     
-    public enum PhrSharingType {
+    public enum PhrSharingTypeOld {
         SHARE_NOTHING("Select One"), SHARE_JOURNAL("Share Journal"), SHARE_MEDICAL("Share Medical"), SHARE_ALL("Share All");
         
         private final String value;
         
-        PhrSharingType(final String type) {
+        PhrSharingTypeOld(final String type) {
             this.value = type;
         }
         
@@ -58,20 +59,20 @@ public interface PhrService {
         }
     };
     
-    public enum PhrDynamicRole {
+    public enum PhrDynamicRoleOld {
         ADMINISTRATOR("Administrator"), OWNER("Owner"), SHARE_JOURNAL("Share Journal"), SHARE_MEDICAL("Share Medical");
         
         private final String value;
         
-        private static final Map<String, PhrDynamicRole> lookup = new HashMap<String, PhrDynamicRole>();
+        private static final Map<String, PhrDynamicRoleOld> lookup = new HashMap<String, PhrDynamicRoleOld>();
         
         static {
-            for (final PhrDynamicRole s : EnumSet.allOf(PhrDynamicRole.class)) {
+            for (final PhrDynamicRoleOld s : EnumSet.allOf(PhrDynamicRoleOld.class)) {
                 lookup.put(s.getValue(), s);
             }
         }
         
-        PhrDynamicRole(final String role) {
+        PhrDynamicRoleOld(final String role) {
             this.value = role;
         }
         
@@ -79,7 +80,7 @@ public interface PhrService {
             return value;
         }
         
-        public static PhrDynamicRole getRole(final String value) {
+        public static PhrDynamicRoleOld getRole(final String value) {
             return lookup.get(value);
         }
     };
@@ -117,7 +118,7 @@ public interface PhrService {
     
     public boolean hasPrivilege(String privilege, Patient requestedPatient, Person requestedPerson, User requestingUser);
     
-    public List<PhrDynamicRole> getDynamicRoles(Patient requestedPatient, Person requestedPerson, User requestingUser);
+    public List<String> getDynamicRoles(Patient requestedPatient, Person requestedPerson, User requestingUser);
     
     public List<Person> getRelatedPersons(Person person);
     
@@ -145,5 +146,7 @@ public interface PhrService {
      * @return
      */
     public String getPhrRole(User user);
+    
+    public Set<String> getSharingTypes();
     
 }

@@ -128,9 +128,11 @@
 		    <td>Share:</td>
 		    <td> 
 			<form:select path="patient.newSharingToken.shareType">
+				<option value="SELECT ONE" label="SELECT ONE">SELECT ONE</option>
 				<c:forEach items="${patient.sharingTypes}" var="sharingType">
-					<option value="${sharingType.value}" label="${sharingType.value}">${sharingType.value}</option>
+					<option value="${sharingType}" label="${sharingType}">${sharingType}</option>
 				</c:forEach>
+				<option value="SHARE ALL" label="SHARE ALL">SHARE ALL</option>
 		    </form:select>
 		    <span style="color:red">*</span> (Required)
 		    </td>
@@ -231,11 +233,15 @@
 		    <td> 
 			<spring:bind path="patient.sharingTokens[${status.index}].shareType">
 				<select name="${status.expression}" onChange="onChange()">
+					<option value="SELECT ONE" label="SELECT ONE"				
+					  <c:if test="${'SELECT ONE' == status.value}">selected="selected"</c:if>>SELECT ONE</option>
 					<c:forEach items="${patient.sharingTypes}" var="sharingType">
-						<option value="${sharingType.value}"
-							<c:if test="${sharingType.value == status.value}">selected="selected"</c:if>>${sharingType.value}
+						<option value="${sharingType}"
+							<c:if test="${sharingType == status.value}">selected="selected"</c:if>>${sharingType}
 						</option>
 					</c:forEach>
+					<option value="SHARE ALL" label="SHARE ALL"									
+					  <c:if test="${'SHARE ALL' == status.value}">selected="selected"</c:if>>SHARE ALL</option>
 		    	</select>
 		    </spring:bind>		    
 		    </td>

@@ -16,6 +16,7 @@ package org.openmrs.module.personalhr;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +38,7 @@ public class PhrPatient {
     
     private PhrSharingToken newSharingToken;
     
-    private PhrService.PhrSharingType[] sharingTypes;
+    private Set<String> sharingTypes;
     
     private PhrService.PhrRelationType[] relationTypes;
     
@@ -68,7 +69,7 @@ public class PhrPatient {
                     + this.sharingTokens);
         }
         
-        this.sharingTypes = PhrService.PhrSharingType.values();
+        this.sharingTypes = PersonalhrUtil.getService().getSharingTypes();
         
         this.relationTypes = PhrService.PhrRelationType.values();
         
@@ -109,11 +110,11 @@ public class PhrPatient {
         this.patientId = patientId;
     }
     
-    public PhrService.PhrSharingType[] getSharingTypes() {
+    public Set<String> getSharingTypes() {
         return this.sharingTypes;
     }
     
-    public void setSharingTypes(final PhrService.PhrSharingType[] sharingTypes) {
+    public void setSharingTypes(final Set<String> sharingTypes) {
         this.sharingTypes = sharingTypes;
     }
     

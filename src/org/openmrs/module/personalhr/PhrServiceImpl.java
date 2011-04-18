@@ -14,7 +14,11 @@ package org.openmrs.module.personalhr;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -151,14 +155,14 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
             return true;
         }
         
-        //When url privilege is not specified, allow only owner, admin, shareee and share all to access
         if ((privilege == null) || privilege.trim().isEmpty()) {
+            //When url privilege is not specified and requested patient/person is not null, allow only owner, admin, shareee and share all to access
             if ((requestedPatient != null) || (requestedPerson != null)) {
-                final String reqRole = "Owner,Administrator,Share Medical,Share Journal,Share All".toLowerCase();
-                final List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
+                final String reqRole = "Owner,Administrator,Share Medical,Share Journal,Share All".toUpperCase();
+                final List<String> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
                 if (roles != null) {
-                    for (final PhrDynamicRole role : roles) {
-                        if (reqRole.contains(role.getValue().toLowerCase())) {
+                    for (final String role : roles) {
+                        if (reqRole.contains(role.toUpperCase())) {
                             this.log.debug("hasPrivilege returns true ->" + privilege + "|" + requestedPatient + "|"
                                     + requestedPerson + "|" + user);
                             return true;
@@ -168,27 +172,33 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
                 this.log.debug("PhrServiceImpl:hasPrivilege returns false ->" + privilege + "|" + requestedPatient
                         + "|" + requestedPerson + "|" + user);
                 return false;
-            } else {
+            } 
+            //When url privilege is not specified and requested patient/person is null, allow every one to access            
+            else {
                 this.log.debug("PhrServiceImpl:hasPrivilege returns true ->" + privilege + "|" + requestedPatient
                         + "|" + requestedPerson + "|" + user);
                 return true;
             }
-        }
+        } 
         
         //When url privilege is specified, check the database for authorized roles
         final List<PhrPrivilege> rules = this.privilegeDao.getByPrivilege(privilege);
-        final List<PhrDynamicRole> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
+        final List<String> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
         if (rules != null) {
+            //for each required privilege/role
             for (final PhrPrivilege rule : rules) {
                 if (rule != null) {
-                    final String reqRole = rule.getRequiredRole().toLowerCase();
+                    final String reqRole = rule.getRequiredRole().toUpperCase();
                     
                     if (roles != null) {
-                        for (final PhrDynamicRole role : roles) {
-                            if (reqRole.contains(role.getValue().toLowerCase())) {
+                        //for each roles held
+                        for (final String role : roles) {
+                            if (reqRole.contains(role.toUpperCase()) ||
+                                "Administrator".equalsIgnoreCase(role) ||
+                                "Share All".equalsIgnoreCase(role)) {
                                 this.log.debug("hasPrivilege returns true ->" + privilege + "|" + requestedPatient + "|"
                                         + requestedPerson + "|" + user);
-                                return true;
+                                return true; //held at least one required role
                             }
                         }
                     }
@@ -202,19 +212,19 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     }
     
     @Override
-    public List<PhrDynamicRole> getDynamicRoles(final Patient requestedPatient, final Person requestedPerson, final User user) {
+    public List<String> getDynamicRoles(final Patient requestedPatient, final Person requestedPerson, final User user) {
         this.log.debug("PhrServiceImpl:getDynamicRoles->" + requestedPatient + "|" + requestedPerson + "|" + user);
-        final List<PhrDynamicRole> roles = new ArrayList<PhrDynamicRole>();
+        final List<String> roles = new ArrayList<String>();
         
         //check for administrator privilege
         if (user.hasRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue(), true)) {
-            roles.add(PhrService.PhrDynamicRole.ADMINISTRATOR);
+            roles.add("ADMINISTRATOR");
             this.log.debug("getDynamicRoles->ADMINISTRATOR");
         }
         
         //check for owner status
         if (isSamePerson(user, requestedPatient) || isSamePerson(user, requestedPerson)) {
-            roles.add(PhrService.PhrDynamicRole.OWNER);
+            roles.add("OWNER");
             this.log.debug("getDynamicRoles->OWNER");
         } else {
             //check for sharing authorization
@@ -224,12 +234,7 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
                 final String shareType = token.getShareType();
                 if ((shareType != null) && !shareType.trim().isEmpty()) {
                     this.log.debug("getDynamicRoles for shareType: " + shareType);
-                    if (PhrService.PhrSharingType.SHARE_ALL.getValue().equals(shareType)) {
-                        roles.add(PhrService.PhrDynamicRole.SHARE_JOURNAL);
-                        roles.add(PhrService.PhrDynamicRole.SHARE_MEDICAL);
-                    } else {
-                        roles.add(PhrService.PhrDynamicRole.getRole(shareType));
-                    }
+                    roles.add(shareType.toUpperCase());                  
                 }
             }
         }
@@ -372,6 +377,27 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     
     public void setLogEventDao(PhrLogEventDAO logEventDao) {
         this.logEventDao = logEventDao;
+    }
+
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.PhrService#getSharingTypes()
+     */
+    @Override
+    public Set<String> getSharingTypes() {
+        // TODO Auto-generated method stub
+        List<PhrPrivilege> privs = privilegeDao.getAllPhrPrivileges();
+        
+        TreeSet<String> types = new TreeSet<String>();
+        
+        for(PhrPrivilege priv : privs) {
+            String[] roles = priv.getRequiredRole().toUpperCase().split(",");
+            for(String role : roles) {
+                if(role.trim().toUpperCase().startsWith("SHARE") && !role.trim().toUpperCase().endsWith("ALL")) {
+                    types.add(role.trim().toUpperCase());
+                }
+            }            
+        }
+        return types;
     }
     
 }
