@@ -140,7 +140,36 @@ public class PhrSecurityFilter implements Filter {
                                         + redirect);
                                 return;
                             }
+                        } else if ((requestURI.contains("patientDashboard.form") && patId==null) ||
+                                   (requestURI.contains("restrictedUserDashboard.form") && perId == null)) {
+                            String redirect = requestURI;
+                            if (phrRole != null) {
+                                final Integer userPersonId = (user == null ? null : user.getPerson().getId());
+                                if (PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
+                                    if (userPersonId != null) {
+                                        redirect = "/phr/patientDashboard.form?patientId=" + userPersonId;
+                                    } else {
+                                        this.log.error("Error: PHR Patient's person id is null!");
+                                    }
+                                    //PersonalhrUtil.addTemporayPrivileges();
+                                } else if (PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
+                                    if (userPersonId != null) {
+                                        redirect = "/phr/restrictedUserDashboard.form?personId=" + userPersonId;
+                                    } else {
+                                        this.log.error("Error: PHR Restricted user's person id is null!");
+                                    }
+                                    //PersonalhrUtil.addTemporayPrivileges();
+                                } 
+                                
+                                this.log.debug("***URL access is redirected to " + redirect + " for user " + user + "|" + requestURI
+                                        + "|" + pat + "|" + per);
+                                                                
+                                ((HttpServletResponse) response).sendRedirect(((HttpServletRequest) request).getContextPath()
+                                        + redirect);
+                                return;
+                            }
                         }
+
                     }
                     
                     this.log.debug("***URL access is checked and allowed for this authenticated user!!! " + user + "|" + requestURI + "|"
