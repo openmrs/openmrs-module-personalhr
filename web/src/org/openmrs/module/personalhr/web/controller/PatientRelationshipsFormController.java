@@ -47,7 +47,7 @@ public class PatientRelationshipsFormController extends SimpleFormController {
     
     protected final Log log = LogFactory.getLog(getClass());
     
-    private static final String EMAIL_TEMPLATE = "I've shared my health profile with you. \n\nOPENMRS_PHR_SHARING_LINK\n\nThe profile is not an attachment -- it's stored securely online. \n\nTo view the profile, accept the sharing request by clicking the link above and then sign in with your username and password. If you do not have a account yet, you can click on the First Time User Registration link to create one using the e-mail address this sharing request e-mail was sent to. This offer to share expires 30 days from the day it was sent. If you accept the sharing request, you will have ongoing access to view the profile unless the sharer decides to stop sharing it.";
+    private static final String EMAIL_TEMPLATE = "I've shared my health profile with you. \n\nOPENMRS_PHR_SHARING_LINK\n\nThe profile is not an attachment -- it's stored securely online. \n\nTo view the profile, accept the sharing request by clicking the link above and then sign in with your username and password. If you do not have an account yet, you can click on the First Time User Registration link to create one using the e-mail address this sharing request e-mail was sent to. This offer to share expires 30 days from the day it was sent. If you accept the sharing request, you will have ongoing access to view the profile unless the sharer decides to stop sharing it.";
     
     /**
      * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
