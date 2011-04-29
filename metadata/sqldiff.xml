@@ -133,18 +133,18 @@
 			Create phr_event_log  table to track user activities for research purpose 
 		</description>
 		<sql>	
-			create table IF NOT EXISTS phr_event_log (
-				id	        int(16) NOT NULL auto_increment,
-				event_type	varchar(50),
-				event_date	datetime,
-				user_id	int(11),
-				session_id  varchar(36),
-				patient_id	int(11),
-				event_content	text,
-                PRIMARY KEY  (`id`),
-			    CONSTRAINT `fk_phr_event_log_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),				   
-			    CONSTRAINT `fk_phr_event_log_patient_id` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`)				   
-			);	
+create table IF NOT EXISTS phr_event_log (
+id int(16) NOT NULL auto_increment,
+event_type varchar(50),
+event_date datetime,
+user_id int(11),
+session_id varchar(36),
+patient_id int(11),
+event_content text,
+PRIMARY KEY (`id`),
+CONSTRAINT `fk_phr_event_log_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),				   
+CONSTRAINT `fk_phr_event_log_patient_id` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`)				   
+);	
 		</sql>
 	</diff>
 
