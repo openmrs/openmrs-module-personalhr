@@ -338,7 +338,9 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         // TODO Auto-generated method stub
         final List<Person> persons = new ArrayList<Person>();
         for (final PhrSharingToken token : tokens) {
-            persons.add(token.getRelatedPerson());
+            if(token.getRelatedPerson()!=null) {
+                persons.add(token.getRelatedPerson());
+            }
         }
         return persons;
     }
