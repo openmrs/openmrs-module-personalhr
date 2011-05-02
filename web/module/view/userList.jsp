@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
+<<personalhr:require privilege="PHR Administrator" otherwise="/phr/login.htm" />
 
 <openmrs:require privilege="PHR All Patients Access" otherwise="/phr/login.htm" redirect="/phr/user.list" />
 <spring:message var="pageTitle" code="User.manage.titlebar" scope="page"/>

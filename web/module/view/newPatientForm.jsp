@@ -1,8 +1,5 @@
-
-    <%@ include file="/WEB-INF/template/include.jsp" %>
-
-<openmrs:require privilege="Add Patients" otherwise="/phr/login.htm" redirect="../module/personalhr/portlets/newPatientForm.portlet" />
-
+<%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
+<personalhr:require privilege="View Relationships" otherwise="/phr/login.htm" redirect="../module/personalhr/portlets/newPatientForm.portlet"/>
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 

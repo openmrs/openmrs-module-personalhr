@@ -1,4 +1,5 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
+<personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/module/personalhr/view/patientDashboard.form" />
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
 <openmrs:htmlInclude file="/scripts/easyAjax.js" />
 

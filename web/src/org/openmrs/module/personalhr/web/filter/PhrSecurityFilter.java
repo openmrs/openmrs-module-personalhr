@@ -37,9 +37,9 @@ import org.openmrs.module.personalhr.PhrLogEvent;
 import org.openmrs.module.personalhr.PhrService.PhrBasicRole;
 
 /**
- * This filter checks if an authenticated user has been flagged by the admin to change his password
- * on first/subsequent login. It will intercept any requests made to a *.html or a *.form to force
- * the user to change his password.
+ * This filter checks if an authenticated user is allowed to access a given URL (based on PHR URL level security configurations), 
+ * or if a given URL needs to be redirected for a given authenticated user. This filter also records notable events for research purpose. 
+ * 
  */
 public class PhrSecurityFilter implements Filter {
     
@@ -53,6 +53,8 @@ public class PhrSecurityFilter implements Filter {
     
     private String[] excludedURLs;
     
+    private boolean enableEventLogging = true;
+    
     /**
      * @see javax.servlet.Filter#destroy()
      */
@@ -61,6 +63,22 @@ public class PhrSecurityFilter implements Filter {
     }
     
     /**
+     * For an authenticated user to access a non-excluded URL:
+     * 1. check if a redirect is needed first;
+     * 2. if a redirect is not needed, check PHR URL level security
+     * 
+     * PHR URL redirecting rules:
+     * 1. Check user type: unauthenticated user, PHR user, non-PHR user
+     * 2. Unauthenticated user: no-redirect
+     * 3. PHR user: 1) redirect /openmrs/index.htm and /openmrs/phr to corresponding PHR pages; 2) re-append missing patientId or personId parameters
+     * 4. non-PHR user: redirected to non-PHR pages by PHR login servlet
+     * 
+     * PHR URL level security checking rules:  
+     * 1. Check user type: unauthenticated user, PHR user, non-PHR user
+     * 2. Unauthenticated user: skip
+     * 3. PHR user: check against PHR allowed url list and corresponding privilege required
+     * 4. non-PHR user: block access to /phr/ domain
+     * 
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
      *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
@@ -76,13 +94,25 @@ public class PhrSecurityFilter implements Filter {
         
         this.log.debug("Entering PhrSecurityFilter.doFilter: " + requestURI + "|" + patientId + "|" + personId + "|"
                 + encounterId);
+ 
+        //redirect /phr/ to /phr/index.htm
+        if (requestURI.toLowerCase().endsWith("/phr/") ||
+                requestURI.toLowerCase().endsWith("/phr")) {
+            String redirect = "/phr/index.htm";
+                        
+            ((HttpServletResponse) response).sendRedirect(((HttpServletRequest) request).getContextPath()
+                    + redirect);
+            return;
+        }
         
+        //This filter applies to authenticated users only
         if (Context.isAuthenticated()) {
             final User user = Context.getAuthenticatedUser();
             phrRole = PersonalhrUtil.getService().getPhrRole(user);
             
-            if(shouldCheckAccessToUrl(requestURI)) {
-                try{
+            //Check if the URL is in the excluded (for checking) list
+            if(shouldCheckAccessToUrl(requestURI)) {                
+                try{                    
                     PersonalhrUtil.addMinimumTemporaryPrivileges();  
              
                     final Integer patId = PersonalhrUtil.getParamAsInteger(patientId);
@@ -97,16 +127,16 @@ public class PhrSecurityFilter implements Filter {
                     if (enc != null) {
                         pat = enc.getPatient();
                     }
-                                
-                    if (!PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
-                        this.log.debug("***URL access not allowed!!! " + requestURI + "|" + pat + "|" + per + "|"
-                                + user);
-                        PersonalhrUtil.getService().logEvent(PhrLogEvent.ACCESS_NOT_ALLOWED, new Date(), user, 
-                            ((HttpServletRequest) request).getSession().getId(), pat, 
-                            "requestURI="+requestURI+"; client_ip=" + request.getLocalAddr());
-                        this.config.getServletContext().getRequestDispatcher(this.loginForm).forward(request, response);
-                    } else {
-                        if (requestURI.toLowerCase().contains("index.htm") && !requestURI.toLowerCase().contains("/phr/")) {
+                    
+                    //**************************
+                    //Perform redirect checking
+                    //**************************
+                    if(phrRole != null) {
+                        //1) redirect /openmrs/index.htm
+                        if ((requestURI.toLowerCase().contains("index.htm") ||
+                             requestURI.toLowerCase().endsWith("/openmrs/") ||
+                             requestURI.toLowerCase().endsWith("/openmrs")) &&
+                            !requestURI.toLowerCase().contains("/phr/")) {
                             String redirect = requestURI;
                             if (phrRole != null) {
                                 final Integer userPersonId = (user == null ? null : user.getPerson().getId());
@@ -142,6 +172,7 @@ public class PhrSecurityFilter implements Filter {
                             }
                         } else if ((requestURI.contains("patientDashboard.form") && patId==null) ||
                                    (requestURI.contains("restrictedUserDashboard.form") && perId == null)) {
+                            //2) re-append missing patientId or personId parameters
                             String redirect = requestURI;
                             if (phrRole != null) {
                                 final Integer userPersonId = (user == null ? null : user.getPerson().getId());
@@ -168,14 +199,47 @@ public class PhrSecurityFilter implements Filter {
                                         + redirect);
                                 return;
                             }
+                        }                    
+                    }
+                                             
+                    //**************************
+                    //Perform security checking
+                    //**************************
+                    if (phrRole != null) {
+                        if(!requestURI.toLowerCase().contains("/phr/") &&
+                           !requestURI.toLowerCase().contains("/personalhr/") &&
+                           !PersonalhrUtil.getService().isUrlAllowed(requestURI, pat, per, Context.getAuthenticatedUser())) {
+                    
+                            this.log.debug("***URL access not allowed for this PHR user!!! " + requestURI + "|" + pat + "|" + per + "|"
+                                    + user);
+                            PersonalhrUtil.getService().logEvent(PhrLogEvent.ACCESS_NOT_ALLOWED, new Date(), user, 
+                                ((HttpServletRequest) request).getSession().getId(), pat, 
+                                "requestURI="+requestURI+"; client_ip=" + request.getLocalAddr());
+                            this.config.getServletContext().getRequestDispatcher(this.loginForm).forward(request, response);
+                            return;
+                        } else {
+                            this.log.debug("***URL access allowed for this PHR user!!! " + user + "|" + requestURI + "|"
+                                + pat + "|" + per);                            
                         }
-
+                    } else {
+                        if(!(requestURI.toLowerCase().contains("/admin/")) && 
+                           ((requestURI.toLowerCase().contains("/phr/") || 
+                             requestURI.toLowerCase().contains("/personalhr/")))) {
+                            this.log.debug("***URL access not allowed for this non-PHR user!!! " + user + "|" + requestURI + "|"
+                                + pat + "|" + per);
+                            this.config.getServletContext().getRequestDispatcher(this.loginForm).forward(request, response);
+                            return;                            
+                        } else {
+                            this.log.debug("***URL access allowed for this non-PHR user!!! " + user + "|" + requestURI + "|"
+                                + pat + "|" + per);                            
+                        }
                     }
                     
-                    this.log.debug("***URL access is checked and allowed for this authenticated user!!! " + user + "|" + requestURI + "|"
-                            + pat + "|" + per);
                     
-                    if("POST".equalsIgnoreCase(((HttpServletRequest) request).getMethod())) {
+                    //****************************************************
+                    //Perform event logging for "POST" type request only
+                    //****************************************************
+                    if(enableEventLogging && "POST".equalsIgnoreCase(((HttpServletRequest) request).getMethod())) {
                         String command = request.getParameter("command");
                         if(command != null) {
                             PersonalhrUtil.getService().logEvent(PhrLogEvent.SUBMIT_CHANGES, new Date(), user, 

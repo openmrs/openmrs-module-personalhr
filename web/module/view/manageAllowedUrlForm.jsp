@@ -1,4 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<openmrs:require privilege="Manage Modules" otherwise="/login.htm" redirect="/manageAllowedUrl.form" />
+
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <openmrs:htmlInclude file="/moduleResources/personalhr/personalhr.css" />
 <openmrs:htmlInclude file="/dwr/interface/DWRPersonalhrService.js" />

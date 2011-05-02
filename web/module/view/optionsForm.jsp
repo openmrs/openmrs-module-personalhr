@@ -1,8 +1,6 @@
-<%@ include file="/WEB-INF/template/include.jsp"%>
+<%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
+<personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/phr/options.form" />
 
-<openmrs:require privilege="" otherwise="/phr/login.htm"
-	redirect="/phr/options.form" />
-	
 <spring:message var="pageTitle" code="optionsForm.title" scope="page"/>
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp"%>
 

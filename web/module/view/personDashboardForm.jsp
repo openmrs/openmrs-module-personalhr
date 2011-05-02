@@ -1,7 +1,6 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
-<%-- 
-<openmrs:phrRequire privilege="PHR - View Person" otherwise="/phr/login.htm" redirect="/module/personalhr/view/personDashboard.form" />
---%>
+<%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
+<personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/module/personalhr/view/personDashboard.form" />
+
 <c:set var="OPENMRS_VIEWING_PERSON_ID" scope="request" value="${person.personId}"/>
 
 <spring:message var="pageTitle" code="personDashboard.title" scope="page"/>

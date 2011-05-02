@@ -1,8 +1,6 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
-
-<openmrs:require privilege="Add People" otherwise="/phr/login.htm" redirect="/phr/addPerson.htm"/>
-
-<%@ include file="/WEB-INF/template/header.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
+<personalhr:require privilege="PHR Administrator" otherwise="/phr/login.htm" redirect="/phr/addPerson.htm" />
+<%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 
 <c:choose>
 	<c:when test="${empty param.addName}">
@@ -92,4 +90,4 @@
 	</c:otherwise>
 </c:choose>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp" %>

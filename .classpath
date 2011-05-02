@@ -95,6 +95,6 @@
 	<classpathentry kind="lib" path="lib-common/openmrs-api-1.7.2.18048-dev.jar" sourcepath="/openmrs-1.7.x/src/api"/>
 	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.7.2.18048-dev.jar"/>
 	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.7.2.18048-dev.jar"/>
-	<classpathentry kind="lib" path="lib-common/messaging-api-0.9.0-beta.jar"/>
+	<classpathentry kind="lib" path="lib-common/messaging-api-0.9.0-beta.jar" sourcepath="/messaging-api-0.9.0-beta/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

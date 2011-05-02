@@ -77,8 +77,16 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
         return crit.list();
     }
     
+
+    /* Check if a given URL is in the PHR allowed url list, which is relative to default Web context root (i.e. /openmrs ),
+     * and return corresponding configuration if found
+     * 
+     * @param url given URL relative to default Web context (i.e. /openmrs ) 
+     * @return list of allowed URL's pre-configured with required privileges
+     * 
+     * @see org.openmrs.module.personalhr.db.PhrAllowedUrlDAO#getByUrl(java.lang.String)
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public List<PhrAllowedUrl> getByUrl(String url) {
         this.log.debug("PhrServiceImpl:isUrlAllowed->" + url);
         
@@ -87,8 +95,9 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
         //List list0 = query.list();
         url = url.replace("/openmrs", ""); //remove the context root from the url string
         
-        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);
+        final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);        
         crit.add(Restrictions.eq("allowedUrl", url));
+        
         crit.addOrder(Order.desc("allowedUrl"));
         final List<PhrAllowedUrl> list = crit.list();
         if (list.size() >= 1) {

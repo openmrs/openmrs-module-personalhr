@@ -1,11 +1,5 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
-<%-- 
-<openmrs:phrRequire privilege="PHR - View Patient" otherwise="/phr/login.htm" redirect="/module/personalhr/view/patientDashboard.form" />
-extensionPoint
-  org.openmrs.patientDashboard --> org.openmrs.module.personalhr.restrictedUserDashboard
-patientRelationshipsTab
-  patientRelationships --> restrictedUserRelationships
---%>
+<personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/module/personalhr/view/restrictedUserDashboard.form" />
 
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 

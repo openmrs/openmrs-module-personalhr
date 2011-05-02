@@ -46,15 +46,13 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     private PhrSharingTokenDAO sharingTokenDao;
     
     private PhrLogEventDAO logEventDao;
+    
     /**
-     * Called only after user has been authenticated (i.e. requestingUser != null) PHR URL level
-     * security check rules: 1. Check user type: unauthenticated (null) user, PHR user, non PHR user
-     * 2. If unauthenticated user: all URL's are allowed (page level check needed) 3. Otherwise
-     * check patient or person object in the request 4. If no patient or person object involved: all
-     * URL's are allowed 5. Otherwise check access to /phr/ or /personalhr/ domain 7. If access to
-     * /phr/ or /personalhr/ domain, allow authorized PHR user only; do not allow non PHR user 8.
-     * Otherwise, allow all non PHR users, or 9. Allow only registered non /phr/ or /personalhr/
-     * URL's to be accessed by only authorized PHR users
+     * Check if a given PHR user is allowed to access a given URL   
+     * This check is based on PHR allowed url list and corresponding privilege required
+     * The PHR allowed url list may contain wild card '*'
+     * 
+     * @param requestingUser must not be null and must have a PHR role
      * 
      * @see org.openmrs.module.personalhr.PhrService#isUrlAllowed(java.lang.String,
      *      org.openmrs.Patient, org.openmrs.Person, org.openmrs.User)
@@ -64,71 +62,59 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
                                 final User requestingUser) {
         this.log.debug("PhrServiceImpl:isUrlAllowed->" + requestedUrl + "|" + requestedPatient + "|"
                 + requestedPerson + "|" + requestingUser);
-        if (requestingUser == null) {
-            this.log.warn("Allowed -> User not authenticated yet: " + requestedUrl + "|" + requestedPatient + "|"
-                    + requestedPerson + "|" + requestingUser);
-            return true;
-        }
-        
-        //always allowed if requestedPatient==null && requestedPerson==null
-        if ((requestedPatient == null) && (requestedPerson == null)) {
-            this.log.debug("Allowed -> accessing common URL: " + requestedUrl + "|" + requestedPatient + "|"
-                    + requestedPerson + "|" + requestingUser);
-            return true;
-        }
-        
-        //Check access to /phr/ or /personalhr/ domain
-        final String phrRole = getPhrRole(requestingUser);
-        if (requestedUrl.contains("/phr") || requestedUrl.contains("/personalhr")) {
-            if (phrRole != null) {
-                this.log.debug("Allowed -> PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"
-                        + requestedPatient + "|" + requestedPerson + "|" + requestingUser);
-                return hasPrivilege("", requestedPatient, requestedPerson, requestingUser);
                 
-            } else {
-                this.log.warn("Not allowed - > Non PHR User accessing /phr or /personalhr domain: " + requestedUrl + "|"
-                        + requestedPatient + "|" + requestedPerson + "|" + requestingUser);
-                return false;
-            }
-        } else {
-            //Always allow non PHR user accessing non /phr/ domain
-            if (phrRole == null) {
-                this.log.debug("Allowed -> non PHR user accessing non /phr domain or /personalhr: " + requestedUrl + "|"
-                        + requestedPatient + "|" + requestedPerson + "|" + requestingUser);
-                return true;
-            }
-        }
+        //Get all allowed URL list 
+        final List<PhrAllowedUrl> urls = this.allowedUrlDao.getAllPhrAllowedUrls();
         
-        //Check access to non /phr/ domain
-        final List<PhrAllowedUrl> urls = this.allowedUrlDao.getByUrl(requestedUrl);
+        boolean hasPriv = false;        
         if (urls != null) {
             for (final PhrAllowedUrl url : urls) {
                 if (url != null) {
-                    this.log.debug("Allowed - > Accessing allowed non /phr or /personalhr domain -> Checking privileges ... "
+                    String pattern = url.getAllowedUrl().trim().toLowerCase(); //Handling wild card '*'  
+                    pattern = ".*"+pattern.replace(".", "\\.").replace("*", ".*");
+                    if(!requestedUrl.toLowerCase().matches(pattern)) {
+                       continue;
+                    }
+                    
+                    hasPriv = hasPrivilege(url.getPrivilege(), requestedPatient, requestedPerson, requestingUser);                                        
+                    
+                    if(!hasPriv) {
+                        this.log.debug("URL is allowed but not authorized: "
                             + requestedUrl
                             + "|"
                             + requestedPatient
                             + "|"
                             + requestedPerson
                             + "|"
-                            + requestingUser
-                            + "|"
-                            + url.getPrivilege());
-                    return hasPrivilege(url.getPrivilege(), requestedPatient, requestedPerson, requestingUser);
+                            + requestingUser);
+                        
+                        return hasPriv;
+                    }                    
                 }
             }
         }
         
-        this.log.warn("Not allowed - > Accessing non /phr or /personalhr domain by non-authorized PHR user: " + requestedUrl
-                + "|" + requestedPatient + "|" + requestedPerson + "|" + requestingUser);
-        return false;
-    }
+        if(hasPriv) {
+            this.log.debug("URL is allowed and authorized: "
+                + requestedUrl
+                + "|"
+                + requestedPatient
+                + "|"
+                + requestedPerson
+                + "|"
+                + requestingUser);                        
+        } else {                
+            this.log.warn("URL is not allowed: " + requestedUrl
+                    + "|" + requestedPatient + "|" + requestedPerson + "|" + requestingUser);
+        }
+        return hasPriv;
+    }    
     
     /**
-     * Auto generated method comment
+     * Get PHR specific role
      * 
-     * @param requestingUser
-     * @return
+     * @param requestingUser user object
+     * @return PHR specific role
      */
     @Override
     public String getPhrRole(final User user) {
@@ -145,42 +131,42 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         }
     }
     
+    /**
+     * Check if a given PHR user has a given privilege or not   
+     * This check is based on PHR security rule table and user role and relationship to given patient
+     * 
+     * @param user must not be null and must have a PHR role
+     * 
+     */
     @Override
     public boolean hasPrivilege(final String privilege, final Patient requestedPatient, final Person requestedPerson,
                                 final User user) {
         this.log.debug("PhrServiceImpl:hasPrivilege->" + privilege + "|" + requestedPatient + "|" + requestedPerson
                 + "|" + user);
         
-        if ((user != null) && (requestedPatient == null) && (requestedPerson == null)) {
+        //Handle "PHR Authenticated" and "PHR Administrator" specially
+        String phrRole = this.getPhrRole(user);
+        if((phrRole != null && "PHR Authenticated".equalsIgnoreCase(privilege)) ||
+           (phrRole != null && "PHR Administrator".equalsIgnoreCase(privilege) && 
+            "PHR Authenticated".equalsIgnoreCase(phrRole))) {
+            this.log.debug("PhrServiceImpl:hasPrivilege returns true: phrRole=" + phrRole);
             return true;
         }
         
-        if ((privilege == null) || privilege.trim().isEmpty()) {
-            //When url privilege is not specified and requested patient/person is not null, allow only owner, admin, shareee and share all to access
-            if ((requestedPatient != null) || (requestedPerson != null)) {
-                final String reqRole = "Owner,Administrator,Share Medical,Share Journal,Share All".toUpperCase();
-                final List<String> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
-                if (roles != null) {
-                    for (final String role : roles) {
-                        if (reqRole.contains(role.toUpperCase())) {
-                            this.log.debug("hasPrivilege returns true ->" + privilege + "|" + requestedPatient + "|"
-                                    + requestedPerson + "|" + user);
-                            return true;
-                        }
-                    }
-                }
-                this.log.debug("PhrServiceImpl:hasPrivilege returns false ->" + privilege + "|" + requestedPatient
-                        + "|" + requestedPerson + "|" + user);
-                return false;
-            } 
-            //When url privilege is not specified and requested patient/person is null, allow every one to access            
-            else {
-                this.log.debug("PhrServiceImpl:hasPrivilege returns true ->" + privilege + "|" + requestedPatient
-                        + "|" + requestedPerson + "|" + user);
-                return true;
-            }
-        } 
-        
+        //When url privilege is not specified, or requested patient or person is null for sharing pages,
+        //always returns true
+        if ((privilege == null || privilege.trim().isEmpty()) ||
+            (requestedPatient==null && requestedPerson==null && 
+             (!"PHR Authenticated".equalsIgnoreCase(privilege) &&
+              !"PHR Administrator".equalsIgnoreCase(privilege) 
+             )
+            )
+           ) 
+        {
+            this.log.debug("PhrServiceImpl:hasPrivilege returns true because no privilege or no document owner is specified!");
+            return true;
+        }
+                
         //When url privilege is specified, check the database for authorized roles
         final List<PhrPrivilege> rules = this.privilegeDao.getByPrivilege(privilege);
         final List<String> roles = getDynamicRoles(requestedPatient, requestedPerson, user);
@@ -195,9 +181,9 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
                         for (final String role : roles) {
                             if (reqRole.contains(role.toUpperCase()) ||
                                 "Administrator".equalsIgnoreCase(role) ||
-                                "Share All".equalsIgnoreCase(role)) {
+                                ("Share All".equalsIgnoreCase(role) && !"PHR Administrator".equalsIgnoreCase(reqRole))) {
                                 this.log.debug("hasPrivilege returns true ->" + privilege + "|" + requestedPatient + "|"
-                                        + requestedPerson + "|" + user);
+                                        + requestedPerson + "|" + user + "|reqRole=" + role + "|role=" + role);
                                 return true; //held at least one required role
                             }
                         }

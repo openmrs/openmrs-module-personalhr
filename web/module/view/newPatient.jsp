@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 
-<personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/phr/findPatient.htm" />
+<personalhr:require privilege="View Relationships" otherwise="/phr/login.htm" redirect="/phr/newPatient.htm" />
 
 <spring:message var="pageTitle" code="findPatient.title" scope="page"/>
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
