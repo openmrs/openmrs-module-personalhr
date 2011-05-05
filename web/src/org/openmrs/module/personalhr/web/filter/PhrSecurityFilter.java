@@ -293,7 +293,7 @@ public class PhrSecurityFilter implements Filter {
      */
     private boolean shouldCheckAccessToUrl(final String requestURI) {
         for (final String url : this.excludedURLs) {
-            if (requestURI.contains(url)) {
+            if (requestURI.toLowerCase().contains(url.toLowerCase())) {
                 this.log.debug("shouldCheckAccessToUrl: " + false + " for " + requestURI + " due to " + url);
                 return false;
             }

@@ -151,7 +151,7 @@ insert into phr_allowed_url (allowed_url,required_privilege,creator,description)
 insert into phr_allowed_url (allowed_url,required_privilege,creator,description) values ('/module/journaling/*','View Journal',1,'used by journal module');
 insert into phr_allowed_url (allowed_url,required_privilege,creator,description) values ('/DWRModuleMessageService*','View Messages',1,'used by messaging module');	
 insert into phr_allowed_url (allowed_url,required_privilege,creator,description) values ('/DWRMessagingAddressService*','View Messages',1,'used by messaging module');
-insert into phr_allowed_url (allowed_url,required_privilege,creator,description) values ('/DWRPersonalhrService*','Manage Modules',1,'used by personalhr module');
+insert into phr_allowed_url (allowed_url,required_privilege,creator,description) values ('/DWRPersonalhrService*','Manage Modules',1,'Not a PHR privilege; used by personalhr module in admin page');
 insert into phr_allowed_url (allowed_url,required_privilege,creator,description) values ('/DWRLafService*','View Treatment Summary',1,'used by lancearmstrong module');
 insert into phr_allowed_url (allowed_url,required_privilege,creator,description) values ('/HtmlFlowsheetDWR*','View Treatment Summary',1,'used by lancearmstrong module');
 insert into phr_allowed_url (allowed_url,required_privilege,creator,description) values ('/DWRHtmlFormEntryService*','View Treatment Summary',1,'used by lancearmstrong module');

@@ -631,13 +631,16 @@ public class NewPatientFormController extends SimpleFormController {
      * @param email
      */
     private void saveEmail(final Patient newPatient, final String email) {
-        // TODO Auto-generated method stub
-        // TODO Auto-generated method stub
         try {
             final MessagingAddressService mas = Context.getService(MessagingAddressService.class);
-            final MessagingAddress ma = new MessagingAddress(email, newPatient);
-            ma.setProtocol(org.openmrs.module.messaging.email.EmailProtocol.class);
-            mas.saveMessagingAddress(ma);
+            final MessagingAddress ma = new MessagingAddress(email, newPatient, org.openmrs.module.messaging.email.EmailProtocol.class);
+            List<MessagingAddress> addresses = mas.findMessagingAddresses(null, org.openmrs.module.messaging.email.EmailProtocol.class, newPatient, false);
+            if(addresses != null &&  !addresses.isEmpty()) {
+                for(MessagingAddress addr : addresses) {
+                    mas.deleteMessagingAddress(addr);
+                }
+            } 
+            mas.saveMessagingAddress(ma);                           
         } catch (final Exception e) {
             this.log.debug("Unable to save email address to messaging_addresses table " + email, e);
         } catch (final NoClassDefFoundError e) {
