@@ -82,7 +82,7 @@
 			setTabCookie(tabObj.id);
 			if(c=="patientTreatmentSummaryTab" && !summaryTabLoaded) {
 				summaryTabLoaded = true;
-				location.reload(true);
+				//location.reload(true);
 			}
 		}
 		return false;
