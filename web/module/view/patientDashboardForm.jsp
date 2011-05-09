@@ -83,6 +83,7 @@
 			if(c=="patientTreatmentSummaryTab" && !summaryTabLoaded) {
 				summaryTabLoaded = true;
 				//location.reload(true);
+				document.getElementById('treatmentSummaryFrame').contentDocument.location.reload(true);				
 			}
 		}
 		return false;
