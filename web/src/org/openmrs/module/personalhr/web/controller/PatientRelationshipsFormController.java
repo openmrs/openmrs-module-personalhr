@@ -82,8 +82,6 @@ public class PatientRelationshipsFormController extends SimpleFormController {
         final List<PhrSharingToken> tokens = phrPatient.getSharingTokens();
         final PhrSharingToken newToken = phrPatient.getNewSharingToken();
         
-        this.log.debug("tokens.size=" + tokens.size() + "; new relationship with " + newToken.getRelatedPersonName() + ";"
-                + phrPatient.getPersonName());
         try {
             if ("Save Changes".equals(command)) {
                 for (final PhrSharingToken token : tokens) {
@@ -146,9 +144,6 @@ public class PatientRelationshipsFormController extends SimpleFormController {
         final List<PhrSharingToken> tokens = phrPat.getSharingTokens();
         final PhrSharingToken newToken = phrPat.getNewSharingToken();
         
-        this.log.debug("onSubmit: tokens.size=" + tokens.size() + "; new relationship with "
-                + newToken.getRelatedPersonName() + ";" + phrPat.getPersonName() + ";" + newToken.getShareType() + "; "
-                + newToken.getRelationType());
         try {
             if ((command != null) && command.startsWith("Delete")) {
                 final Integer id = PersonalhrUtil.getParamAsInteger(command.substring(7));

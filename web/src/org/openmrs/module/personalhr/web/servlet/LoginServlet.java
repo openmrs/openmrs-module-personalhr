@@ -135,7 +135,7 @@ public class LoginServlet extends HttpServlet {
                     final User user = Context.getAuthenticatedUser();
                     
                     log.debug("Logged in: username=" + username + ", sharingToken=" + sharingToken);
-                    //update sharimg token table
+                    //update sharing token table
                     if (!PersonalhrUtil.isNullOrEmpty(sharingToken)) {
                         PersonalhrUtil.getService().getSharingTokenDao()
                                 .updateSharingToken(user, user.getPerson(), sharingToken);

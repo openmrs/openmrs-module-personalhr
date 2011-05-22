@@ -84,7 +84,10 @@ public class PhrUserFormController {
             log.debug("Entering PhrUserFormController:formBackingObject...new User" + u);
         }
         if (personId != null) {
-            u.setPerson(Context.getPersonService().getPerson(personId));
+            Person per = Context.getPersonService().getPerson(personId);
+            int count = per.getAttributeMap().size();
+            log.debug("attributeMap size = " + count);
+            u.setPerson(per);
         } else if (u.getPerson() == null) {
             final Person p = new Person();
             p.addName(new PersonName());
@@ -190,6 +193,7 @@ public class PhrUserFormController {
         log.debug("Entering PhrUserFormController:handleSubmission..." + sharingToken);
         //add temporary privileges
         boolean isTemporary = false;
+        boolean isAdministrator = false;
         if (!Context.isAuthenticated()) {
             Context.authenticate("temporary", "Temporary8");
             Context.addProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
@@ -198,216 +202,230 @@ public class PhrUserFormController {
             Context.addProxyPrivilege("PHR Restricted Patient Access");
             isTemporary = true;
             log.debug("Added proxy privileges!");
+        } else {
+          if(PhrService.PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(PersonalhrUtil.getService().getPhrRole(Context.getAuthenticatedUser()))) {
+              isAdministrator = true; 
+              Context.addProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+              Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+              Context.addProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
+              Context.addProxyPrivilege("PHR Restricted Patient Access");
+              Context.addProxyPrivilege("PHR Single Patient Access");
+              Context.addProxyPrivilege("PHR All Patients Access");
+          }
         }
         
-        final UserService us = Context.getUserService();
-        final MessageSourceService mss = Context.getMessageSourceService();
-        
-        if (mss.getMessage("User.assumeIdentity").equals(action)) {
-            Context.becomeUser(user.getSystemId());
-            httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.assumeIdentity.success");
-            httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, user.getPersonName());
-            return "redirect:/phr/index.htm";
+        try{
+            final UserService us = Context.getUserService();
+            final MessageSourceService mss = Context.getMessageSourceService();
             
-        } else if (mss.getMessage("User.delete").equals(action)) {
-            try {
-                Context.getUserService().purgeUser(user);
-                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.delete.success");
-                return "redirect:/admin/users/user.list";
-            } catch (final Exception ex) {
-                httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.delete.failure");
-                log.error("Failed to delete user", ex);
-                return "redirect:/phr/user.form?userId=" + request.getParameter("userId");
-            }
-            
-        } else if (mss.getMessage("User.retire").equals(action)) {
-            final String retireReason = request.getParameter("retireReason");
-            if (!(StringUtils.hasText(retireReason))) {
-                errors.rejectValue("retireReason", "User.disableReason.empty");
-                return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
-            } else {
-                us.retireUser(user, retireReason);
-                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.retiredMessage");
-            }
-            
-        } else if (mss.getMessage("User.unRetire").equals(action)) {
-            us.unretireUser(user);
-            httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.unRetiredMessage");
-        } else {
-            // check if username is already in the database
-            if (us.hasDuplicateUsername(user)) {
-                errors.rejectValue("username", "error.username.taken");
-            }
-            
-            // check if password and password confirm are identical
-            if ((password == null) || password.equals("XXXXXXXXXXXXXXX")) {
-                password = "";
-            }
-            if ((confirm == null) || confirm.equals("XXXXXXXXXXXXXXX")) {
-                confirm = "";
-            }
-            
-            if (!password.equals(confirm)) {
-                errors.reject("error.password.match");
-            }
-            
-            if ((password.length() == 0) && isNewUser(user)) {
-                errors.reject("error.password.weak");
-            }
-            
-            //check password strength
-            if (password.length() > 0) {
+            if (mss.getMessage("User.assumeIdentity").equals(action)) {
+                Context.becomeUser(user.getSystemId());
+                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.assumeIdentity.success");
+                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, user.getPersonName());
+                return "redirect:/phr/index.htm";
+                
+            } else if (mss.getMessage("User.delete").equals(action)) {
                 try {
-                    OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
-                } catch (final PasswordException e) {
-                    errors.reject(e.getMessage());
+                    Context.getUserService().purgeUser(user);
+                    httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.delete.success");
+                    return "redirect:/admin/users/user.list";
+                } catch (final Exception ex) {
+                    httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.delete.failure");
+                    log.error("Failed to delete user", ex);
+                    return "redirect:/phr/user.form?userId=" + request.getParameter("userId");
                 }
-            }
-            
-            final Set<Role> newRoles = new HashSet<Role>();
-            if (roles != null) {
-                for (final String r : roles) {
-                    // Make sure that if we already have a detached instance of this role in the
-                    // user's roles, that we don't fetch a second copy of that same role from
-                    // the database, or else hibernate will throw a NonUniqueObjectException.
-                    Role role = null;
-                    if (user.getRoles() != null) {
-                        for (final Role test : user.getRoles()) {
-                            if (test.getRole().equals(r)) {
-                                role = test;
+                
+            } else if (mss.getMessage("User.retire").equals(action)) {
+                final String retireReason = request.getParameter("retireReason");
+                if (!(StringUtils.hasText(retireReason))) {
+                    errors.rejectValue("retireReason", "User.disableReason.empty");
+                    return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
+                } else {
+                    us.retireUser(user, retireReason);
+                    httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.retiredMessage");
+                }
+                
+            } else if (mss.getMessage("User.unRetire").equals(action)) {
+                us.unretireUser(user);
+                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.unRetiredMessage");
+            } else {
+                // check if username is already in the database
+                if (us.hasDuplicateUsername(user)) {
+                    errors.rejectValue("username", "error.username.taken");
+                }
+                
+                // check if password and password confirm are identical
+                if ((password == null) || password.equals("XXXXXXXXXXXXXXX")) {
+                    password = "";
+                }
+                if ((confirm == null) || confirm.equals("XXXXXXXXXXXXXXX")) {
+                    confirm = "";
+                }
+                
+                if (!password.equals(confirm)) {
+                    errors.reject("error.password.match");
+                }
+                
+                if ((password.length() == 0) && isNewUser(user)) {
+                    errors.reject("error.password.weak");
+                }
+                
+                //check password strength
+                if (password.length() > 0) {
+                    try {
+                        OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
+                    } catch (final PasswordException e) {
+                        errors.reject(e.getMessage());
+                    }
+                }
+                
+                final Set<Role> newRoles = new HashSet<Role>();
+                if (roles != null) {
+                    for (final String r : roles) {
+                        // Make sure that if we already have a detached instance of this role in the
+                        // user's roles, that we don't fetch a second copy of that same role from
+                        // the database, or else hibernate will throw a NonUniqueObjectException.
+                        Role role = null;
+                        if (user.getRoles() != null) {
+                            for (final Role test : user.getRoles()) {
+                                if (test.getRole().equals(r)) {
+                                    role = test;
+                                }
                             }
                         }
+                        if (role == null) {
+                            role = us.getRole(r);
+                            user.addRole(role);
+                        }
+                        newRoles.add(role);
                     }
-                    if (role == null) {
-                        role = us.getRole(r);
-                        user.addRole(role);
-                    }
-                    newRoles.add(role);
-                }
-            } else {
-                final Role role = us.getRole("PHR Restricted User");
-                newRoles.add(role);
-                user.addRole(role);
-                log.debug("Added PHR Restricted User role only: " + role);
-            }
-            
-            if (user.getRoles() == null) {
-                newRoles.clear();
-            } else {
-                user.getRoles().retainAll(newRoles);
-            }
-            
-            final String[] keys = request.getParameterValues("property");
-            final String[] values = request.getParameterValues("value");
-            
-            if ((keys != null) && (values != null)) {
-                for (int x = 0; x < keys.length; x++) {
-                    final String key = keys[x];
-                    final String val = values[x];
-                    user.setUserProperty(key, val);
-                }
-            }
-            
-            new UserProperties(user.getUserProperties()).setSupposedToChangePassword(forcePassword);
-            
-            final UserValidator uv = new UserValidator();
-            uv.validate(user, errors);
-            
-            if (errors.hasErrors()) {
-                log.debug("errors validating user: " + errors.getErrorCount() + errors.toString());
-                return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
-            }
-            
-            if (isNewUser(user)) {
-                log.debug("Saving new user " + user.getUsername() + ", sharingToken=" + sharingToken);
-                final PhrSharingToken token = PersonalhrUtil.getService().getSharingTokenDao().getSharingToken(sharingToken);
-                
-                //check name matching
-                if (token == null) {
-                    httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-                        "Failed to register without a valid sharing token");
-                    log.error("Failed to register without a valid sharing token");
-                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
-                        httpSession.getId(), null, 
-                        "error=Failed to register without a valid sharing token; user_name=" + user.getName());
-
-                    if (isTemporary) {
-                        Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
-                        Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-                        Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-                        Context.removeProxyPrivilege("PHR Restricted Patient Access");
-                        Context.logout();
-                        log.debug("Removed proxy privileges!");
-                    }
-                    return "redirect:/phr/index.htm?noredirect=true";
-                } else if ((token != null) && (token.getRelatedPerson() != null)) {
-                    httpSession
-                            .setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register with a used sharing token");
-                    log.error("Failed to register with a used sharing token");
-                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
-                        httpSession.getId(), null, 
-                        "error=Failed to register with a used sharing token; user_name=" + user.getName() + "; sharingToken="+token);
-                    if (isTemporary) {
-                        Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
-                        Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-                        Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-                        Context.removeProxyPrivilege("PHR Restricted Patient Access");
-                        Context.logout();
-                        log.debug("Removed proxy privileges!");
-                    }
-                    
-                    return "redirect:/phr/index.htm?noredirect=true";
-                } else if (token.getRelatedPersonName().toLowerCase().contains(user.getFamilyName().toLowerCase())
-                        && token.getRelatedPersonName().toLowerCase().contains(user.getGivenName().toLowerCase())) {
-                    log.debug("PHR Restricted Patient Access="
-                            + Context.getAuthenticatedUser().hasPrivilege("PHR Restricted Patient Access"));
-                    ;
-                    us.saveUser(user, password);
-                    
-                    token.setRelatedPerson(user.getPerson());
-                    token.setChangedBy(user);
-                    final Date date = new Date();
-                    token.setDateChanged(date);
-                    token.setActivateDate(date);
-                    PersonalhrUtil.getService().getSharingTokenDao().savePhrSharingToken(token);
-                    httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
-                    log.debug("New self-registered user created: " + user.getUsername());
-                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), user, 
-                        httpSession.getId(), null, 
-                        "info=New self-registered user created; user_name=" + user.getName() + "; sharingToken="+token);
                 } else {
-                    httpSession.setAttribute(
-                        WebConstants.OPENMRS_MSG_ATTR,
-                        "Failed to create new user due to name mismatch: " + user.getFamilyName() + ", "
-                                + user.getGivenName());
-                    log.debug("Failed to create new user due to name mismatch: " + token.getRelatedPersonName() + " vs "
-                            + user.getFamilyName() + ", " + user.getGivenName());
-                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
-                        httpSession.getId(), null, 
-                        "info=Failed to create new user due to name mismatch; user_name=" + user.getName() + "; sharingToken="+token);
+                    final Role role = us.getRole("PHR Restricted User");
+                    newRoles.add(role);
+                    user.addRole(role);
+                    log.debug("Added PHR Restricted User role only: " + role);
                 }
-            } else {
-                us.saveUser(user, null);
                 
-                if (!password.equals("") && Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
-                    }
-                    us.changePassword(user, password);
+                if (user.getRoles() == null) {
+                    newRoles.clear();
+                } else {
+                    user.getRoles().retainAll(newRoles);
                 }
-                log.debug("Existing user " + user.getUsername() + " changed by user "
-                        + Context.getAuthenticatedUser().getUsername());
-                PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_UPDATE, new Date(), Context.getAuthenticatedUser(), 
-                    httpSession.getId(), null, 
-                    "info=Existing user updated; user_name=" + user.getName());
-                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
+                
+                final String[] keys = request.getParameterValues("property");
+                final String[] values = request.getParameterValues("value");
+                
+                if ((keys != null) && (values != null)) {
+                    for (int x = 0; x < keys.length; x++) {
+                        final String key = keys[x];
+                        final String val = values[x];
+                        user.setUserProperty(key, val);
+                    }
+                }
+                
+                new UserProperties(user.getUserProperties()).setSupposedToChangePassword(forcePassword);
+                
+                final UserValidator uv = new UserValidator();
+                uv.validate(user, errors);
+                
+                if (errors.hasErrors()) {
+                    log.debug("errors validating user: " + errors.getErrorCount() + errors.toString());
+                    return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
+                }
+                
+                if (isNewUser(user) && !isAdministrator) {
+                    log.debug("Saving new user " + user.getUsername() + ", sharingToken=" + sharingToken);
+                    final PhrSharingToken token = PersonalhrUtil.getService().getSharingTokenDao().getSharingToken(sharingToken);
+                    
+                    //check token existence and name matching
+                    if (token == null || token.getExpireDate().before(new Date())) {
+                        httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+                            "Failed to register without a valid sharing token");
+                        log.error("Failed to register without a valid sharing token");
+                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
+                            httpSession.getId(), null, 
+                            "error=Failed to register without a valid sharing token; user_name=" + user.getName());
+    
+                        if (isTemporary) {
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+                            Context.removeProxyPrivilege("PHR Restricted Patient Access");
+                            Context.logout();
+                            log.debug("Removed proxy privileges!");
+                        }
+                        return "redirect:/phr/index.htm?noredirect=true";
+                    } else if ((token != null) && (token.getRelatedPerson() != null)) {
+                        httpSession
+                                .setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register with a used sharing token");
+                        log.error("Failed to register with a used sharing token");
+                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
+                            httpSession.getId(), null, 
+                            "error=Failed to register with a used sharing token; user_name=" + user.getName() + "; sharingToken="+token);
+                        if (isTemporary) {
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+                            Context.removeProxyPrivilege("PHR Restricted Patient Access");
+                            Context.logout();
+                            log.debug("Removed proxy privileges!");
+                        }
+                        
+                        return "redirect:/phr/index.htm?noredirect=true";
+                    } else if (token.getRelatedPersonName().toLowerCase().contains(user.getFamilyName().toLowerCase())
+                            && token.getRelatedPersonName().toLowerCase().contains(user.getGivenName().toLowerCase())) {
+                        //create a new user by self registration
+                        us.saveUser(user, password);
+                        
+                        token.setRelatedPerson(user.getPerson());
+                        token.setChangedBy(user);
+                        final Date date = new Date();
+                        token.setDateChanged(date);
+                        token.setActivateDate(date);
+                        PersonalhrUtil.getService().getSharingTokenDao().savePhrSharingToken(token);
+                        httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
+                        log.debug("New self-registered user created: " + user.getUsername());
+                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), user, 
+                            httpSession.getId(), null, 
+                            "info=New self-registered user created; user_name=" + user.getName() + "; sharingToken="+token);
+                    } else {
+                        httpSession.setAttribute(
+                            WebConstants.OPENMRS_MSG_ATTR,
+                            "Failed to create new user due to name mismatch: " + user.getFamilyName() + ", "
+                                    + user.getGivenName());
+                        log.debug("Failed to create new user due to name mismatch: " + token.getRelatedPersonName() + " vs "
+                                + user.getFamilyName() + ", " + user.getGivenName());
+                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
+                            httpSession.getId(), null, 
+                            "info=Failed to create new user due to name mismatch; user_name=" + user.getName() + "; sharingToken="+token);
+                    }
+                } else if (isNewUser(user) && isAdministrator) {
+                    //create a new user by PHR Administrator
+                    us.saveUser(user, password);                
+                } else {
+                    //modify an exiting user
+                    us.saveUser(user, null);
+                    
+                    if (!password.equals("") && Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
+                        }
+                        us.changePassword(user, password);
+                    }
+                    log.debug("Existing user " + user.getUsername() + " changed by user "
+                            + Context.getAuthenticatedUser().getUsername());
+                    PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_UPDATE, new Date(), Context.getAuthenticatedUser(), 
+                        httpSession.getId(), null, 
+                        "info=Existing user updated; user_name=" + user.getName());
+                    httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
+                }
+                
+                if (StringUtils.hasLength(secretQuestion) && StringUtils.hasLength(secretAnswer)) {
+                    us.changeQuestionAnswer(user, secretQuestion, secretAnswer);
+                    httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
+                }                
             }
-            
-            if (StringUtils.hasLength(secretQuestion) && StringUtils.hasLength(secretAnswer)) {
-                us.changeQuestionAnswer(user, secretQuestion, secretAnswer);
-                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
-            }
-            
+        } finally {
             //remove temporary privileges
             if (isTemporary) {
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
@@ -415,8 +433,17 @@ public class PhrUserFormController {
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
                 Context.removeProxyPrivilege("PHR Restricted Patient Access");
                 Context.logout();
-                log.debug("Removed proxy privileges!");
-            }
+                log.debug("Removed proxy privileges for self registration!");
+            } else if (isAdministrator) {
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
+                Context.removeProxyPrivilege("PHR Restricted Patient Access");
+                Context.removeProxyPrivilege("PHR Single Patient Access");
+                Context.removeProxyPrivilege("PHR All Patients Access");
+                Context.logout();
+                log.debug("Removed proxy privileges for PHR Administrator!");
+            }            
         }
         return "redirect:/phr/index.htm?noredirect=true";
     }

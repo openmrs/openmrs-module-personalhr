@@ -155,15 +155,9 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         
         //When url privilege is not specified, or requested patient or person is null for sharing pages,
         //always returns true
-        if ((privilege == null || privilege.trim().isEmpty()) ||
-            (requestedPatient==null && requestedPerson==null && 
-             (!"PHR Authenticated".equalsIgnoreCase(privilege) &&
-              !"PHR Administrator".equalsIgnoreCase(privilege) 
-             )
-            )
-           ) 
+        if(privilege == null || privilege.trim().isEmpty()) 
         {
-            this.log.debug("PhrServiceImpl:hasPrivilege returns true because no privilege or no document owner is specified!");
+            this.log.debug("PhrServiceImpl:hasPrivilege returns true because no privilege is specified!");
             return true;
         }
                 
@@ -209,7 +203,7 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         }
         
         //check for owner status
-        if (isSamePerson(user, requestedPatient) || isSamePerson(user, requestedPerson)) {
+        if ((requestedPatient==null && requestedPerson == null) || isSamePerson(user, requestedPatient) || isSamePerson(user, requestedPerson)) {
             roles.add("OWNER");
             this.log.debug("getDynamicRoles->OWNER");
         } else {
@@ -310,7 +304,7 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         if (pat != null) {
             return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPatient(pat));
         } else {
-            return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPerson(person));
+            return getRelatedPatients(this.sharingTokenDao.getSharingTokenByPerson(person));
         }
     }
     
@@ -330,6 +324,17 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         }
         return persons;
     }
+    
+    private List<Person> getRelatedPatients(final List<PhrSharingToken> tokens) {
+        // TODO Auto-generated method stub
+        final List<Person> persons = new ArrayList<Person>();
+        for (final PhrSharingToken token : tokens) {
+            if(token.getPatient()!=null) {
+                persons.add(token.getPatient());
+            }
+        }
+        return persons;
+    }    
     
     /**
      * Auto generated method comment

@@ -143,45 +143,49 @@ public class PhrPatient {
         final PhrSharingTokenDAO dao = PersonalhrUtil.getService().getSharingTokenDao();
         
         //check non-deleted relationships
-        for (final PhrSharingToken token : this.sharingTokens) {
-            if (token.getId() > 0) { //check changed relationship
-                boolean isChanged = false;
-                final PhrSharingToken oldToken = dao.getPhrSharingToken(token.getId());
-                if (!oldToken.getRelatedPersonEmail().equals(token.getRelatedPersonEmail())) {
-                    oldToken.setRelatedPersonEmail(token.getRelatedPersonEmail());
-                    isChanged = true;
+        if(this.sharingTokens != null) {
+            for (final PhrSharingToken token : this.sharingTokens) {
+                if (token.getId() > 0) { //check changed relationship
+                    boolean isChanged = false;
+                    final PhrSharingToken oldToken = dao.getPhrSharingToken(token.getId());
+                    if (!oldToken.getRelatedPersonEmail().equals(token.getRelatedPersonEmail())) {
+                        oldToken.setRelatedPersonEmail(token.getRelatedPersonEmail());
+                        isChanged = true;
+                    }
+                    if (!oldToken.getRelatedPersonName().equals(token.getRelatedPersonName())) {
+                        oldToken.setRelatedPersonName(token.getRelatedPersonName());
+                        isChanged = true;
+                    }
+                    if (!oldToken.getRelationType().equals(token.getRelationType())) {
+                        oldToken.setRelationType(token.getRelationType());
+                        isChanged = true;
+                    }
+                    if (!oldToken.getShareType().equals(token.getShareType())) {
+                        oldToken.setShareType(token.getShareType());
+                        isChanged = true;
+                    }
+                    if (isChanged) { //save changed relationship
+                        this.numberChanged++;
+                        dao.savePhrSharingToken(token);
+                        this.log.debug("Changed token id: " + token.getId());
+                    }
+                } else { //save added relationship
+                    this.numberAdded++;
+                    final PhrSharingToken addedToken = dao.savePhrSharingToken(token);
+                    this.log.debug("Newly added token id: " + addedToken.getId());
                 }
-                if (!oldToken.getRelatedPersonName().equals(token.getRelatedPersonName())) {
-                    oldToken.setRelatedPersonName(token.getRelatedPersonName());
-                    isChanged = true;
-                }
-                if (!oldToken.getRelationType().equals(token.getRelationType())) {
-                    oldToken.setRelationType(token.getRelationType());
-                    isChanged = true;
-                }
-                if (!oldToken.getShareType().equals(token.getShareType())) {
-                    oldToken.setShareType(token.getShareType());
-                    isChanged = true;
-                }
-                if (isChanged) { //save changed relationship
-                    this.numberChanged++;
-                    dao.savePhrSharingToken(token);
-                    this.log.debug("Changed token id: " + token.getId());
-                }
-            } else { //save added relationship
-                this.numberAdded++;
-                final PhrSharingToken addedToken = dao.savePhrSharingToken(token);
-                this.log.debug("Newly added token id: " + addedToken.getId());
             }
+            Collections.sort(this.sharingTokens);
         }
         
         //check deleted relationships
-        Collections.sort(this.sharingTokens);
-        for (final PhrSharingToken token : oldTokens) {
-            if (Collections.binarySearch(this.sharingTokens, token) < 0) {
-                dao.deletePhrSharingToken(token);
-                this.numberDeleted++;
-                this.log.debug("Deleted token id: " + token.getId());
+        if(oldTokens != null) {
+            for (final PhrSharingToken token : oldTokens) {
+                if (Collections.binarySearch(this.sharingTokens, token) < 0) {
+                    dao.deletePhrSharingToken(token);
+                    this.numberDeleted++;
+                    this.log.debug("Deleted token id: " + token.getId());
+                }
             }
         }
         

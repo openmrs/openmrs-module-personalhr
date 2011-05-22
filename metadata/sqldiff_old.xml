@@ -105,8 +105,8 @@ insert into phr_security_rule (privilege, required_role, creator) values ('View 
 insert into phr_security_rule (privilege, required_role, creator) values ('Edit Journal','Administrator, Owner, Share Journal',1);
 insert into phr_security_rule (privilege, required_role, creator) values ('View Journal','Administrator, Owner, Share Medical, Share Journal',1);
 insert into phr_security_rule (privilege, required_role, creator) values ('Create Messages','Administrator, Owner',1);
-insert into phr_security_rule (privilege, required_role, creator) values ('View Messages','Administrator, Owner, Share Messages',1);
-insert into phr_security_rule (privilege, required_role, creator) values ('PHR Authenticated','Administrator, Owner, Share Medical, Share Journal, Share Messages',1);
+insert into phr_security_rule (privilege, required_role, creator) values ('View Messages','Administrator, Owner',1);
+insert into phr_security_rule (privilege, required_role, creator) values ('PHR Authenticated','Administrator, Owner, Share Medical, Share Journal',1);
 insert into phr_security_rule (privilege, required_role, creator) values ('PHR Administrator','Administrator',1);
 		</sql>
 	</diff>
