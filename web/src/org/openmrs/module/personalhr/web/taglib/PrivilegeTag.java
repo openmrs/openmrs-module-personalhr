@@ -35,6 +35,8 @@ public class PrivilegeTag extends TagSupport {
     
     private String inverse;
     
+    private String role;
+    
     @Override
     public int doStartTag() {
         this.log.debug("PHR PrivilegeTag started...");
@@ -86,16 +88,16 @@ public class PrivilegeTag extends TagSupport {
         
         final Person per = personId == null ? null : Context.getPersonService().getPerson(personId);
         if (per != null) {
-            this.log.debug("Checking user " + user + " for privs " + this.privilege + " on person " + per);
+            this.log.debug("Checking user " + user + " for privs|role " + this.privilege + "|" + this.role + " on person " + per);
         }
         
         if ((per == null) && (pat == null)) {
-            this.log.debug("Checking user " + user + " for privs " + this.privilege);
+            this.log.debug("Checking user " + user + " for privs|role " + this.privilege + "|" + this.role);
         }
         
         boolean hasPrivilege = false;
         final PhrService serv = PersonalhrUtil.getService();
-        if (this.privilege.contains(",")) {
+        if (privilege != null && this.privilege.contains(",")) {
             final String[] privs = this.privilege.split(",");
             for (final String p : privs) {
                 if (serv.hasPrivilege(p, pat, per, user)) {
@@ -103,8 +105,19 @@ public class PrivilegeTag extends TagSupport {
                     break;
                 }
             }
-        } else {
+        } else if(privilege != null && !privilege.trim().isEmpty()){
+            //check privilege only
             hasPrivilege = serv.hasPrivilege(this.privilege, pat, per, user);
+            if(hasPrivilege && role != null  && !role.trim().isEmpty()) {
+                //check both privilege and role
+                hasPrivilege = serv.hasPrivilege(this.privilege, pat, per, user);                            
+            }
+        } else if(role != null  && !role.trim().isEmpty()){
+            //check role only
+            hasPrivilege = user.hasRole(this.role);            
+        } else {
+            //no privilege checking required
+            hasPrivilege = true;
         }
         
         // allow inversing
@@ -147,5 +160,23 @@ public class PrivilegeTag extends TagSupport {
      */
     public void setInverse(final String inverse) {
         this.inverse = inverse;
+    }
+
+    
+    /**
+     * 
+     * @return the role of user
+     */
+    public String getRole() {
+        return role;
+    }
+
+    
+    /**
+     * 
+     * @param role set the role of the user
+     */
+    public void setRole(String role) {
+        this.role = role;
     }
 }

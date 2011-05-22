@@ -68,6 +68,7 @@ public class RequireTag extends TagSupport {
     
     private boolean errorOccurred;
     
+    private String role;
     /**
      * This is where all the magic happens. The privileges are checked and the user is redirected if
      * need be. <br/>
@@ -139,13 +140,17 @@ public class RequireTag extends TagSupport {
             this.log.debug("Checking user " + user + " for privs " + this.privilege);
         }
         
-        this.log.debug("Checking user " + user + " for privs " + this.privilege + " on person|patient " + per + "|" + pat);
+        this.log.debug("Checking user " + user + " for privs|role " + this.privilege + "|" + this.role + " on person|patient " + per + "|" + pat);
         
         // Parse comma-separated list of privileges in allPrivileges and anyPrivileges attributes
         final String[] allPrivilegesArray = StringUtils.commaDelimitedListToStringArray(this.allPrivileges);
         final String[] anyPrivilegeArray = StringUtils.commaDelimitedListToStringArray(this.anyPrivilege);
         
-        final boolean hasPrivilege = hasPrivileges(user, per, pat, this.privilege, allPrivilegesArray, anyPrivilegeArray);
+        boolean hasPrivilege = hasPrivileges(user, per, pat, this.privilege, allPrivilegesArray, anyPrivilegeArray);
+        if((hasPrivilege || this.privilege == null) && (this.role!=null && !this.role.trim().isEmpty())) {
+            hasPrivilege = user.hasRole(role); 
+        }
+        
         if (!hasPrivilege) {
             this.errorOccurred = true;
             if (userContext.isAuthenticated()) {
@@ -362,4 +367,18 @@ public class RequireTag extends TagSupport {
         this.redirect = redirect;
     }
     
+    /**
+     * @return the role of user
+     */
+    public String getRole() {
+        return role;
+    }
+
+    
+    /**
+     * @param role set the role of the user
+     */
+    public void setRole(String role) {
+        this.role = role;
+    }    
 }

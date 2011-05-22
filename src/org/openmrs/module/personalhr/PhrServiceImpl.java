@@ -171,13 +171,16 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
                     final String reqRole = rule.getRequiredRole().toUpperCase();
                     
                     if (roles != null) {
-                        //for each roles held
+                        //for each role held
                         for (final String role : roles) {
                             if (reqRole.contains(role.toUpperCase()) ||
                                 "Administrator".equalsIgnoreCase(role) ||
-                                ("Share All".equalsIgnoreCase(role) && !"PHR Administrator".equalsIgnoreCase(reqRole))) {
+                                ("Share All".equalsIgnoreCase(role) 
+                                 && !"PHR Administrator".equalsIgnoreCase(reqRole)
+                                 && !"View Relationships".equalsIgnoreCase(privilege)
+                                 && !"View Messages".equalsIgnoreCase(privilege))) {
                                 this.log.debug("hasPrivilege returns true ->" + privilege + "|" + requestedPatient + "|"
-                                        + requestedPerson + "|" + user + "|reqRole=" + role + "|role=" + role);
+                                        + requestedPerson + "|" + user + "|reqRole=" + reqRole + "|role=" + role);
                                 return true; //held at least one required role
                             }
                         }

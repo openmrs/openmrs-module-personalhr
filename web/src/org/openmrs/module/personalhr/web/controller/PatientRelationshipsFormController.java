@@ -157,9 +157,9 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                     //send email notification to the specified person
                     String email = EMAIL_TEMPLATE;
                     final String emailAddress = phrPat.getNewSharingToken().getRelatedPersonEmail();
-                    final String ip = "65.111.248.164"; //"172.30.201.24";
+                    final String deployUrl= Context.getRuntimeProperties().getProperty("deployment.url");//"https://65.111.248.164:8443/"; //"172.30.201.24";
                     final String token = phrPat.getNewSharingToken().getSharingToken();
-                    final String url = "https://" + ip + ":8443/" + "openmrs/phr/index.htm?sharingToken=" + token;
+                    final String url = deployUrl + "/openmrs/phr/index.htm?sharingToken=" + token;
                     email = email.replaceAll("OPENMRS_PHR_SHARING_LINK", url);
                     
                     sendEmail(emailAddress, email);

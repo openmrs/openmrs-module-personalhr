@@ -93,6 +93,9 @@ public class PhrUserFormController {
             p.addName(new PersonName());
             u.setPerson(p);
             log.debug("Entering PhrUserFormController:formBackingObject...setPerson" + p);
+        } else {
+            int count = u.getPerson().getAttributeMap().size();
+            log.debug("attributeMap size = " + count);            
         }
         
         return u;
@@ -208,9 +211,7 @@ public class PhrUserFormController {
               Context.addProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
               Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
               Context.addProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
-              Context.addProxyPrivilege("PHR Restricted Patient Access");
-              Context.addProxyPrivilege("PHR Single Patient Access");
-              Context.addProxyPrivilege("PHR All Patients Access");
+              Context.addProxyPrivilege(OpenmrsConstants.PRIV_PURGE_USERS);
           }
         }
         
@@ -228,7 +229,7 @@ public class PhrUserFormController {
                 try {
                     Context.getUserService().purgeUser(user);
                     httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.delete.success");
-                    return "redirect:/admin/users/user.list";
+                    return "redirect:/phr/user.list";
                 } catch (final Exception ex) {
                     httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.delete.failure");
                     log.error("Failed to delete user", ex);
@@ -438,10 +439,7 @@ public class PhrUserFormController {
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
-                Context.removeProxyPrivilege("PHR Restricted Patient Access");
-                Context.removeProxyPrivilege("PHR Single Patient Access");
-                Context.removeProxyPrivilege("PHR All Patients Access");
-                Context.logout();
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_PURGE_USERS);
                 log.debug("Removed proxy privileges for PHR Administrator!");
             }            
         }

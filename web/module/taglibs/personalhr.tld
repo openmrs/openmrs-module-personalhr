@@ -35,6 +35,11 @@
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 	<attribute>
+		<name>role</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 		<name>otherwise</name>
 		<required>true</required>
 		<rtexprvalue>false</rtexprvalue>
@@ -65,7 +70,12 @@
 	<body-content>JSP</body-content>
 	<attribute>
 		<name>privilege</name>
-		<required>true</required>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>role</name>
+		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>

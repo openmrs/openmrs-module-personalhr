@@ -94,6 +94,10 @@
 	<c:if test="${createNewPerson}">
 		<input type="hidden" name="createNewPerson" value="true"/>
 	</c:if>	
+	<c:if test="${!createNewPerson}">
+		<input type="hidden" name="person_id" value="${user.person.personId}"/>
+	</c:if>	
+	
 	<fieldset>
 		<legend><spring:message code="User.demographicInfo"/></legend>
 				<table>

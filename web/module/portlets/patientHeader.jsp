@@ -1,9 +1,5 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 
-<%-- 
-<openmrs:phrRequire privilege="PHR - View Patient" otherwise="/phr/login.htm" redirect="/module/personalhr/view/patientDashboard.form" />
---%>
-
 	<%-- Header showing preferred name, id, and treatment status --%>
 	<c:if test="${empty model.patientReasonForExit}">
 		<div id="patientHeader" class="boxHeader">
