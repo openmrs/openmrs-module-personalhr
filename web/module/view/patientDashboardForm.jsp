@@ -14,6 +14,7 @@
 	<spring:message var="pageTitle" code="patientDashboard.title" scope="page"/>
 </c:if>
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
+<openmrs:htmlInclude file="/moduleResources/personalhr/personalhr.css" />
 
 <script type="text/javascript">
 	var timeOut = null;
@@ -25,7 +26,7 @@
 	function initTabs() {
 		var c = getTabCookie();
 		if (c == null) {
-			var tabs = document.getElementById("patientTabs").getElementsByTagName("a");
+			var tabs = document.getElementById("patientPhrTabs").getElementsByTagName("a");
 			if (tabs.length && tabs[0].id)
 				c = tabs[0].id;
 		}
@@ -119,7 +120,7 @@
 
 <openmrs:globalProperty var="enableFormEntryTab" key="FormEntry.enableDashboardTab" defaultValue="true"/>
 
-<div id="patientTabs${patientVariation}">
+<div id="patientPhrTabs${patientVariation}">
 	<ul>
 		<%-- 
 		<openmrs:hasPhrPrivilege privilege="PHR - View Overview Section">
@@ -151,7 +152,7 @@
 	--%>
 	<personalhr:hasPrivilege privilege="View Relationships">	
 		<div id="patientRelationships" style="display:none;">
-				<div class="tooltip">
+				<div class="tooltipPhr">
 				<spring:message code="personalhr.tooltip.patient.relationships"/>		
 				</div>
 				<iframe src ="${pageContext.request.contextPath}/phr/patientRelationshipsForm.form?patientId=${patient.patientId}" width="100%" height="500">
@@ -161,7 +162,7 @@
 		</div>
 		
 		<div id="patientDemographics" style="display:none;">
-				<div class="tooltip">
+				<div class="tooltipPhr">
 				<spring:message code="personalhr.tooltip.patient.demographics"/>
 				</div>
 				<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" patientId="${patient.patientId}" />
