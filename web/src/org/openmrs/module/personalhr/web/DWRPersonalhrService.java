@@ -15,12 +15,19 @@ package org.openmrs.module.personalhr.web;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.directwebremoting.WebContext;
+import org.directwebremoting.WebContextFactory;
 
+import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrAllowedUrl;
+import org.openmrs.module.personalhr.PhrLogEvent;
 import org.openmrs.module.personalhr.PhrPrivilege;
 
 /**
@@ -50,4 +57,15 @@ public class DWRPersonalhrService {
         rule.setDateCreated(new Date());
         PersonalhrUtil.getService().getPrivilegeDao().savePhrPrivilege(rule);
     }	
+    
+    public void logChangeTabEvent(String eventContent) {
+        WebContext webContext = WebContextFactory.get();
+        HttpSession session = webContext.getSession();
+        String sessionId = session.getId();
+
+        PersonalhrUtil.getService().logEvent(PhrLogEvent.CHANGE_TAB, new Date(), Context.getAuthenticatedUser(), 
+            sessionId, null, eventContent);
+        
+    }
+    
 }

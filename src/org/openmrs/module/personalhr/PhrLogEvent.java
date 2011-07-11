@@ -57,6 +57,7 @@ public class PhrLogEvent {
     public static final String ACCESS_NOT_ALLOWED = "ACCESS_NOT_ALLOWED";
     public static final String ACCESS_REDIRECT = "ACCESS_REDIRECT";
     public static final String SUBMIT_CHANGES = "SUBMIT_CHANGES";
+    public static final String CHANGE_TAB = "CHANGE_TAB";
     
     public PhrLogEvent(String eventType, Date eventDate, Integer userId, String sessionId, Integer patientId, String eventContent) {
         this.eventType = eventType;

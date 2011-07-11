@@ -15,6 +15,7 @@
 </c:if>
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 <openmrs:htmlInclude file="/moduleResources/personalhr/personalhr.css" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPersonalhrService.js" />
 
 <script type="text/javascript">
 	var timeOut = null;
@@ -86,6 +87,8 @@
 				//location.reload(true);
 				document.getElementById('treatmentSummaryFrame').contentDocument.location.reload(true);				
 			}
+			//log this event
+			DWRPersonalhrService.logChangeTabEvent(String(c));
 		}
 		return false;
     }

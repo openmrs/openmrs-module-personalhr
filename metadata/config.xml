@@ -62,6 +62,7 @@
 				<param name="class" value="org.openmrs.module.personalhr.web.DWRPersonalhrService"/>
 				<include method="addAllowedUrl"/>
 				<include method="addPhrPrivilege"/>
+				<include method="logChangeTabEvent"/>
 			</create>
 		</allow>
 	</dwr>
