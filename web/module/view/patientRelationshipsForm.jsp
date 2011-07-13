@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 <personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/module/personalhr/view/patientDashboard.form" />
-<%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/headerMinimal.jsp" %>
 <openmrs:htmlInclude file="/scripts/easyAjax.js" />
 
 <script type="text/javascript">
@@ -257,4 +257,4 @@
 </div>
 
 <br/>
-<%@ include file="/WEB-INF/template/footerMinimal.jsp" %>
+<%@ include file="/WEB-INF/view/module/personalhr/template/footerMinimal.jsp" %>
