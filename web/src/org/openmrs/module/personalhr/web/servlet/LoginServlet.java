@@ -175,27 +175,28 @@ public class LoginServlet extends HttpServlet {
                         log.debug("Locale address: " + request.getLocalAddr());
                     }
                     
-                    final String phrRole = PersonalhrUtil.getService().getPhrRole(user);
-                    final Integer personId = user.getPerson().getPersonId(); //same as patient id
-                    if (PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
-                        if (personId != null) {
-                            redirect = request.getContextPath() + "/phr/patientDashboard.form?patientId=" + personId;
+                    if("/openmrs".equals(redirect)) {
+                        final String phrRole = PersonalhrUtil.getService().getPhrRole(user);
+                        final Integer personId = user.getPerson().getPersonId(); //same as patient id
+                        if (PhrBasicRole.PHR_PATIENT.getValue().equals(phrRole)) {
+                            if (personId != null) {
+                                redirect = request.getContextPath() + "/phr/patientDashboard.form?patientId=" + personId;
+                                //PersonalhrUtil.addTemporayPrivileges();
+                            } else {
+                                log.error("Error: PHR Patient's person id is null!");
+                            }
+                        } else if (PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
+                            if (personId != null) {
+                                redirect = request.getContextPath() + "/phr/restrictedUserDashboard.form?personId=" + personId;
+                                //PersonalhrUtil.addTemporayPrivileges();
+                            } else {
+                                log.error("Error: PHR Restricted user's person id is null!");
+                            }
+                        } else if (PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)) {
+                            redirect = request.getContextPath() + "/phr/findPatient.htm";
                             //PersonalhrUtil.addTemporayPrivileges();
-                        } else {
-                            log.error("Error: PHR Patient's person id is null!");
                         }
-                    } else if (PhrBasicRole.PHR_RESTRICTED_USER.getValue().equals(phrRole)) {
-                        if (personId != null) {
-                            redirect = request.getContextPath() + "/phr/restrictedUserDashboard.form?personId=" + personId;
-                            //PersonalhrUtil.addTemporayPrivileges();
-                        } else {
-                            log.error("Error: PHR Restricted user's person id is null!");
-                        }
-                    } else if (PhrBasicRole.PHR_ADMINISTRATOR.getValue().equals(phrRole)) {
-                        redirect = request.getContextPath() + "/phr/findPatient.htm";
-                        //PersonalhrUtil.addTemporayPrivileges();
                     }
-                    
                     log.debug("PHR LoginServlet redirect to " + redirect);
                     PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_LOGIN, new Date(), user, 
                             httpSession.getId(), null, 

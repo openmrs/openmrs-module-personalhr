@@ -71,10 +71,10 @@
 						<spring:message code="header.logged.in"/> ${authenticatedUser.personName}
 					</span>
 					<span id="userLogout">
-						<a href='${pageContext.request.contextPath}/moduleServlet/personalhr/phrLogoutServlet'><spring:message code="header.logout" /></a>
+						<a style="color:navy;" href='${pageContext.request.contextPath}/moduleServlet/personalhr/phrLogoutServlet'><spring:message code="header.logout" /></a>
 					</span>
 					<span>
-						<a href="${pageContext.request.contextPath}/phr/options.form"><spring:message code="Navigation.options"/></a>
+						<a style="color:navy;" href="${pageContext.request.contextPath}/phr/options.form"><spring:message code="Navigation.options"/></a>
 					</span>
 				</c:if>
 				<c:if test="${authenticatedUser == null}">
@@ -82,13 +82,13 @@
 						<spring:message code="header.logged.out"/>
 					</span>
 					<span id="userLogIn">
-						<a href='${pageContext.request.contextPath}/phr/login.htm'><spring:message code="header.login"/></a>
+						<a  style="color:navy;" href='${pageContext.request.contextPath}/phr/login.htm'><spring:message code="header.login"/></a>
 					</span>
 				</c:if>
 			</openmrs:authentication>
 
 			<span id="userHelp">
-				<a href='<%= request.getContextPath() %>/phr/help.htm'><spring:message code="header.help"/></a>
+				<a style="color:navy;" href='<%= request.getContextPath() %>/phr/help.htm'><spring:message code="header.help"/></a>
 			</span>
 		</div>
 

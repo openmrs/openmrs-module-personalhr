@@ -61,7 +61,6 @@
 	}
 
 	function onAdd() {
-		$j('#commandClicked').val("Add");
 	}
 
 	function onChange() {
@@ -71,9 +70,11 @@
 
 	function confirmSubmit(formId,prompt) {
 		if(confirm(prompt)) {
-		  $j('#'+formId).submit();
+		  //$j('#'+formId).submit();
+ 		  $j('#commandClicked').val("Add");
 		  return true;
 		} else {
+			$j('#commandClicked').val("Cancel");
 			return false;
 		}
 	}	
@@ -87,8 +88,8 @@
 --%>
 
 <div id="addNewRelationshipPopup">
-  <form method="post" id="addRelationForm" onsubmit="return false;">
-	<input type="submit" name="command" value="Add" onClick="onAdd(); return confirmSubmit('addRelationForm','An email notification will be sent to this person ater the relationship is added. Click OK to proceed, or Cancel to revise.');"/>
+  <form method="post" id="addRelationForm">
+	<input type="submit" name="command" value="Add" onClick="return confirmSubmit('addRelationForm','An email notification will be sent to this person after the relationship is added. Click OK to proceed, or Cancel to revise.');"/>
 	<input type="submit" name="command" value="Cancel" onClick="$j('#addNewRelationshipPopup').dialog('close');"/>
 	<input type="hidden" name="command" value="Unknown" id="commandClicked"/>
 	
@@ -96,7 +97,7 @@
 	  <tbody>
 	  <c:set var="token" value="${patient.newSharingToken}"/>
 		  <tr>
-		    <td>Person Name:</td>
+		    <td>Person's Full Name (e.g. Jane Doe):</td>
 		    <td>
 			<spring:bind path="patient.newSharingToken.relatedPersonName">		    
 				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
@@ -117,7 +118,7 @@
 		    </td>
 		  </tr>
 		  <tr>
-		    <td>Person Email:</td>
+		    <td>Person's Email:</td>
 		    <td>
 			<spring:bind path="patient.newSharingToken.relatedPersonEmail">		    
 		    <input name="${status.expression}" type="text" value="${status.value}" />

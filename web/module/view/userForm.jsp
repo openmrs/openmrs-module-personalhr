@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
-<personalhr:require privilege="PHR Administrator" otherwise="/phr/login.htm" redirect="/phr/user.form" />
 
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
  
