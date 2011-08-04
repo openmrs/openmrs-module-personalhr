@@ -384,7 +384,7 @@ public class PhrUserFormController {
                         token.setDateChanged(date);
                         token.setActivateDate(date);
                         PersonalhrUtil.getService().getSharingTokenDao().savePhrSharingToken(token);
-                        httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
+                        httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "personalhr.user.signed.up");
                         log.debug("New self-registered user created: " + user.getUsername());
                         PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), user, 
                             httpSession.getId(), null, 

@@ -74,11 +74,6 @@
 					<span id="userLogout">
 						<a style="color:navy;" href='${pageContext.request.contextPath}/moduleServlet/personalhr/phrLogoutServlet'><spring:message code="header.logout" /></a>
 					</span>
-					<personalhr:hasPrivilege role="PHR Restricted User">
-						<span id="myHome">
-							<a style="color:navy;" href="restrictedUserDashboard.form?"><spring:message code="personalhr.myPersonalRecord"/></a>
-						</span>
-					</personalhr:hasPrivilege>
 					<span>
 						<a style="color:navy;" href="${pageContext.request.contextPath}/phr/options.form"><spring:message code="Navigation.options"/></a>
 					</span>

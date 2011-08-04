@@ -1,18 +1,6 @@
 <%@ taglib prefix="personalhr" uri="/WEB-INF/view/module/personalhr/taglibs/personalhr.tld" %>
 
 <ul id="navList" class="navList">
-	<personalhr:hasPrivilege role="PHR Patient">
-		<li id="patientDashboardLink">
-			<a href="patientDashboard.form?"><spring:message code="personalhr.myPersonalRecord"/></a>
-		</li>
-	</personalhr:hasPrivilege>
-
-		<personalhr:hasPrivilege role="PHR Restricted User">
-			<li id="personDashboardLink">
-				<a href="restrictedUserDashboard.form?"><spring:message code="personalhr.myPersonalRecord"/></a>
-			</li>
-		</personalhr:hasPrivilege>
-
 		<personalhr:hasPrivilege role="PHR Administrator">
 			<li id="findPatientNavLink">
 				<a href="${pageContext.request.contextPath}/phr/findPatient.htm">

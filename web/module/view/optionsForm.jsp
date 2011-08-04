@@ -2,7 +2,7 @@
 <personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/phr/options.form" />
 
 <spring:message var="pageTitle" code="optionsForm.title" scope="page"/>
-<%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp"%>
+<%@ include file="/WEB-INF/view/module/personalhr/template/headerForOptions.jsp"%>
 
 <script type="text/javascript">
 

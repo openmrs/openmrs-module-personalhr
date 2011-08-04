@@ -178,7 +178,8 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
                                 ("Share All".equalsIgnoreCase(role) 
                                  && !"PHR Administrator".equalsIgnoreCase(reqRole)
                                  && !"View Relationships".equalsIgnoreCase(privilege)
-                                 && !"View Messages".equalsIgnoreCase(privilege))) {
+                                 //&& !"View Messages".equalsIgnoreCase(privilege)
+                                 )) {
                                 this.log.debug("hasPrivilege returns true ->" + privilege + "|" + requestedPatient + "|"
                                         + requestedPerson + "|" + user + "|reqRole=" + reqRole + "|role=" + role);
                                 return true; //held at least one required role

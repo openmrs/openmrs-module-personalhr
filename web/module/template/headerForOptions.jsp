@@ -74,11 +74,15 @@
 					<span id="userLogout">
 						<a style="color:navy;" href='${pageContext.request.contextPath}/moduleServlet/personalhr/phrLogoutServlet'><spring:message code="header.logout" /></a>
 					</span>
-					<personalhr:hasPrivilege role="PHR Restricted User">
-						<span id="myHome">
+					<span id="myHome">
+						<personalhr:hasPrivilege role="PHR Patient">
+							<a style="color:navy;" href="patientDashboard.form?"><spring:message code="personalhr.myPersonalRecord"/></a>
+						</personalhr:hasPrivilege>
+					
+						<personalhr:hasPrivilege role="PHR Restricted User">
 							<a style="color:navy;" href="restrictedUserDashboard.form?"><spring:message code="personalhr.myPersonalRecord"/></a>
-						</span>
-					</personalhr:hasPrivilege>
+						</personalhr:hasPrivilege>
+					</span>
 					<span>
 						<a style="color:navy;" href="${pageContext.request.contextPath}/phr/options.form"><spring:message code="Navigation.options"/></a>
 					</span>
