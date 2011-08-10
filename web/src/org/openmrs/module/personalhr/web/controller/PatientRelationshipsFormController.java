@@ -47,7 +47,7 @@ public class PatientRelationshipsFormController extends SimpleFormController {
     
     protected final Log log = LogFactory.getLog(getClass());
     
-    private static final String EMAIL_TEMPLATE = "I've shared my health profile with you. \n\nOPENMRS_PHR_SHARING_LINK\n\nThe profile is not an attachment -- it's stored securely online. \n\nTo view the profile, click the link above. Then sign in with your username and password. If you do not have an account yet, you can create one by clicking on the \"First Time User Registration\". You will need to use the e-mail address this sharing request e-mail was sent to. This offer to share my health profile expires 30 days from the day it was sent.";
+    private static final String EMAIL_TEMPLATE = "You've been invited by OPENMRS_PHR_SHARING_PERSON to access OPENMRS_PHR_PATEINT_GENDER personal health profile. \n\nOPENMRS_PHR_SHARING_LINK\n\nThe profile is not an attachment -- it's stored securely online. \n\nTo view the profile, click the link above. Then sign in with your username and password. If you do not have an account yet, you can create one by clicking on the \"First Time User Registration\". You will need to use the e-mail address this sharing request e-mail was sent to. This offer to share my health profile expires 30 days from the day it was sent.";
     
     /**
      * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
@@ -162,6 +162,15 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                     final String url = deployUrl + "/openmrs/phr/index.htm?sharingToken=" + token;
                     email = email.replaceAll("OPENMRS_PHR_SHARING_LINK", url);
                     
+                    String hisOrHer = "his";
+                    if("F".equalsIgnoreCase(phrPat.getPatient().getGender())) {
+                        hisOrHer="her";
+                    }
+                    email = email.replaceAll("OPENMRS_PHR_PATEINT_GENDER", hisOrHer);
+                        
+                    String patientName = phrPat.getPersonName();
+                    email = email.replaceAll("OPENMRS_PHR_SHARING_PERSON", patientName);
+
                     sendEmail(emailAddress, email);
                     
                     this.log.debug("\n\nThe following email has been sent to " + emailAddress + ":\n" + email + "\n\n");
