@@ -4,6 +4,8 @@
 <spring:message var="pageTitle" code="optionsForm.title" scope="page"/>
 <%@ include file="/WEB-INF/view/module/personalhr/template/headerForOptions.jsp"%>
 
+<openmrs:htmlInclude file="/moduleResources/personalhr/personalhr.css" />
+
 <script type="text/javascript">
 
 window.onload = init;
@@ -106,21 +108,30 @@ function containsError(element) {
 
 </script>
 
-<h2><spring:message code="options.title" /></h2>
+<personalhr:hasPrivilege role="PHR Patient">
+<div class="boxHeader${model.patientVariation}"><spring:message code="personalhr.demographics"/></div>
+	<div id="patientDemographics2" class="box${model.patientVariation}">
+			<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" patientId="${opts.personName.person.personId}" />
+	</div>
+</personalhr:hasPrivilege>
+
+<br/><br/>
+
+<div class="boxHeader${model.patientVariation}"><spring:message code="options.title"/></div>
 
 <spring:hasBindErrors name="opts">
 	<spring:message code="fix.error" />
 	<div class="error"><c:forEach items="${errors.allErrors}" var="error">
 		<spring:message code="${error.code}" text="${error.code}" />
 		<br />
-		<!-- ${error} -->
 	</c:forEach></div>
 	<br />
 </spring:hasBindErrors>
 
 <form method="post">
 
-<div id="optionsForm">
+<div id="optionsForm" class="box${model.patientVariation}">
+
 <fieldset><legend><spring:message code="options.default.legend" /></legend>
 <table>
 	<tr>
@@ -339,10 +350,9 @@ function containsError(element) {
 <br />
 <br />
 </fieldset>
-
-</div>
 <br />
 <input type="submit" value="<spring:message code="options.save"/>">
+</div>
 </form>
 
 <%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp"%>

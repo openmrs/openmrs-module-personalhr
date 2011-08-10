@@ -173,7 +173,6 @@
 			<c:if test="${empty model.hideAddNewPatient}">
 				<openmrs:hasPrivilege privilege="Add Patients">
 					<br/> &nbsp; <spring:message code="general.or"/><br/><br/>
-					<!-- openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=newPatient.htm|viewType=${model.viewType}" /-->
 					<openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=addPerson.htm|viewType=${model.viewType}" />
 				</openmrs:hasPrivilege>
 				

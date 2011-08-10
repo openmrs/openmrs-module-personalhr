@@ -132,7 +132,6 @@
 		
 	<personalhr:hasPrivilege privilege="View Relationships">	
 		<li><a id="patientRelationshipsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.relationships"/></a></li>
-		<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.demographics"/></a></li>
 		<c:if test="${enableFormEntry}">
 			<li><a id="formEntryTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.formEntry"/></a></li>
 		</c:if>
@@ -164,13 +163,6 @@
 			</div>						
 		</div>
 		
-		<div id="patientDemographics" style="display:none;">
-				<div class="tooltipPhr">
-				<spring:message code="personalhr.tooltip.patient.demographics"/>
-				</div>
-				<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" patientId="${patient.patientId}" />
-		</div>
-
 	</personalhr:hasPrivilege>
 		
 	    <c:if test="${enableFormEntry}">
