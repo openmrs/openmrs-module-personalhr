@@ -89,7 +89,7 @@
 
 <div id="addNewRelationshipPopup">
   <form method="post" id="addRelationForm">
-	<input type="submit" name="command" value="Add" onClick="return confirmSubmit('addRelationForm','An email notification will be sent to this person after the relationship is added. You may want to contact this person directly to check if the notification is received. <br/>Click OK to proceed, or Cancel to revise.');"/>
+	<input type="submit" name="command" value="Add" onClick="return confirmSubmit('addRelationForm','An email notification will be sent to this person after the relationship is added.\nYou may want to contact this person directly to check if the notification is received.\n\nClick OK to proceed, or Cancel to revise.');"/>
 	<input type="submit" name="command" value="Cancel" onClick="$j('#addNewRelationshipPopup').dialog('close');"/>
 	<input type="hidden" name="command" value="Unknown" id="commandClicked"/>
 	
