@@ -598,7 +598,11 @@ public class NewPatientFormController extends SimpleFormController {
                 }
                 
                 //save email to messaging_addresses table
-                saveEmail(newPatient, email);
+                Integer addressId = saveEmail(newPatient, email);
+                //set default messaging alert address
+                boolean shouldAlert = true;
+                PersonalhrUtil.setMessagingAlertSettings(newPatient, shouldAlert, addressId);                       
+                
             }
             
             // redirect if an error occurred
@@ -630,7 +634,7 @@ public class NewPatientFormController extends SimpleFormController {
      * @param newPatient
      * @param email
      */
-    private void saveEmail(final Patient newPatient, final String email) {
+    private Integer saveEmail(final Patient newPatient, final String email) {
         try {
             final MessagingAddressService mas = Context.getService(MessagingAddressService.class);
             final MessagingAddress ma = new MessagingAddress(email, newPatient, org.openmrs.module.messaging.email.EmailProtocol.class);
@@ -640,11 +644,21 @@ public class NewPatientFormController extends SimpleFormController {
                     mas.deleteMessagingAddress(addr);
                 }
             } 
-            mas.saveMessagingAddress(ma);                           
+            ma.setPreferred(true);
+            mas.saveMessagingAddress(ma);
+            
+            List<MessagingAddress> addresses2 = mas.findMessagingAddresses(null, org.openmrs.module.messaging.email.EmailProtocol.class, newPatient, false);
+            if(addresses2 != null &&  !addresses2.isEmpty() && addresses2.get(0) != null) {
+                return addresses2.get(0).getId();
+            } else {            
+                return null;
+            }
         } catch (final Exception e) {
             this.log.debug("Unable to save email address to messaging_addresses table " + email, e);
+            return null;
         } catch (final NoClassDefFoundError e) {
             this.log.debug("Messaging module is not found, cannot save " + email, e);
+            return null;
         }
         
     }

@@ -23,14 +23,22 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Attributable;
+import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
+import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.module.messaging.MessagingAddressService;
+import org.openmrs.module.messaging.domain.MessagingAddress;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrLogEvent;
 import org.openmrs.module.personalhr.PhrService;
@@ -38,6 +46,7 @@ import org.openmrs.module.personalhr.PhrSharingToken;
 import org.openmrs.propertyeditor.RoleEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.validator.UserValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
@@ -201,6 +210,7 @@ public class PhrUserFormController {
             Context.authenticate("temporary", "Temporary8");
             Context.addProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
             Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+            Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
             Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
             Context.addProxyPrivilege("PHR Restricted Patient Access");
             isTemporary = true;
@@ -212,6 +222,7 @@ public class PhrUserFormController {
               Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
               Context.addProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
               Context.addProxyPrivilege(OpenmrsConstants.PRIV_PURGE_USERS);
+              Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
           }
         }
         
@@ -334,6 +345,8 @@ public class PhrUserFormController {
                     return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
                 }
                 
+                String emailEntered = request.getParameter("9");
+                
                 if (isNewUser(user) && !isAdministrator) {
                     log.debug("Saving new user " + user.getUsername() + ", sharingToken=" + sharingToken);
                     final PhrSharingToken token = PersonalhrUtil.getService().getSharingTokenDao().getSharingToken(sharingToken);
@@ -351,6 +364,7 @@ public class PhrUserFormController {
                             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
                             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
                             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
                             Context.removeProxyPrivilege("PHR Restricted Patient Access");
                             Context.logout();
                             log.debug("Removed proxy privileges!");
@@ -368,16 +382,54 @@ public class PhrUserFormController {
                             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
                             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
                             Context.removeProxyPrivilege("PHR Restricted Patient Access");
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
                             Context.logout();
                             log.debug("Removed proxy privileges!");
                         }
                         
                         return "redirect:/phr/index.htm?noredirect=true";
-                    } else if (token.getRelatedPersonName().toLowerCase().contains(user.getFamilyName().toLowerCase())
-                            && token.getRelatedPersonName().toLowerCase().contains(user.getGivenName().toLowerCase())) {
+                    } else if (emailEntered != null && token.getRelatedPersonEmail().equalsIgnoreCase(emailEntered)) {                        
+                        // look for person attributes (including email entered) in the request and save to user
+                        for (final PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PATIENT,
+                            ATTR_VIEW_TYPE.VIEWING)) {
+                            final String paramName = type.getPersonAttributeTypeId().toString();
+                            final String value = request.getParameter(paramName);
+                            
+                            this.log.debug("paramName=" + paramName);
+                            
+                            // if there is an error displaying the attribute, the value will be null
+                            if (value != null) {
+                                final PersonAttribute attribute = new PersonAttribute(type, value);
+                                try {
+                                    final Object hydratedObject = attribute.getHydratedObject();
+                                    if ((hydratedObject == null) || "".equals(hydratedObject.toString())) {
+                                        // if null is returned, the value should be blanked out
+                                        attribute.setValue("");
+                                    } else if (hydratedObject instanceof Attributable) {
+                                        attribute.setValue(((Attributable) hydratedObject).serialize());
+                                    } else if (!hydratedObject.getClass().getName().equals(type.getFormat())) {
+                                        // if the classes doesn't match the format, the hydration failed somehow
+                                        // TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
+                                        throw new APIException();
+                                    }
+                                } catch (final APIException e) {
+                                    errors.rejectValue("attributeMap[" + type.getName() + "]", "Invalid value for " + type.getName()
+                                            + ": '" + value + "'");
+                                    this.log.warn("Got an invalid value: " + value + " while setting personAttributeType id #"
+                                            + paramName, e);
+                                    
+                                    // setting the value to empty so that the user can reset the value to something else
+                                    attribute.setValue("");
+                                    
+                                }
+                                user.getPerson().addAttribute(attribute);
+                            }
+                        }
+                                                                        
                         //create a new user by self registration
                         us.saveUser(user, password);
                         
+                        //update sharing token
                         token.setRelatedPerson(user.getPerson());
                         token.setChangedBy(user);
                         final Date date = new Date();
@@ -389,16 +441,22 @@ public class PhrUserFormController {
                         PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), user, 
                             httpSession.getId(), null, 
                             "info=New self-registered user created; user_name=" + user.getName() + "; sharingToken="+token);
+                        
+                        //save email to messaging service
+                        Integer addressId = saveEmail(user.getPerson(), emailEntered);
+                        
+                        //set default messaging alert address
+                        boolean shouldAlert = true;
+                        PersonalhrUtil.setMessagingAlertSettings(user.getPerson(), shouldAlert, addressId);                       
                     } else {
                         httpSession.setAttribute(
                             WebConstants.OPENMRS_MSG_ATTR,
-                            "Failed to create new user due to name mismatch: " + user.getFamilyName() + ", "
-                                    + user.getGivenName());
-                        log.debug("Failed to create new user due to name mismatch: " + token.getRelatedPersonName() + " vs "
-                                + user.getFamilyName() + ", " + user.getGivenName());
+                            "Failed to create new user due to email mismatch: " + emailEntered);
+                        log.debug("Failed to create new user due to email mismatch: " + token.getRelatedPersonEmail() + " vs "
+                                + emailEntered);
                         PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
                             httpSession.getId(), null, 
-                            "info=Failed to create new user due to name mismatch; user_name=" + user.getName() + "; sharingToken="+token);
+                            "info=Failed to create new user due to email mismatch: " + token.getRelatedPersonEmail() + "vs " + emailEntered + "; sharingToken="+token);
                     }
                 } else if (isNewUser(user) && isAdministrator) {
                     //create a new user by PHR Administrator
@@ -433,6 +491,7 @@ public class PhrUserFormController {
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
                 Context.removeProxyPrivilege("PHR Restricted Patient Access");
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
                 Context.logout();
                 log.debug("Removed proxy privileges for self registration!");
             } else if (isAdministrator) {
@@ -440,6 +499,7 @@ public class PhrUserFormController {
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_PURGE_USERS);
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
                 log.debug("Removed proxy privileges for PHR Administrator!");
             }            
         }
@@ -457,4 +517,37 @@ public class PhrUserFormController {
         return user == null ? true : user.getUserId() == null;
     }
     
+    /**
+     * Auto generated method comment
+     * 
+     * @param newPatient
+     * @param email
+     */
+    private Integer saveEmail(final Person newPerson, final String email) {
+        try {
+            final MessagingAddressService mas = Context.getService(MessagingAddressService.class);
+            final MessagingAddress ma = new MessagingAddress(email, newPerson, org.openmrs.module.messaging.email.EmailProtocol.class);
+            ma.setPreferred(true);
+            List<MessagingAddress> addresses = mas.findMessagingAddresses(null, org.openmrs.module.messaging.email.EmailProtocol.class, newPerson, false);
+            if(addresses != null &&  !addresses.isEmpty()) {
+                for(MessagingAddress addr : addresses) {
+                    mas.deleteMessagingAddress(addr);
+                }
+            } 
+            mas.saveMessagingAddress(ma);
+
+            List<MessagingAddress> addresses2 = mas.findMessagingAddresses(null, org.openmrs.module.messaging.email.EmailProtocol.class, newPerson, false);
+            if(addresses2 != null &&  !addresses2.isEmpty() && addresses2.get(0) != null) {
+                return addresses2.get(0).getId();
+            } else {            
+                return null;
+            }
+        } catch (final Exception e) {
+            this.log.debug("Unable to save email address to messaging_addresses table " + email, e);
+            return null;
+        } catch (final NoClassDefFoundError e) {
+            this.log.debug("Messaging module is not found, cannot save " + email, e);
+            return null;
+        }         
+    }    
 }
