@@ -5,6 +5,7 @@
 
 <personalhr:require privilege="View Relationships" otherwise="/phr/phr_security_checking.htm" redirect="/phr/phr_security_checking.htm" />
 <openmrs:htmlInclude file="/dwr/interface/DWRPersonalhrService.js" />
+<openmrs:htmlInclude file="/moduleResources/personalhr/personalhr.css" />
 
 <script type="text/javascript">
 	var timeOut = null;
