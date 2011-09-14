@@ -637,14 +637,18 @@ public class NewPatientFormController extends SimpleFormController {
     private Integer saveEmail(final Patient newPatient, final String email) {
         try {
             final MessagingAddressService mas = Context.getService(MessagingAddressService.class);
-            final MessagingAddress ma = new MessagingAddress(email, newPatient, org.openmrs.module.messaging.email.EmailProtocol.class);
+            MessagingAddress ma = new MessagingAddress(email, newPatient, org.openmrs.module.messaging.email.EmailProtocol.class);
+            ma.setPreferred(true);
             List<MessagingAddress> addresses = mas.findMessagingAddresses(null, org.openmrs.module.messaging.email.EmailProtocol.class, newPatient, false);
             if(addresses != null &&  !addresses.isEmpty()) {
                 for(MessagingAddress addr : addresses) {
-                    mas.deleteMessagingAddress(addr);
+                    if(addr.getPreferred()) {
+                        addr.setAddress(email);
+                        ma = addr;
+                        break;
+                    }
                 }
             } 
-            ma.setPreferred(true);
             mas.saveMessagingAddress(ma);
             
             List<MessagingAddress> addresses2 = mas.findMessagingAddresses(null, org.openmrs.module.messaging.email.EmailProtocol.class, newPatient, false);

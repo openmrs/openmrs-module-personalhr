@@ -4,6 +4,7 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/headerForRestricted.jsp" %>
 
 <personalhr:require privilege="View Relationships" otherwise="/phr/phr_security_checking.htm" redirect="/phr/phr_security_checking.htm" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPersonalhrService.js" />
 
 <script type="text/javascript">
 	var timeOut = null;
@@ -38,6 +39,15 @@
 		if (typeof tabObj == "string")
 			tabObj = document.getElementById(tabObj);
 		
+		var c = "";
+		if (!document.getElementById || !document.createTextNode) {return;}
+		if (typeof tabObj == "string") {
+			tabObj = document.getElementById(tabObj);
+			c = tabObj;
+		} else {			
+			c = tabObj.id;
+		}
+		
 		if (tabObj) {
 			var tabs = tabObj.parentNode.parentNode.getElementsByTagName('a');
 			for (var i=0; i<tabs.length; i++) {
@@ -56,6 +66,8 @@
 			addClass(tabObj, 'current');
 			
 			setTabCookie(tabObj.id);
+			//log this event
+			DWRPersonalhrService.logChangeTabEvent(String(c));
 		}
 		return false;
     }

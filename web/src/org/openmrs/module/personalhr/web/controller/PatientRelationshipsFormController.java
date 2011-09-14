@@ -47,8 +47,7 @@ public class PatientRelationshipsFormController extends SimpleFormController {
     
     protected final Log log = LogFactory.getLog(getClass());
     
-    private static final String EMAIL_TEMPLATE = "Dear OPENMRS_PHR_RELATED_PERSON,\n\nYou've been invited by OPENMRS_PHR_SHARING_PERSON to access OPENMRS_PHR_PATEINT_GENDER_S personal cancer toolkit. Specifically OPENMRS_PHR_PATEINT_GENDER_I has granted you permission to view certain information in order to assist OPENMRS_PHR_PATEINT_GENDER_M in OPENMRS_PHR_PATEINT_GENDER_S future treatment.\n\nOPENMRS_PHR_SHARING_LINK\n\nTo access OPENMRS_PHR_PATEINT_GENDER_S personal cancer toolkit, click the link above. Then sign in with your username and password. If you do not have an account yet, you can create one by clicking on the \"First Time User Registration\". You will need to use the e-mail address this sharing request e-mail was sent to. This invitation expires 30 days from the day it was sent.\n\nIf you have any questions or require further clarification, please contact the site administrator here:\n\ncancertoolkit-l@regenstrief.org\n\nThank You!\nSincerely,\nThe Personal Cancer Toolkit Development Team";
-    
+    private static final String EMAIL_TEMPLATE = "Dear OPENMRS_PHR_RELATED_PERSON,\n\nOPENMRS_PHR_SHARING_PERSON has invited you to access OPENMRS_PHR_PATEINT_GENDER_S Personal Cancer Toolkit. The Cancer Toolkit is a Personal Health Record that contains OPENMRS_PHR_SHARING_FIRST_NAME's cancer diagnosis, follow-up care and other related information. \n\nOPENMRS_PHR_SHARING_LINK\n\nTo access OPENMRS_PHR_PATEINT_GENDER_S personal cancer toolkit, click the link above. Then sign in with your username and password. If you do not have an account yet, you can create one by clicking on the \"First Time User Registration\".When signing in, you will need to enter the e-mail address this sharing request was sent to. This invitation expires 30 days from the day it was sent.\n\nIf you have any questions or require further clarification, please contact the site administrator here:\n\ncancertoolkit-l@regenstrief.org\n\nThank You!\nSincerely,\nThe Personal Cancer Toolkit Development Team";
     /**
      * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
      * expected
@@ -163,22 +162,25 @@ public class PatientRelationshipsFormController extends SimpleFormController {
                     email = email.replaceAll("OPENMRS_PHR_SHARING_LINK", url);
                     
                     String hisOrHer = "his";
-                    String himOrHer = "him";
-                    String heOrShe = "he";
+                    //String himOrHer = "him";
+                    //String heOrShe = "he";
                     if("F".equalsIgnoreCase(phrPat.getPatient().getGender())) {
                         hisOrHer="her";
-                        himOrHer="her";
-                        heOrShe="she";
+                        //himOrHer="her";
+                        //heOrShe="she";
                     }
                     email = email.replaceAll("OPENMRS_PHR_PATEINT_GENDER_S", hisOrHer);
-                    email = email.replaceAll("OPENMRS_PHR_PATEINT_GENDER_M", himOrHer);
-                    email = email.replaceAll("OPENMRS_PHR_PATEINT_GENDER_I", heOrShe);
+                    //email = email.replaceAll("OPENMRS_PHR_PATEINT_GENDER_M", himOrHer);
+                    //email = email.replaceAll("OPENMRS_PHR_PATEINT_GENDER_I", heOrShe);
                         
                     String patientName = phrPat.getPatient().getPersonName().getFullName();
+                    String patientFirstName = phrPat.getPatient().getGivenName();
+                   
                     String relatedPersonName = newToken.getRelatedPersonName();
                     email = email.replaceAll("OPENMRS_PHR_SHARING_PERSON", patientName);
                     email = email.replaceAll("OPENMRS_PHR_RELATED_PERSON", relatedPersonName);
-
+                    email = email.replaceAll("OPENMRS_PHR_SHARING_FIRST_NAME", patientFirstName);
+                    
                     sendEmail(emailAddress, email);
                     
                     this.log.debug("\n\nThe following email has been sent to " + emailAddress + ":\n" + email + "\n\n");

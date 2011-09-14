@@ -526,12 +526,16 @@ public class PhrUserFormController {
     private Integer saveEmail(final Person newPerson, final String email) {
         try {
             final MessagingAddressService mas = Context.getService(MessagingAddressService.class);
-            final MessagingAddress ma = new MessagingAddress(email, newPerson, org.openmrs.module.messaging.email.EmailProtocol.class);
+            MessagingAddress ma = new MessagingAddress(email, newPerson, org.openmrs.module.messaging.email.EmailProtocol.class);
             ma.setPreferred(true);
             List<MessagingAddress> addresses = mas.findMessagingAddresses(null, org.openmrs.module.messaging.email.EmailProtocol.class, newPerson, false);
             if(addresses != null &&  !addresses.isEmpty()) {
                 for(MessagingAddress addr : addresses) {
-                    mas.deleteMessagingAddress(addr);
+                    if(addr.getPreferred()) {
+                        addr.setAddress(email);
+                        ma = addr;
+                        break;
+                    }
                 }
             } 
             mas.saveMessagingAddress(ma);
