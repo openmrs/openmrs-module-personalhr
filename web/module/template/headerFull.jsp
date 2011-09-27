@@ -31,6 +31,7 @@
 			<openmrs:htmlInclude file="/moduleResources/personalhr/jquery-ui-1.8.9.custom.min.js" />
 			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
 		</c:if>
+		<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 		<link rel="icon" type="image/ico" href="<openmrs:contextPath/><spring:theme code='favicon' />">
 
 		<c:choose>

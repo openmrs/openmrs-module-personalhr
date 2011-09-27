@@ -216,9 +216,11 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
             
             if (token != null) {
                 final String shareType = token.getShareType();
+                final String relationType = token.getRelationType();
                 if ((shareType != null) && !shareType.trim().isEmpty()) {
                     this.log.debug("getDynamicRoles for shareType: " + shareType);
-                    roles.add(shareType.toUpperCase());                  
+                    roles.add(shareType.toUpperCase());
+                    roles.add(shareType.toUpperCase() + " & " + relationType);                    
                 }
             }
         }
@@ -389,7 +391,7 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         for(PhrPrivilege priv : privs) {
             String[] roles = priv.getRequiredRole().toUpperCase().split(",");
             for(String role : roles) {
-                if(role.trim().toUpperCase().startsWith("SHARE") && !role.trim().toUpperCase().endsWith("ALL")) {
+                if(role.trim().toUpperCase().startsWith("SHARE") && !role.trim().toUpperCase().endsWith("ALL") && !role.contains("&")) {
                     types.add(role.trim().toUpperCase());
                 }
             }            

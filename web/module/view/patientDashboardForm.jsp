@@ -16,6 +16,7 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 <openmrs:htmlInclude file="/moduleResources/personalhr/personalhr.css" />
 <openmrs:htmlInclude file="/dwr/interface/DWRPersonalhrService.js" />
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <script type="text/javascript">
 	var timeOut = null;
