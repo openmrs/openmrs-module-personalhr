@@ -26,6 +26,8 @@ import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
 /**
  * The basic Sharing Token data object
+ * 
+ * @author hxiao
  */
 
 public class PhrPatient {
@@ -52,6 +54,10 @@ public class PhrPatient {
     
     private int numberDeleted;
     
+    /**
+     * Construct a PhrPatient object with sharing tokens and other information pre-populated 
+     * @param patId a given patient ID
+     */
     public PhrPatient(final Integer patId) {
         this.patientId = patId;
         
@@ -86,50 +92,112 @@ public class PhrPatient {
         
     }
     
+    /**
+     * Get a list of sharing tokens owned by this patient
+     * 
+     * @return a list of sharing tokens
+     */
     public List<PhrSharingToken> getSharingTokens() {
         return this.sharingTokens;
     }
     
+    /**
+     * Set a list of sharing tokens for the patient
+     * 
+     * @param sharingTokens a list of sharing tokens
+     */
     public void setSharingTokens(final List<PhrSharingToken> sharingTokens) {
         this.sharingTokens = sharingTokens;
     }
     
+    /**
+     * Get the Patient object
+     * 
+     * @return a Patient object
+     */
     public Patient getPatient() {
         return this.patient;
     }
     
+    /**
+     * Set a Patient object
+     * 
+     * @param patient patient object
+     */
     public void setPatient(final Patient patient) {
         this.patient = patient;
     }
     
+    /**
+     * Get the ID of this patient
+     * 
+     * @return patient ID
+     */
     public Integer getPatientId() {
         return this.patientId;
     }
     
+    
+    /**
+     * Set the id of this patient
+     * 
+     * @param patientId patient ID
+     */
     public void setPatientId(final Integer patientId) {
         this.patientId = patientId;
     }
     
+    /**
+     * Get all sharing types across all PHR users
+     * 
+     * @return sharing types defined across PHR users
+     */
     public Set<String> getSharingTypes() {
         return this.sharingTypes;
     }
     
+    /**
+     * Set sharing types
+     * 
+     * @param sharingTypes list of sharing types
+     */
     public void setSharingTypes(final Set<String> sharingTypes) {
         this.sharingTypes = sharingTypes;
     }
     
+    /**
+     * Get all relation types
+     * 
+     * @return a list of relation types
+     */
     public PhrService.PhrRelationType[] getRelationTypes() {
         return this.relationTypes;
     }
     
+    /**
+     * Set all relation types
+     * 
+     * @param relationTypes a list of relation types
+     */
     public void setRelationTypes(final PhrService.PhrRelationType[] relationTypes) {
         this.relationTypes = relationTypes;
     }
     
+    /**
+     * Get a newly added sharing token 
+     * 
+     * @return a newly added sharing token
+     */
     public PhrSharingToken getNewSharingToken() {
         return this.newSharingToken;
     }
     
+    
+    /**
+     * Set a newly added sharing token
+     * 
+     * @param newSharingToken a newly added sharing token
+     */
     public void setNewSharingToken(final PhrSharingToken newSharingToken) {
         this.newSharingToken = newSharingToken;
     }
@@ -216,42 +284,82 @@ public class PhrPatient {
         
     }
     
+    /**
+     * Get the number of sharing token changed
+     * 
+     * @return the number of sharing token changed
+     */
     public int getNumberChanged() {
         return this.numberChanged;
     }
     
+    /**
+     * Set the number of sharing token changed
+     * 
+     * @param numberChanged the number of sharing token changed
+     */
     public void setNumberChanged(final int numberChanged) {
         this.numberChanged = numberChanged;
     }
     
+    /**
+     * Get the number of sharing token added
+     * 
+     * @return the number of sharing token added
+     */
     public int getNumberAdded() {
         return this.numberAdded;
     }
     
+    /**
+     * Set the number of sharing token added
+     * 
+     * @param numberAdded the number of sharing token added
+     */
     public void setNumberAdded(final int numberAdded) {
         this.numberAdded = numberAdded;
     }
     
+    /**
+     * Get the number of sharing token deleted
+     * 
+     * @return the number of sharing token deleted
+     */
     public int getNumberDeleted() {
         return this.numberDeleted;
     }
     
+    /**
+     * Set the number of sharing token deleted
+     * 
+     * @param numberDeleted the number of sharing token deleted
+     */
     public void setNumberDeleted(final int numberDeleted) {
         this.numberDeleted = numberDeleted;
     }
     
+    /**
+     * Get the person's name
+     * 
+     * @return person's name
+     */
     public String getPersonName() {
         return this.personName;
     }
     
+    /**
+     * Set the name of the patient/person
+     * 
+     * @param personName the name of the patient/person
+     */
     public void setPersonName(final String personName) {
         this.personName = personName;
     }
     
     /**
-     * Auto generated method comment
+     * Delete a sharing token of a given id
      * 
-     * @param id
+     * @param id id of a sharing token to be deleted
      */
     public void delete(final Integer id) {
         final PhrSharingTokenDAO dao = PersonalhrUtil.getService().getSharingTokenDao();

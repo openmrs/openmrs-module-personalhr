@@ -16,7 +16,9 @@ package org.openmrs.module.personalhr;
 import org.openmrs.BaseOpenmrsMetadata;
 
 /**
- * The basic Sharing Token data object
+ * The basic data object to represent PHR defined Privilege 
+ * 
+ * @author hxiao
  */
 
 public class PhrPrivilege extends BaseOpenmrsMetadata {
@@ -33,7 +35,6 @@ public class PhrPrivilege extends BaseOpenmrsMetadata {
      */
     @Override
     public Integer getId() {
-        // TODO Auto-generated method stub
         return this.id;
     }
     
@@ -46,18 +47,38 @@ public class PhrPrivilege extends BaseOpenmrsMetadata {
         
     }
     
+    /**
+     * Get privilege
+     * 
+     * @return privilege
+     */
     public String getPrivilege() {
         return this.privilege;
     }
     
+    /**
+     * Set a privilege
+     * 
+     * @param privilege a privilege
+     */
     public void setPrivilege(final String privilege) {
         this.privilege = privilege;
     }
     
+    /**
+     * Get PHR role required to have this privilege 
+     * 
+     * @return PHR role required
+     */
     public String getRequiredRole() {
         return this.requiredRole;
     }
     
+    /**
+     * Set PHR role required to have this privilege 
+     * 
+     * @param requiredRole PHR role required
+     */
     public void setRequiredRole(final String requiredRole) {
         this.requiredRole = requiredRole;
     }

@@ -17,7 +17,9 @@ import java.util.List;
 
 
 /**
- *
+ * Basic data object to represent the security configuration of a PHR implementation
+ * 
+ * @author hxiao
  */
 public class PhrSecurityConfig {
     private List<PhrAllowedUrl> allowedUrlList;
@@ -26,38 +28,84 @@ public class PhrSecurityConfig {
     private PhrPrivilege newPrivilege;
     
     
+    /**
+     * Default Constructor with data pre-populated
+     * 
+     */
     public PhrSecurityConfig() {
         allowedUrlList=PersonalhrUtil.getService().getAllowedUrlDao().getAllPhrAllowedUrls();
         phrPrivilegeList=PersonalhrUtil.getService().getPrivilegeDao().getAllPhrPrivileges(); 
     }
+    /**
+     * Get allowed URL list
+     * 
+     * @return allowed URL list
+     */
     public List<PhrAllowedUrl> getAllowedUrlList() {
         return allowedUrlList;
     }
     
+    /**
+     * Set allowed URL list
+     * 
+     * @param allowedUrlList allowed URL list
+     */
     public void setAllowedUrlList(List<PhrAllowedUrl> allowedUrlList) {
         this.allowedUrlList = allowedUrlList;
     }
     
+    /**
+     * Get allowed URL list
+     * 
+     * @return a list of allowed URL's
+     */
     public List<PhrPrivilege> getPhrPrivilegeList() {
         return phrPrivilegeList;
     }
     
+    /**
+     * Set a list of PHR privileges
+     * 
+     * @param phrPrivilegeLIst a list of PHR privileges
+     */
     public void setPhrPrivilegeList(List<PhrPrivilege> phrPrivilegeLIst) {
         this.phrPrivilegeList = phrPrivilegeLIst;
     }
     
+    
+    /**
+     * Get a newly added allowed URL
+     * 
+     * @return a newly added allowed URL
+     */
     public PhrAllowedUrl getNewAllowedUrl() {
         return newAllowedUrl;
     }
     
+    /**
+     * Set a newly added allowed URL
+     * 
+     * @param newAllowedUrl allowed URL list newly added
+     */
     public void setNewAllowedUrl(PhrAllowedUrl newAllowedUrl) {
         this.newAllowedUrl = newAllowedUrl;
     }
     
+    
+    /**
+     * Get newly added privilege
+     * 
+     * @return a newly added privilege
+     */
     public PhrPrivilege getNewPrivilege() {
         return newPrivilege;
     }
     
+    /**
+     * Set a newly added privilege 
+     * 
+     * @param newPrivlege newly added privilege
+     */
     public void setNewPrivilege(PhrPrivilege newPrivlege) {
         this.newPrivilege = newPrivlege;
     }       

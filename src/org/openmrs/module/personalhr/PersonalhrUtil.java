@@ -32,7 +32,9 @@ import org.openmrs.module.messaging.PersonAttributeService;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- *
+ * Contains utility methods used internally or by other modules for convenience
+ * 
+ * @author hxiao
  */
 public class PersonalhrUtil {
     
@@ -64,6 +66,10 @@ public class PersonalhrUtil {
     static Pattern pattern = Pattern.compile(
         "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", Pattern.CASE_INSENSITIVE);
     
+    /**
+     * Add temporary privileges needed for PHR users to access OpenMRS core 
+     * 
+     */
     public static void addTemporaryPrivileges() {
         //Add temporary privilege
         for (final String priv : temporaryPrivileges) {
@@ -74,6 +80,10 @@ public class PersonalhrUtil {
         log.debug("addTemporayPrivileges called: privCount=" + privCount);
     }
     
+    /**
+     * Remove temporary privileges
+     * 
+     */
     public static void removeTemporaryPrivileges() {
         //Remove temporary privilege
         for (final String priv : temporaryPrivileges) {
@@ -84,6 +94,10 @@ public class PersonalhrUtil {
         log.debug("removeTemporayPrivileges called: privCount=" + privCount);
     }
     
+    /**
+     * Add minimum temporary privileges needed for PHR users to access OpenMRS core 
+     * 
+     */
     public static void addMinimumTemporaryPrivileges() {
         //Add temporary privilege
         log.debug("Adding minimum tempary privilege... ");
@@ -95,6 +109,10 @@ public class PersonalhrUtil {
         log.debug("addMinimumTemporayPrivileges called: privCount=" + privCount);
     }
 
+    /**
+     * Remove minimum temporary privileges
+     * 
+     */
     public static void removeMinimumTemporaryPrivileges() {
         //Remove temporary privilege
         for(String priv : temporaryPrivilegesMin) {
@@ -106,16 +124,21 @@ public class PersonalhrUtil {
     }       
     
     /**
-     * Generate a random text token of a given length
+     * Generate a random text token of a predefined length
      * 
-     * @param n number of characters in this token
-     * @return generated token
+     * @return a random token string
      */
     public static String getRandomToken() {
         final int n = 30;
         return getRandomToken(n);
     }
     
+    /**
+     * Generate a random text token of a given length
+     * 
+     * @param n length of token
+     * @return a random token string
+     */
     public static String getRandomToken(final int n) {
         if (n <= 0) {
             return null;
@@ -142,16 +165,21 @@ public class PersonalhrUtil {
         return new String(token);
     }
     
+    /**
+     * Convenient method to get PhrService instance
+     * 
+     * @return PhrService instance
+     */
     public static PhrService getService() {
         return Context.getService(PhrService.class);
     }
     
     /**
-     * Auto generated method comment
+     * Get a parameter contained in a url string as an Integer value
+     * @param paramName parameter name
+     * @param urlString URL string containing this parameter
      * 
-     * @param string
-     * @param requestURI
-     * @return
+     * @return an Integer value of the parameter
      */
     public static Integer getParamAsInteger(final String paramName, final String urlString) {
         // TODO Auto-generated method stub
@@ -180,6 +208,12 @@ public class PersonalhrUtil {
         return retValue;
     }
     
+    /**
+     * Convert a string value parameter to Integer value
+     * 
+     * @param paramValue given parameter as a string
+     * @return a Integer value
+     */
     public static Integer getParamAsInteger(final String paramValue) {
         Integer retValue = null;
         
@@ -193,15 +227,21 @@ public class PersonalhrUtil {
     }
     
     /**
-     * Auto generated method comment
+     * Check if a string is null or empty
+     * @param value a given string
      * 
-     * @param relatedPersonEmail
-     * @return
+     * @return true if the given string is null or empty
      */
     public static boolean isNullOrEmpty(final String value) {
         return ((value == null) || value.trim().isEmpty());
     }
     
+    /**
+     * Return the expire date of a generated token (default 14 days)
+     * 
+     * @param date date when the token is generated
+     * @return expiration date
+     */
     public static Date getExpireDate(final Date date) {
         final Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -211,26 +251,31 @@ public class PersonalhrUtil {
     }
     
     /**
-     * Auto generated method comment
+     * Validate the format of a user entered email
      * 
-     * @param email
-     * @return
+     * @param email email entered by the user
+     * @return true if the email is in good format
      */
     public static boolean isValidEmail(final String email) {
         final Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
     
+    /**
+     * Test email validation function
+     * 
+     * @param args arguments passed in to the main method
+     */
     public static void main(final String[] args) {
         final String email = "hxiao@regenstrief.org";
         System.out.print(email + " is valid? " + isValidEmail("hxiao@regenstrief.org"));
     }
     
     /**
-     * Auto generated method comment
+     * Convert to a parameter value of any type to Integer
      * 
-     * @param attribute
-     * @return
+     * @param value any type of Object value
+     * @return an Integer value
      */
     public static Integer getInteger(final Object value) {
         // TODO Auto-generated method stub
@@ -247,15 +292,23 @@ public class PersonalhrUtil {
     }
     
     /**
-     * Auto generated method comment
+     * Generate a random identifier for a person
      * 
-     * @return
+     * @return an person identifier of default length (8)
      */
     public static String getRandomIdentifer() {
         final int n = 8;
         return getRandomToken(n);
     }
     
+    
+    /**
+     * Set messaging alert options for a given user
+     * 
+     * @param per a given person
+     * @param shouldAlert true if an alert will be sent when a message comes into OMail box
+     * @param messagingAddressId ID of messaging address for the alert to be sent to
+     */
     public static void setMessagingAlertSettings(Person per, Boolean shouldAlert, Integer messagingAddressId){
         log.info("Setting Omail Alert settings.");
 

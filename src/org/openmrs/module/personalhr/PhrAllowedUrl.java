@@ -16,7 +16,9 @@ package org.openmrs.module.personalhr;
 import org.openmrs.BaseOpenmrsMetadata;
 
 /**
- * The basic Sharing Token data object
+ * The basic data object for configuring Allowed URL with a given Privilege 
+ * 
+ * @author hxiao
  */
 
 public class PhrAllowedUrl extends BaseOpenmrsMetadata {
@@ -46,18 +48,38 @@ public class PhrAllowedUrl extends BaseOpenmrsMetadata {
         
     }
     
+    /**
+     * Get privilege to access a given URL
+     * 
+     * @return privilege 
+     */
     public String getPrivilege() {
         return this.privilege;
     }
     
+    /**
+     * Set privilege to access a given URL
+     * 
+     * @param privilege privilege to set
+     */
     public void setPrivilege(final String privilege) {
         this.privilege = privilege;
     }
     
+    /**
+     * Get URL allowed with a given privilege
+     * 
+     * @return privilege 
+     */
     public String getAllowedUrl() {
         return this.allowedUrl;
     }
     
+    /**
+     * Set URL allowed with a given privilege
+     * 
+     * @param allowedUrl URL string whose access is allowed with a given privilege
+     */
     public void setAllowedUrl(final String allowedUrl) {
         this.allowedUrl = allowedUrl;
     }

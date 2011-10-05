@@ -13,17 +13,28 @@
  */
 package org.openmrs.module.personalhr.db;
 
-import java.util.List;
-
 import org.hibernate.SessionFactory;
 import org.openmrs.module.personalhr.PhrLogEvent;
 
 
 /**
- *
+ * Data Access Object for phr_log_event table access
+ * 
+ * @author hxiao
  */
 public interface PhrLogEventDAO {
+    /**
+     * Set hibernate session factory
+     * 
+     * @param sessionFactory Hibernate session factory
+     */
     public void setSessionFactory(SessionFactory sessionFactory);
        
-    public PhrLogEvent savePhrEventLog(PhrLogEvent rule);    
+    /**
+     * Save PhrEventLog object to database
+     * 
+     * @param event PhrEventLog object
+     * @return event log object saved
+     */
+    public PhrLogEvent savePhrEventLog(PhrLogEvent event);    
 }

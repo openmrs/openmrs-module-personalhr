@@ -34,6 +34,8 @@ import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
 /**
  * Hibernate implementation of the Data Access Object
+ * 
+ * @author hxiao
  */
 public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     
@@ -41,16 +43,25 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     
     private SessionFactory sessionFactory;
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#setSessionFactory(org.hibernate.SessionFactory)
+     */
     @Override
     public void setSessionFactory(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getPhrSharingToken(java.lang.Integer)
+     */
     @Override
     public PhrSharingToken getPhrSharingToken(final Integer id) {
         return (PhrSharingToken) this.sessionFactory.getCurrentSession().get(PhrSharingToken.class, id);
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#savePhrSharingToken(org.openmrs.module.personalhr.PhrSharingToken)
+     */
     @Override
     public PhrSharingToken savePhrSharingToken(final PhrSharingToken token) {
         //sessionFactory.getCurrentSession().close();
@@ -65,6 +76,9 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         return token;
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#deletePhrSharingToken(org.openmrs.module.personalhr.PhrSharingToken)
+     */
     @Override
     public void deletePhrSharingToken(final PhrSharingToken token) {
         //sessionFactory.getCurrentSession().delete(token);
@@ -77,6 +91,9 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         sess.close();
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getAllPhrSharingTokens()
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<PhrSharingToken> getAllPhrSharingTokens() {
@@ -86,6 +103,9 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         return crit.list();
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingTokenByPatient(org.openmrs.Patient)
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<PhrSharingToken> getSharingTokenByPatient(final Patient pat) {
@@ -101,6 +121,9 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         }
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingTokenByPerson(org.openmrs.Person)
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<PhrSharingToken> getSharingTokenByPerson(final Person per) {
@@ -141,6 +164,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         crit.add(Restrictions.eq("relatedPerson", per));
         crit.add(Restrictions.eq("patient", pat));
         crit.addOrder(Order.desc("dateCreated"));
+        @SuppressWarnings("unchecked")
         final List<PhrSharingToken> list = crit.list();
         this.log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + requestedPatient + "|" + requestedPerson + "|"
                 + requestingUser + "|token count=" + list.size());

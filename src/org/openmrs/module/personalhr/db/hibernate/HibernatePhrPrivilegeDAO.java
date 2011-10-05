@@ -29,6 +29,8 @@ import org.openmrs.module.personalhr.db.PhrPrivilegeDAO;
 
 /**
  * Hibernate implementation of the Data Access Object
+ * 
+ * @author hxiao
  */
 public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     
@@ -36,16 +38,25 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     
     private SessionFactory sessionFactory;
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#setSessionFactory(org.hibernate.SessionFactory)
+     */
     @Override
     public void setSessionFactory(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#getPhrPrivilege(java.lang.Integer)
+     */
     @Override
     public PhrPrivilege getPhrPrivilege(final Integer id) {
         return (PhrPrivilege) this.sessionFactory.getCurrentSession().get(PhrPrivilege.class, id);
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#savePhrPrivilege(org.openmrs.module.personalhr.PhrPrivilege)
+     */
     @Override
     public PhrPrivilege savePhrPrivilege(final PhrPrivilege rule) {
         Session sess = sessionFactory.openSession();
@@ -59,6 +70,9 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
         return rule;
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#deletePhrPrivilege(org.openmrs.module.personalhr.PhrPrivilege)
+     */
     @Override
     public void deletePhrPrivilege(final PhrPrivilege rule) {
         Session sess = sessionFactory.openSession();
@@ -69,6 +83,9 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
         sess.close();
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#getAllPhrPrivileges()
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<PhrPrivilege> getAllPhrPrivileges() {
@@ -77,6 +94,9 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
         return crit.list();
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#getByRole(java.lang.String)
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<PhrPrivilege> getByRole(final String role) {
@@ -91,6 +111,9 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
         }
     }
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#getByPrivilege(java.lang.String)
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<PhrPrivilege> getByPrivilege(final String priv) {

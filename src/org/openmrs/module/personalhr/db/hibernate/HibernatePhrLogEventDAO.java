@@ -24,6 +24,8 @@ import org.openmrs.module.personalhr.db.PhrLogEventDAO;
 
 /**
  * Hibernate implementation of the Data Access Object
+ * 
+ * @author hxiao
  */
 public class HibernatePhrLogEventDAO implements PhrLogEventDAO {
     
@@ -31,6 +33,9 @@ public class HibernatePhrLogEventDAO implements PhrLogEventDAO {
     
     private SessionFactory sessionFactory;
     
+    /* (non-Jsdoc)
+     * @see org.openmrs.module.personalhr.db.PhrLogEventDAO#setSessionFactory(org.hibernate.SessionFactory)
+     */
     @Override
     public void setSessionFactory(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;

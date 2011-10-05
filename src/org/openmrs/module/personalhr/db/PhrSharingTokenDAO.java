@@ -21,54 +21,96 @@ import org.openmrs.User;
 import org.openmrs.module.personalhr.PhrSharingToken;
 
 /**
- *
+ * Data Access Object for phr_sharing_token table access
+ * 
+ * @author hxiao
  */
 public interface PhrSharingTokenDAO {
     
+    /**
+     * Set Hibernate session factory
+     * 
+     * @param sessionFactory Hibernate session factory object
+     */
     public void setSessionFactory(SessionFactory sessionFactory);
     
+    /**
+     * Get sharing token of a given id
+     * 
+     * @param id id of the sharing token
+     * @return sharing token
+     */
     public PhrSharingToken getPhrSharingToken(Integer id);
     
+    
+    /**
+     * Save a sharing token
+     * 
+     * @param token sharing token to save
+     * @return sharing token saved
+     */
     public PhrSharingToken savePhrSharingToken(PhrSharingToken token);
     
+    /**
+     * Delete a sharing token
+     * 
+     * @param token sharing token to be dleted
+     */
     public void deletePhrSharingToken(PhrSharingToken token);
     
+    /**
+     * Get all sharing tokens
+     *  
+     * @return all sharing tokens
+     */
     public List<PhrSharingToken> getAllPhrSharingTokens();
     
+    /**
+     * Get sharing tokens belonging to a given patient
+     * 
+     * @param pat patient
+     * @return sharing tokens belonged to a given patient
+     */
     public List<PhrSharingToken> getSharingTokenByPatient(Patient pat);
     
+    /**
+     * Get sharing tokens belonging to a given person
+     * 
+     * @param per person
+     * @return sharing tokens belonged to a given person
+     */
     public List<PhrSharingToken> getSharingTokenByPerson(Person per);
     
     /**
-     * Auto generated method comment
+     * Get sharing tokens owned by a given user on a given patient or person
      * 
-     * @param requestedPatient
-     * @param requestedPerson
-     * @param requestingUser
-     * @return
+     * @param requestedPatient given patient who grants the sharing token
+     * @param requestedPerson given person who grants the sharing token
+     * @param requestingUser given user who is granted with the sharing token
+     * @return sharing token granted to the given user
      */
     public PhrSharingToken getSharingToken(Patient requestedPatient, Person requestedPerson, User requestingUser);
     
     /**
-     * Auto generated method comment
+     * Delete sharing token of a given id
      * 
-     * @param id
+     * @param id sharing token id
      */
     public void deletePhrSharingToken(Integer id);
     
     /**
-     * Auto generated method comment
+     * Get sharing token of a given id
      * 
-     * @param tokenString
-     * @return
+     * @param tokenString token string
+     * @return sharing token object
      */
     public PhrSharingToken getSharingToken(String tokenString);
     
     /**
-     * Auto generated method comment
-     * 
-     * @param person
-     * @param sharingToken
+     * Update a sharing token for a given user on a given person
+     * @param user given user
+     * @param person given person
+     * @param sharingToken given sharing token to update
      */
     public void updateSharingToken(User user, Person person, String sharingToken);
 }

@@ -14,8 +14,6 @@ package org.openmrs.module.personalhr;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -33,7 +31,9 @@ import org.openmrs.module.personalhr.db.PhrPrivilegeDAO;
 import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
 /**
- *
+ * Implementation of the services provided by PHR module
+ * 
+ * @author hxiao
  */
 public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     
@@ -113,7 +113,7 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /**
      * Get PHR specific role
      * 
-     * @param requestingUser user object
+     * @param user user object
      * @return PHR specific role
      */
     @Override
@@ -195,6 +195,14 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         return false;
     }
     
+    /**
+     * Get a list of dynamic roles assigned to a given user to access data of a given patient or person
+     * 
+     * @param requestedPatient patient whose data is contained in the request
+     * @param requestedPerson person whose data is contained in the request
+     * @param user user who made the request
+     * @return true is this URL is allowed
+     */
     @Override
     public List<String> getDynamicRoles(final Patient requestedPatient, final Person requestedPerson, final User user) {
         this.log.debug("PhrServiceImpl:getDynamicRoles->" + requestedPatient + "|" + requestedPerson + "|" + user);
@@ -243,7 +251,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
      */
     private boolean isSamePerson(final User user, final Person requestedPerson) {
         this.log.debug("PhrServiceImpl:isSamePerson->" + user + "|" + requestedPerson);
-        // TODO Auto-generated method stub
         if ((user == null) || (requestedPerson == null)) {
             this.log.debug("isSamePerson(Person)=false ->" + user + "|" + requestedPerson);
             return false;
@@ -261,7 +268,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
      */
     private boolean isSamePerson(final User user, final Patient requestedPatient) {
         this.log.debug("PhrServiceImpl:isSamePerson->" + user + "|" + requestedPatient);
-        // TODO Auto-generated method stub
         if ((user == null) || (requestedPatient == null)) {
             this.log.debug("isSamePerson(Patient)=false ->" + user + "|" + requestedPatient);
             return false;
@@ -270,37 +276,55 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         return user.getPerson().getPersonId().equals(requestedPatient.getPersonId());
     }
     
+    /* 
+     * @see org.openmrs.module.personalhr.PhrService#getPrivilegeDao()
+     */
     @Override
     public PhrPrivilegeDAO getPrivilegeDao() {
         return this.privilegeDao;
     }
     
+    /* 
+     * @see org.openmrs.module.personalhr.PhrService#setPrivilegeDao(org.openmrs.module.personalhr.db.PhrPrivilegeDAO)
+     */
     @Override
     public void setPrivilegeDao(final PhrPrivilegeDAO privilegeDao) {
         this.privilegeDao = privilegeDao;
     }
     
+    /* 
+     * @see org.openmrs.module.personalhr.PhrService#getAllowedUrlDao()
+     */
     @Override
     public PhrAllowedUrlDAO getAllowedUrlDao() {
         return this.allowedUrlDao;
     }
     
+    /* 
+     * @see org.openmrs.module.personalhr.PhrService#setAllowedUrlDao(org.openmrs.module.personalhr.db.PhrAllowedUrlDAO)
+     */
     @Override
     public void setAllowedUrlDao(final PhrAllowedUrlDAO allowedUrlDao) {
         this.allowedUrlDao = allowedUrlDao;
     }
     
+    /* 
+     * @see org.openmrs.module.personalhr.PhrService#getSharingTokenDao()
+     */
     @Override
     public PhrSharingTokenDAO getSharingTokenDao() {
         return this.sharingTokenDao;
     }
     
+    /* 
+     * @see org.openmrs.module.personalhr.PhrService#setSharingTokenDao(org.openmrs.module.personalhr.db.PhrSharingTokenDAO)
+     */
     @Override
     public void setSharingTokenDao(final PhrSharingTokenDAO sharingTokenDao) {
         this.sharingTokenDao = sharingTokenDao;
     }
     
-    /* (non-Jsdoc)
+    /* 
      * @see org.openmrs.module.personalhr.PhrService#getRelatedPersons(org.openmrs.Person)
      */
     @Override
@@ -315,13 +339,12 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     }
     
     /**
-     * Auto generated method comment
+     * Get related persons from a given list of sharing tokens
      * 
-     * @param sharingTokenByPatient
-     * @return
+     * @param tokens a list of sharing tokens
+     * @return related persons
      */
     private List<Person> getRelatedPersons(final List<PhrSharingToken> tokens) {
-        // TODO Auto-generated method stub
         final List<Person> persons = new ArrayList<Person>();
         for (final PhrSharingToken token : tokens) {
             if(token.getRelatedPerson()!=null) {
@@ -331,8 +354,13 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         return persons;
     }
     
+    /**
+     * Get related patients from a given list of sharing tokens
+     * 
+     * @param tokens a list of sharing tokens
+     * @return related patients
+     */
     private List<Person> getRelatedPatients(final List<PhrSharingToken> tokens) {
-        // TODO Auto-generated method stub
         final List<Person> persons = new ArrayList<Person>();
         for (final PhrSharingToken token : tokens) {
             if(token.getPatient()!=null) {
@@ -343,10 +371,10 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     }    
     
     /**
-     * Auto generated method comment
+     * Get patient object of a given person
      * 
-     * @param person
-     * @return
+     * @param person given person obhect
+     * @return patient object
      */
     private Patient getPatient(final Person person) {
         // TODO Auto-generated method stub
@@ -357,7 +385,7 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         }
     }
 
-    /* (non-Jsdoc)
+    /* 
      * @see org.openmrs.module.personalhr.PhrService#logEvent(java.lang.String, java.util.Date, int, java.lang.String, int, java.lang.String)
      */
     @Override
@@ -374,16 +402,20 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     }
 
     
+    /**
+     * Set PhrLogEventDAO dao object
+     * 
+     * @param logEventDao PhrLogEventDAO object to set
+     */
     public void setLogEventDao(PhrLogEventDAO logEventDao) {
         this.logEventDao = logEventDao;
     }
 
-    /* (non-Jsdoc)
+    /* 
      * @see org.openmrs.module.personalhr.PhrService#getSharingTypes()
      */
     @Override
     public Set<String> getSharingTypes() {
-        // TODO Auto-generated method stub
         List<PhrPrivilege> privs = privilegeDao.getAllPhrPrivileges();
         
         TreeSet<String> types = new TreeSet<String>();
