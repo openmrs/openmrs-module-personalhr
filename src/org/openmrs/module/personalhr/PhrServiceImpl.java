@@ -391,7 +391,12 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     @Override
     public void logEvent(String eventType, Date eventDate, User user, String sessionId, Patient patient, String eventContent) {
         // TODO Auto-generated method stub
-        PhrLogEvent eventLog = new PhrLogEvent(eventType, eventDate, (user==null ? null:user.getUserId()),
+        User usr = user;
+        if(usr==null) {
+            usr = Context.getAuthenticatedUser();
+        }
+        
+        PhrLogEvent eventLog = new PhrLogEvent(eventType, eventDate, (usr==null ? null:usr.getUserId()),
                                    sessionId, (patient==null?null:patient.getPatientId()), eventContent);
         logEventDao.savePhrEventLog(eventLog);
     }
