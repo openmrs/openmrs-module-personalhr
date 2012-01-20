@@ -258,5 +258,15 @@ public interface PhrService {
      * @return all sharing types
      */
     public Set<String> getSharingTypes();
+
+    /**
+     * Check if a given Person has a given basic role or not   
+     * This check is based on PHR security rule table and user role and relationship to given patient
+     * 
+     * @param person person whose privilege is checked
+     * @param role basic role to check
+     * @return true if the person has the given basic PHR role
+     */
+    boolean hasBasicRole(Person person, PhrBasicRole role);
     
 }

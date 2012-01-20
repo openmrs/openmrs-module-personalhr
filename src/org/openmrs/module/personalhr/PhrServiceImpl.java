@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
@@ -194,6 +195,31 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
                 + user);
         return false;
     }
+
+    /**
+     * Check if a given Person has a given basic role or not   
+     * This check is based on PHR security rule table and user role and relationship to given patient
+     * 
+     * @param person person whose privilege is checked
+     * @param role basic role to check
+     * @return true if the person has the given basic PHR role
+     * 
+     */
+    @Override
+    public boolean hasBasicRole(final Person person, PhrBasicRole role) {
+        this.log.debug("PhrServiceImpl:hasBasicRole->" + person);
+        List<User> users = Context.getUserService().getUsersByRole(Context.getUserService().getRole(role.getValue()));
+        if(users==null) {
+            return false;
+        }
+        for(User u : users) {
+            if(u.getPerson().equals(person)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     
     /**
      * Get a list of dynamic roles assigned to a given user to access data of a given patient or person
@@ -331,10 +357,19 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     public List<Person> getRelatedPersons(final Person person) {
         // TODO Auto-generated method stub
         final Patient pat = getPatient(person);
-        if (pat != null) {
-            return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPatient(pat));
-        } else {
-            return getRelatedPatients(this.sharingTokenDao.getSharingTokenByPerson(person));
+        User usr = Context.getAuthenticatedUser();
+        boolean isAdmin = false;
+        if(usr != null) {
+            isAdmin = usr.hasRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue(), false);
+        }
+        if(!isAdmin) {
+            if (pat != null) {
+                return getRelatedPersons(this.sharingTokenDao.getSharingTokenByPatient(pat));
+            } else {
+                return getRelatedPatients(this.sharingTokenDao.getSharingTokenByPerson(person));
+            }
+        } else{
+            return getAllPhrUsers();
         }
     }
     
@@ -369,6 +404,28 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         }
         return persons;
     }    
+    
+    
+    /**
+     * Get all PHR Users
+     * 
+     * @return person objects of all PHR Users
+     */
+    private List<Person> getAllPhrUsers() {
+        final List<Person> persons = new ArrayList<Person>();
+        final List<User> users = new ArrayList<User>();
+        
+        users.addAll(Context.getUserService().getUsersByRole(Context.getUserService().getRole(PhrBasicRole.PHR_ADMINISTRATOR.getValue())));
+        users.addAll(Context.getUserService().getUsersByRole(Context.getUserService().getRole(PhrBasicRole.PHR_PATIENT.getValue())));
+        users.addAll(Context.getUserService().getUsersByRole(Context.getUserService().getRole(PhrBasicRole.PHR_RESTRICTED_USER.getValue())));
+        
+        for (final User user : users) {
+            if(user != null && user.getPerson()!=null) {
+                persons.add(user.getPerson());
+            }
+        }
+        return persons;
+    }
     
     /**
      * Get patient object of a given person

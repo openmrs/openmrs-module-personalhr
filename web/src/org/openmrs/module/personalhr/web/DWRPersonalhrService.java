@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.WebContext;
 import org.directwebremoting.WebContextFactory;
 
+import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.messaging.MessagingService;
 import org.openmrs.module.personalhr.PersonalhrUtil;
@@ -83,9 +84,11 @@ public class DWRPersonalhrService {
         WebContext webContext = WebContextFactory.get();
         HttpSession session = webContext.getSession();
         String sessionId = session.getId();
+        Object o = session.getAttribute("org.openmrs.portlet.patientId");
+        Patient pat = (o==null ? null:Context.getPatientService().getPatient((Integer) o));
 
         PersonalhrUtil.getService().logEvent(PhrLogEvent.CHANGE_TAB, new Date(), Context.getAuthenticatedUser(), 
-            sessionId, null, eventContent);
+            sessionId, pat, eventContent);
         
     }
     

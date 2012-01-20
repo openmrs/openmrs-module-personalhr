@@ -59,8 +59,8 @@
 		var c = "";
 		if (!document.getElementById || !document.createTextNode) {return;}
 		if (typeof tabObj == "string") {
-			tabObj = document.getElementById(tabObj);
 			c = tabObj;
+			tabObj = document.getElementById(tabObj);
 		} else {			
 			c = tabObj.id;
 		}

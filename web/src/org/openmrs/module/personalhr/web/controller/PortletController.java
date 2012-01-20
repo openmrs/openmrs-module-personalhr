@@ -189,6 +189,8 @@ public class PortletController implements Controller {
                 // if a patient id is available, put patient data documented above in the model
                 Object o = request.getAttribute("org.openmrs.portlet.patientId");
                 if (o != null) {
+                    request.getSession().setAttribute("org.openmrs.portlet.patientId", o);
+                    
                     String patientVariation = "";
                     final Integer patientId = (Integer) o;
                     if (!model.containsKey("patient")) {

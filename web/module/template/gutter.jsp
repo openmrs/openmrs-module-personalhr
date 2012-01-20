@@ -8,7 +8,7 @@
 				</a>
 			</li>
 			<li id="manageUserLink">
-				<a href="user.list">
+				<a href="${pageContext.request.contextPath}/phr/user.list">
 					<spring:message code="User.manage"/>
 				</a>
 			</li>

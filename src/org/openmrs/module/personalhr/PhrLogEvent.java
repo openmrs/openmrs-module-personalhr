@@ -150,6 +150,7 @@ public class PhrLogEvent {
      * Event type
      */
     public static final String CHANGE_TAB = "CHANGE_TAB";
+    public static final String CONTACT_US = "CONTACT_US";
     
     /**
      * Construct the event log object

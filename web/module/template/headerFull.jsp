@@ -25,6 +25,7 @@
 		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
+		<openmrs:htmlInclude file="/dwr/interface/DWRPersonalhrService.js" />
 		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
 			<openmrs:htmlInclude file="/moduleResources/personalhr/jquery-1.4.4.min.js" />
 			<openmrs:htmlInclude file="/moduleResources/personalhr/jquery-ui-1.8.9.custom.css" />
@@ -53,6 +54,37 @@
 			var dwrLoadingMessage = '<spring:message code="general.loading" />';
 			var jsDateFormat = '<openmrs:datePattern localize="false"/>';
 			var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
+
+			$j(document).ready(function() {
+				$j('#contactUsPopup').dialog({
+						title: 'dynamic',
+						autoOpen: false,
+						draggable: false,
+						resizable: false,
+						resize:    'auto',
+						width: '700px',
+						modal: true,
+						open: function(a, b) {  }
+				});
+			});
+				
+			function onContactUs(title) {
+				$j('#contactUsPopup')
+					.dialog('option', 'title', title)
+					.dialog('option', 'height', $j(window).height()/3) 
+					.dialog('open');
+			}
+			
+			function onSendMessage() {
+				var messageContent = $j('#contactMessage').val();
+      	  	  	$j('#contactUsPopup').dialog("close");
+				DWRPersonalhrService.sendMessageToUs(messageContent);
+			}
+			
+			function onCancelMessage() {
+      	  	  	$j('#contactUsPopup').dialog("close");
+			}								
+			
 		</script>
 
 		<openmrs:extensionPoint pointId="org.openmrs.headerFullIncludeExt" type="html" requiredClass="org.openmrs.module.web.extension.HeaderIncludeExt">
@@ -96,6 +128,9 @@
 
 			<span id="userHelp">
 				<a style="color:navy;" href="#" onClick="window.open('<%= request.getContextPath() %>/../cancertoolkit/help')" ><spring:message code="header.help"/></a>
+			</span>
+			<span id="contactUs">
+				<a style="color:navy;" href="#" onClick="onContactUs('Contact us with questions or feedback');" title="Contact us with questions or feedback"><spring:message code="personalhr.header.contact.us"/></a>
 			</span>
 		</div>
 
@@ -153,6 +188,14 @@
 					<i><spring:message code="error.dwr.stacktrace"/></i> 
 					<a href="#" onclick="this.parentNode.parentNode.style.display='none'"><spring:message code="error.dwr.hide"/></a>
 				</div>
+			</div>
+			<div id="contactUsPopup">
+				<span><spring:message code="personalhr.contact.us.instruction"/></span>
+				<br/><br/>				
+				<textarea id="contactMessage" rows="5" cols="100"></textarea>
+				<br/><br/>
+				<input type="button" name="sendMessage" id="sendMessage" value="Send" onClick="onSendMessage();"/>
+				<input type="button" name="cancelMessage" id="cancelMessage" value="Cancel" onClick="onCancelMessage();"/>						
 			</div>
 			
 			

@@ -63,6 +63,7 @@
 				<include method="addAllowedUrl"/>
 				<include method="addPhrPrivilege"/>
 				<include method="logChangeTabEvent"/>
+				<include method="sendMessageToUs"/>
 			</create>
 		</allow>
 	</dwr>
