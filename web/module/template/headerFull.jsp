@@ -127,7 +127,10 @@
 			</openmrs:authentication>
 
 			<span id="userHelp">
-				<a style="color:navy;" href="#" onClick="window.open('<%= request.getContextPath() %>/../cancertoolkit/help')" ><spring:message code="header.help"/></a>
+				<a style="color:navy;" href="#" onClick="window.open('<%= request.getContextPath() %>/../cancertoolkit/help')" ><spring:message code="personalhr.header.help"/></a>
+			</span>
+			<span id="userVideo">
+				<a style="color:navy;" href="#" onClick="window.open('http://www.indiana.edu/~video/stream/launchflash.html?folder=techserv&filename=PCT_INTRO.mp4')"><spring:message code="personalhr.header.video"/></a>
 			</span>
 			<span id="contactUs">
 				<a style="color:navy;" href="#" onClick="onContactUs('Contact us with questions or feedback');" title="Contact us with questions or feedback"><spring:message code="personalhr.header.contact.us"/></a>
