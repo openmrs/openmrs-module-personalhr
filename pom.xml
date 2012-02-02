@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>personalhr</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Personal Health Record</name>
 	<description>Parent project for Personal Health Record</description>
