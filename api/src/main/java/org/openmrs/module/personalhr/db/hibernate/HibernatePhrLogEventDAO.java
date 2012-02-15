@@ -36,7 +36,7 @@ public class HibernatePhrLogEventDAO implements PhrLogEventDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrLogEventDAO#setSessionFactory(org.hibernate.SessionFactory)
      */
-    @Override
+
     public void setSessionFactory(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -44,7 +44,7 @@ public class HibernatePhrLogEventDAO implements PhrLogEventDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrLogEventDAO#savePhrEventLog(org.openmrs.module.personalhr.PhrLogEvent)
      */
-    @Override
+
     public PhrLogEvent savePhrEventLog(PhrLogEvent event) {
         Session sess = sessionFactory.openSession();
         Transaction tx = sess.beginTransaction();

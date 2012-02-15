@@ -105,7 +105,7 @@ public class PortletController implements Controller {
      * @should calculate bmi into patientBmiAsString
      * @should not fail with empty height and weight properties
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response)
                                                                                                            throws ServletException,

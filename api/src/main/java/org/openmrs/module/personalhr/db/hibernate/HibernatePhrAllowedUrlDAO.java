@@ -41,7 +41,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrAllowedUrlDAO#setSessionFactory(org.hibernate.SessionFactory)
      */
-    @Override
+
     public void setSessionFactory(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -49,7 +49,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrAllowedUrlDAO#getPhrAllowedUrl(java.lang.Integer)
      */
-    @Override
+
     public PhrAllowedUrl getPhrAllowedUrl(final Integer id) {
         return (PhrAllowedUrl) this.sessionFactory.getCurrentSession().get(PhrAllowedUrl.class, id);
     }
@@ -57,7 +57,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrAllowedUrlDAO#savePhrAllowedUrl(org.openmrs.module.personalhr.PhrAllowedUrl)
      */
-    @Override
+
     public PhrAllowedUrl savePhrAllowedUrl(final PhrAllowedUrl rule) {
         Session sess = sessionFactory.openSession();
         Transaction tx = sess.beginTransaction();
@@ -72,7 +72,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrAllowedUrlDAO#deletePhrAllowedUrl(org.openmrs.module.personalhr.PhrAllowedUrl)
      */
-    @Override
+
     public void deletePhrAllowedUrl(final PhrAllowedUrl rule) {
         Session sess = sessionFactory.openSession();
         Transaction tx = sess.beginTransaction();
@@ -86,7 +86,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrAllowedUrlDAO#getAllPhrAllowedUrls()
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public List<PhrAllowedUrl> getAllPhrAllowedUrls() {
         final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);
@@ -103,7 +103,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
      * 
      * @see org.openmrs.module.personalhr.db.PhrAllowedUrlDAO#getByUrl(java.lang.String)
      */
-    @Override
+
     public List<PhrAllowedUrl> getByUrl(String url) {
         this.log.debug("PhrServiceImpl:isUrlAllowed->" + url);
         
@@ -127,7 +127,7 @@ public class HibernatePhrAllowedUrlDAO implements PhrAllowedUrlDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrAllowedUrlDAO#getByPrivilege(java.lang.String)
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public List<PhrAllowedUrl> getByPrivilege(final String priv) {
         final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrAllowedUrl.class);

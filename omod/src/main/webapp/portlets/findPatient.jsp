@@ -109,6 +109,7 @@
 					dwr.util.useLoadingMessage();
 				
 					<request:existsParameter name="patientId">
+						<!-- User has 'patientId' in the request params -- selecting that patient -->
 						var pats = new Array();
 						pats.push(new Object());
 						pats[0].patientId = '<request:parameter name="patientId"/>';
@@ -116,6 +117,7 @@
 					</request:existsParameter>
 					
 					<request:existsParameter name="phrase">
+						<!-- User has 'phrase' in the request params -- searching on that -->
 						searchBox.value = '<request:parameter name="phrase"/>';
 					</request:existsParameter>
 				
@@ -135,55 +137,69 @@
 		<c:when test="${model.size == 'full'}">
 			
 			<openmrs:require privilege="View Patients" otherwise="/phr/login.htm" redirect="/phr/index.htm" />
-
-			<openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
-			<openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
-
+			<style>
+				#openmrsSearchTable_wrapper{
+				/* Removes the empty space between the widget and the Create New Patient section if the table is short */
+				/* Over ride the value set by datatables */
+					min-height: 0px; height: auto !important;
+				}
+			</style>
+			<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js"/>
+			<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables_jui.css"/>
+			<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
+			<openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
+			
 			<script type="text/javascript">
-				dojo.require("dojo.widget.openmrs.PatientSearch");
-				
-				dojo.addOnLoad( function() {
+				var lastSearch;
+				$j(document).ready(function() {
+					new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler, 
+						[	{fieldName:"identifier", header:omsgs.identifier},
+							{fieldName:"givenName", header:omsgs.givenName},
+							{fieldName:"middleName", header:omsgs.middleName},
+							{fieldName:"familyName", header:omsgs.familyName},
+							{fieldName:"age", header:omsgs.age},
+							{fieldName:"gender", header:omsgs.gender},
+							{fieldName:"birthdateString", header:omsgs.birthdate},
+						],
+						{
+						  searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>'
+						  <c:if test="${not empty param.phrase}">
+						      , searchPhrase: '<spring:message text="${ param.phrase }" javaScriptEscape="true"/>'
+						  </c:if>
+						});
 					
-					searchWidget = dojo.widget.manager.getWidgetById("pSearch");
-					dojo.event.topic.subscribe("pSearch/select", 
-						function(msg) {
-							if (msg.objs[0].patientId)
-								document.location = "${model.postURL}?patientId=" + msg.objs[0].patientId + "&phrase=" + searchWidget.text;
-							else if (msg.objs[0].href)
-								document.location = msg.objs[0].href;
-						}
-					);
-					
-					<c:if test="${empty hideAddNewPatient}">
-						searchWidget.addPatientLink = '<a href="#" onClick="return jumpToAddNew()"><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>';
-					</c:if>
-					searchWidget.inputNode.select();
-					changeClassProperty("description", "display", "none");
+					//set the focus to the first input box on the page(in this case the text box for the search widget)
+					var inputs = document.getElementsByTagName("input");
+				    if(inputs[0])
+				    	inputs[0].focus();
+				    		
+				    
 				});
+			
+				function doSelectionHandler(index, data) {
+					document.location = "${model.postURL}?patientId=" + data.patientId + "&phrase=" + lastSearch;
+				}
+			
+				//searchHandler for the Search widget
+				function doPatientSearch(text, resultHandler, getMatchCount, opts) {
+					lastSearch = text;
+					DWRPatientService.findCountAndPatients(text, opts.start, opts.length, getMatchCount, resultHandler);
+				}
 				
 			</script>
 			
-			<div id="findPatient">
+			<div>
 				<b class="boxHeader"><spring:message code="Patient.find"/></b>
 				<div class="box">
-					<div dojoType="PatientSearch" widgetId="pSearch" <c:if test="${model.showIncludeVoided == 'true'}">showIncludeVoided="true"</c:if> searchLabel="<spring:message code="Patient.searchBox" htmlEscape="true"/>" showVerboseListing="true" patientId='<request:parameter name="patientId"/>' searchPhrase='<request:parameter name="phrase"/>' <c:if test="${not empty hideAddNewPatient}">showAddPatientLink='false'</c:if>></div>
+					<div class="searchWidgetContainer" id="findPatients"></div>
 				</div>
 			</div>
 			
 			<c:if test="${empty model.hideAddNewPatient}">
 				<openmrs:hasPrivilege privilege="Add Patients">
 					<br/> &nbsp; <spring:message code="general.or"/><br/><br/>
-					<openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=addPerson.htm|viewType=${model.viewType}" />
+					<openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=admin/person/addPerson.htm|viewType=${model.viewType}" />
 				</openmrs:hasPrivilege>
-				
-				<script type="text/javascript">
-					function jumpToAddNew() {
-						var searchWidget = dojo.widget.manager.getWidgetById("pSearch");
-						searchWidget.clearSearch();
-						document.getElementById("personName").focus();
-						return false;
-					}
-				</script>
 			</c:if>
 
 		</c:when>

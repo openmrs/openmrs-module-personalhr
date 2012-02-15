@@ -29,7 +29,7 @@ public class RedirectController implements Controller {
     
     private String redirectView = "";
     
-    @Override
+
     public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response)
                                                                                                            throws ServletException,
                                                                                                            IOException {

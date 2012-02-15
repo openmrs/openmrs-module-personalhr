@@ -31,11 +31,11 @@ public class SpringController implements Controller {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    @Override
+
     public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response)
                                                                                                            throws ServletException,
                                                                                                            IOException {
-        this.log.debug("Entering org.openmrs.module.cancertoolkit.web.controller.SpringController");
+        this.log.debug("Entering org.openmrs.module.personalhr.web.controller.SpringController");
         
         String path = request.getServletPath();
         if (path.endsWith("htm")) {

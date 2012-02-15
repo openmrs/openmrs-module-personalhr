@@ -41,7 +41,7 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#setSessionFactory(org.hibernate.SessionFactory)
      */
-    @Override
+
     public void setSessionFactory(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -49,7 +49,7 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#getPhrPrivilege(java.lang.Integer)
      */
-    @Override
+
     public PhrPrivilege getPhrPrivilege(final Integer id) {
         return (PhrPrivilege) this.sessionFactory.getCurrentSession().get(PhrPrivilege.class, id);
     }
@@ -57,7 +57,7 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#savePhrPrivilege(org.openmrs.module.personalhr.PhrPrivilege)
      */
-    @Override
+
     public PhrPrivilege savePhrPrivilege(final PhrPrivilege rule) {
         Session sess = sessionFactory.openSession();
         Transaction tx = sess.beginTransaction();
@@ -73,7 +73,7 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#deletePhrPrivilege(org.openmrs.module.personalhr.PhrPrivilege)
      */
-    @Override
+
     public void deletePhrPrivilege(final PhrPrivilege rule) {
         Session sess = sessionFactory.openSession();
         Transaction tx = sess.beginTransaction();
@@ -86,7 +86,7 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#getAllPhrPrivileges()
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public List<PhrPrivilege> getAllPhrPrivileges() {
         final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrPrivilege.class);
@@ -97,7 +97,7 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#getByRole(java.lang.String)
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public List<PhrPrivilege> getByRole(final String role) {
         final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrPrivilege.class);
@@ -114,7 +114,7 @@ public class HibernatePhrPrivilegeDAO implements PhrPrivilegeDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrPrivilegeDAO#getByPrivilege(java.lang.String)
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public List<PhrPrivilege> getByPrivilege(final String priv) {
         this.log.debug("PhrServiceImpl:isUrlAllowed->" + priv);

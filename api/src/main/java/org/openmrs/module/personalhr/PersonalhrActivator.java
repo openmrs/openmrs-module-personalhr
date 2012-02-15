@@ -15,29 +15,59 @@ package org.openmrs.module.personalhr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.module.Activator;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.BaseModuleActivator;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class contains the logic that is run every time this module is either started or shutdown
  */
-@SuppressWarnings("deprecation")
-public class PersonalhrActivator implements Activator {
+public class PersonalhrActivator extends BaseModuleActivator {
     
     private final Log log = LogFactory.getLog(this.getClass());
+	/**
+	 * A boolean used to protect against multiple started() calls
+	 */
+	private boolean startedCalled = true; //create patient attributes manually to prevent security issues
+	private static String EMAIL_ATTR_NAME = "Email";
     
     /**
      * @see org.openmrs.module.Activator#startup()
      */
     @Override
-    public void startup() {
-        this.log.info("Starting Personal Health Records Module");
-    }
-    
+	public void started() {
+		log.info("Started Personal Health Records Module");
+		if(!startedCalled){ 
+			createPatientAttributes();
+			startedCalled = true;
+		}
+	}
+	
+	private void createPatientAttributes(){
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES);
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES);
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		PersonService personService = Context.getPersonService();
+		if(personService.getPersonAttributeTypeByName(EMAIL_ATTR_NAME) == null){
+			PersonAttributeType emailAttr = new PersonAttributeType();
+			emailAttr.setName(EMAIL_ATTR_NAME);
+			emailAttr.setFormat("java.lang.String");
+			emailAttr.setDescription("A person's email address");
+			emailAttr.setSearchable(true);
+			emailAttr.setCreator(Context.getUserService().getUserByUsername("admin"));
+			personService.savePersonAttributeType(emailAttr);
+		}
+		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES);
+		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES);		
+		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+	}    
     /**
      * @see org.openmrs.module.Activator#shutdown()
      */
     @Override
-    public void shutdown() {
+    public void stopped() {
         this.log.info("Shutting down Personal Health Records Module");
     }
     

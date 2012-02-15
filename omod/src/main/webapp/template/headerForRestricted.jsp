@@ -122,7 +122,7 @@
 			</openmrs:authentication>
 
 			<span id="userHelp">
-				<a style="color:navy;" href="#" onClick="window.open('<%= request.getContextPath() %>/../cancertoolkit/help')" ><spring:message code="header.help"/></a>
+				<a style="color:navy;" href="${pageContext.request.contextPath}/phr/help.htm" ><spring:message code="header.help"/></a>
 			</span>
 			<span id="contactUs">
 				<a style="color:navy;" href="#" onClick="onContactUs('Contact us with questions or feedback');" title="Contact us with questions or feedback"><spring:message code="personalhr.header.contact.us"/></a>

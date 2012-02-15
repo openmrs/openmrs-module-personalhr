@@ -41,7 +41,7 @@ public class ShortPatientValidator implements Validator {
      * @param c The class to check for support.
      * @see org.springframework.validation.Validator#supports(java.lang.Class)
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public boolean supports(final Class c) {
         return ShortPatientModel.class.isAssignableFrom(c);
@@ -61,7 +61,7 @@ public class ShortPatientValidator implements Validator {
      * @should fail validation if voidReason is blank when patient is voided
      * @should fail validation if causeOfDeath is blank when patient is dead
      */
-    @Override
+
     public void validate(final Object obj, final Errors errors) {
         
         final ShortPatientModel shortPatientModel = (ShortPatientModel) obj;

@@ -33,7 +33,6 @@ public class PhrAllowedUrl extends BaseOpenmrsMetadata {
     /**
      * @see org.openmrs.OpenmrsObject#getId()
      */
-    @Override
     public Integer getId() {
         // TODO Auto-generated method stub
         return this.id;
@@ -42,7 +41,6 @@ public class PhrAllowedUrl extends BaseOpenmrsMetadata {
     /**
      * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
      */
-    @Override
     public void setId(final Integer id) {
         this.id = id;
         

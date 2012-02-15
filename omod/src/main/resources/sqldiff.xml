@@ -122,6 +122,43 @@ CREATE TABLE IF NOT EXISTS `phr_allowed_url` (
   CONSTRAINT `User who changed phr_allowed_url` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
               CONSTRAINT `User who retired phr_allowed_url` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Create Messages','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Create Relationships','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Edit Journal','Administrator, Owner, Share Journal',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('PHR Administrator','Administrator',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('PHR Authenticated','Administrator, Owner, Share Medical, Share Journal',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View All Messages','Administrator',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Journal','Administrator, Owner, Share Journal',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Messages','Administrator, Owner, Share Medical, Share Journal',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Relationships','Administrator, Owner',1,now() );
+
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/dwr/call/plaincall/Multiple.*','View Messages','used by messaginphr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRConceptService*','PHR Authenticated','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRJournalEntryService*','View Journal','Used by phrjournal module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRMessagingAddressService*','View Messages','used by messaging module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRMessagingSettingsService*','View Messages','used by messaginphr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPatientService*','PHR Administrator','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPersonalhrService.add*','Manage Modules','used by personalhr module to configure security rules by OpenMRS administrator',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPersonalhrService.logChangeTabEvent*','PHR Authenticated','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPersonalhrService.send*','','everybody can send message to Contact Us; used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPersonService*','PHR Administrator','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRUserService*','PHR Administrator','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/messaging/*','View Messages','used by messaging module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/messagingphr/*','View Messages','used by messaging module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/phrjournal/*','View Journal','used by phrjournal module',1,now());
+
+insert into privilege (privilege, description, uuid) values('PHR All Patients Access','A privilege to access all patients. Only PHR Administrator role can have this privilege.',uuid() );
+insert into privilege (privilege, description, uuid) values('PHR Restricted Patient Access','A privilege to access data of patients who explicitly grant this access. Only PHR Restricted User role can have this privilege. ',uuid() );
+insert into privilege (privilege, description, uuid) values('PHR Single Patient Access','A privilege to access a patient user\'s own data. Only PHR Patient role can have this privilege.',uuid() );
+
+insert into role (role, description, uuid) values('PHR Administrator','A user who can have full access to any data of any patient with a PHR Patient role',uuid() );
+insert into role (role, description, uuid) values('PHR Patient','A patient user who can view, update and share his/her own data in a PHR system',uuid() );
+insert into role (role, description, uuid) values('PHR Restricted User','A user who can access a patient\'s data only after receiving appropriate authority from that patient.',uuid() );
+
+insert into role_privilege (role, privilege) values('PHR Administrator','PHR All Patients Access' );
+insert into role_privilege (role, privilege) values('PHR Patient','PHR Single Patient Access' );
+insert into role_privilege (role, privilege) values('PHR Restricted User','PHR Restricted Patient Access' );
 		</sql>
 	</diff>
 

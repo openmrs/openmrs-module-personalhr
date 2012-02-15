@@ -98,7 +98,7 @@
 			</openmrs:authentication>
 
 			<span id="userHelp">
-				<a style="color:navy;" href="#" onClick="window.open('<%= request.getContextPath() %>/../cancertoolkit/help')" ><spring:message code="header.help"/></a>
+				<a style="color:navy;" href="${pageContext.request.contextPath}/phr/help.htm" ><spring:message code="header.help"/></a>
 			</span>
 		</div>
 

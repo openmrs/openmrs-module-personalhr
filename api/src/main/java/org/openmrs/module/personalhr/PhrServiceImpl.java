@@ -58,7 +58,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
      * @see org.openmrs.module.personalhr.PhrService#isUrlAllowed(java.lang.String,
      *      org.openmrs.Patient, org.openmrs.Person, org.openmrs.User)
      */
-    @Override
     public boolean isUrlAllowed(final String requestedUrl, final Patient requestedPatient, final Person requestedPerson,
                                 final User requestingUser) {
         this.log.debug("PhrServiceImpl:isUrlAllowed->" + requestedUrl + "|" + requestedPatient + "|"
@@ -117,7 +116,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
      * @param user user object
      * @return PHR specific role
      */
-    @Override
     public String getPhrRole(final User user) {
         this.log.debug("PhrServiceImpl:igetPhrRole->" + user);
         // TODO Auto-generated method stub
@@ -139,7 +137,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
      * @param user must not be null and must have a PHR role
      * 
      */
-    @Override
     public boolean hasPrivilege(final String privilege, final Patient requestedPatient, final Person requestedPerson,
                                 final User user) {
         this.log.debug("PhrServiceImpl:hasPrivilege->" + privilege + "|" + requestedPatient + "|" + requestedPerson
@@ -205,7 +202,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
      * @return true if the person has the given basic PHR role
      * 
      */
-    @Override
     public boolean hasBasicRole(final Person person, PhrBasicRole role) {
         this.log.debug("PhrServiceImpl:hasBasicRole->" + person);
         List<User> users = Context.getUserService().getUsersByRole(Context.getUserService().getRole(role.getValue()));
@@ -229,7 +225,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
      * @param user user who made the request
      * @return true is this URL is allowed
      */
-    @Override
     public List<String> getDynamicRoles(final Patient requestedPatient, final Person requestedPerson, final User user) {
         this.log.debug("PhrServiceImpl:getDynamicRoles->" + requestedPatient + "|" + requestedPerson + "|" + user);
         final List<String> roles = new ArrayList<String>();
@@ -305,7 +300,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /* 
      * @see org.openmrs.module.personalhr.PhrService#getPrivilegeDao()
      */
-    @Override
     public PhrPrivilegeDAO getPrivilegeDao() {
         return this.privilegeDao;
     }
@@ -313,7 +307,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /* 
      * @see org.openmrs.module.personalhr.PhrService#setPrivilegeDao(org.openmrs.module.personalhr.db.PhrPrivilegeDAO)
      */
-    @Override
     public void setPrivilegeDao(final PhrPrivilegeDAO privilegeDao) {
         this.privilegeDao = privilegeDao;
     }
@@ -321,7 +314,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /* 
      * @see org.openmrs.module.personalhr.PhrService#getAllowedUrlDao()
      */
-    @Override
     public PhrAllowedUrlDAO getAllowedUrlDao() {
         return this.allowedUrlDao;
     }
@@ -329,7 +321,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /* 
      * @see org.openmrs.module.personalhr.PhrService#setAllowedUrlDao(org.openmrs.module.personalhr.db.PhrAllowedUrlDAO)
      */
-    @Override
     public void setAllowedUrlDao(final PhrAllowedUrlDAO allowedUrlDao) {
         this.allowedUrlDao = allowedUrlDao;
     }
@@ -337,7 +328,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /* 
      * @see org.openmrs.module.personalhr.PhrService#getSharingTokenDao()
      */
-    @Override
     public PhrSharingTokenDAO getSharingTokenDao() {
         return this.sharingTokenDao;
     }
@@ -345,7 +335,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /* 
      * @see org.openmrs.module.personalhr.PhrService#setSharingTokenDao(org.openmrs.module.personalhr.db.PhrSharingTokenDAO)
      */
-    @Override
     public void setSharingTokenDao(final PhrSharingTokenDAO sharingTokenDao) {
         this.sharingTokenDao = sharingTokenDao;
     }
@@ -353,7 +342,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /* 
      * @see org.openmrs.module.personalhr.PhrService#getRelatedPersons(org.openmrs.Person)
      */
-    @Override
     public List<Person> getRelatedPersons(final Person person) {
         // TODO Auto-generated method stub
         final Patient pat = getPatient(person);
@@ -445,7 +433,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /* 
      * @see org.openmrs.module.personalhr.PhrService#logEvent(java.lang.String, java.util.Date, int, java.lang.String, int, java.lang.String)
      */
-    @Override
     public void logEvent(String eventType, Date eventDate, User user, String sessionId, Patient patient, String eventContent) {
         // TODO Auto-generated method stub
         User usr = user;
@@ -476,7 +463,6 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     /* 
      * @see org.openmrs.module.personalhr.PhrService#getSharingTypes()
      */
-    @Override
     public Set<String> getSharingTypes() {
         List<PhrPrivilege> privs = privilegeDao.getAllPhrPrivileges();
         

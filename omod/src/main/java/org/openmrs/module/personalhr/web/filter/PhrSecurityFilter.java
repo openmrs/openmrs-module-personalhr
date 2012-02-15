@@ -58,7 +58,7 @@ public class PhrSecurityFilter implements Filter {
     /**
      * @see javax.servlet.Filter#destroy()
      */
-    @Override
+
     public void destroy() {
     }
     
@@ -82,7 +82,7 @@ public class PhrSecurityFilter implements Filter {
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
      *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
      */
-    @Override
+
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
                                                                                                                throws IOException,
                                                                                                                ServletException {
@@ -306,7 +306,7 @@ public class PhrSecurityFilter implements Filter {
     /**
      * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
      */
-    @Override
+
     public void init(final FilterConfig config) throws ServletException {
         this.config = config;
         this.excludeURL = config.getInitParameter("excludeURL");

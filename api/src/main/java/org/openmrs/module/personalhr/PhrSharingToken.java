@@ -53,7 +53,6 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
     /**
      * @see org.openmrs.OpenmrsObject#getId()
      */
-    @Override
     public Integer getId() {
         return this.id;
     }
@@ -61,7 +60,6 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
     /**
      * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
      */
-    @Override
     public void setId(final Integer id) {
         this.id = id;
         
@@ -252,7 +250,6 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    @Override
     public int compareTo(final PhrSharingToken newToken) {
         return newToken.getId().compareTo(this.id);
     }

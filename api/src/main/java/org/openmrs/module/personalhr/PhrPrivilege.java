@@ -33,15 +33,13 @@ public class PhrPrivilege extends BaseOpenmrsMetadata {
     /**
      * @see org.openmrs.OpenmrsObject#getId()
      */
-    @Override
-    public Integer getId() {
+     public Integer getId() {
         return this.id;
     }
     
     /**
      * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
      */
-    @Override
     public void setId(final Integer id) {
         this.id = id;
         

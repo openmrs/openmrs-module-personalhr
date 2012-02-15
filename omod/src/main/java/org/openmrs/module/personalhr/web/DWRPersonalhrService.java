@@ -37,7 +37,7 @@ import org.openmrs.module.personalhr.PhrPrivilege;
  */
 public class DWRPersonalhrService {
     protected final Log log = LogFactory.getLog(getClass());
-    private final String admin_email_address = "cancertoolkit-l@regenstrief.org"; 
+    private final String admin_email_address = "phrtoolkit-l@regenstrief.org"; 
     
 	/**
 	 * PHR security configuration: add allowed URL
@@ -93,7 +93,7 @@ public class DWRPersonalhrService {
     }
     
     /**
-     * Allow user to send questions or feedback to us (cancer toolkit administrators)
+     * Allow user to send questions or feedback to us (phr toolkit administrators)
      * 
      * @param messageContent content of message entered by the user
      */
@@ -104,7 +104,7 @@ public class DWRPersonalhrService {
             String sessionId = (session==null? "":session.getId());
 
             if(Context.isAuthenticated()) {
-                messageContent = "(Sent from Personal Cancer Toolkit user " + Context.getAuthenticatedUser().getUsername() + ": )\n" + messageContent;
+                messageContent = "(Sent from Personal Health Toolkit user " + Context.getAuthenticatedUser().getUsername() + ": )\n" + messageContent;
             } 
             PersonalhrUtil.getService().logEvent(PhrLogEvent.CONTACT_US, new Date(), Context.getAuthenticatedUser(), 
                 sessionId, null, messageContent);

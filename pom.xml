@@ -22,6 +22,13 @@
 		<module>omod</module>
 	</modules>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>messaging-api</artifactId>
+			<version>0.9.0-beta</version>
+		</dependency>
+	</dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<!--

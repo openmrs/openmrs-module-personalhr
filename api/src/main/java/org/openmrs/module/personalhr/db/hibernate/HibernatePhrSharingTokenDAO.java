@@ -46,7 +46,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#setSessionFactory(org.hibernate.SessionFactory)
      */
-    @Override
+
     public void setSessionFactory(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -54,7 +54,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getPhrSharingToken(java.lang.Integer)
      */
-    @Override
+
     public PhrSharingToken getPhrSharingToken(final Integer id) {
         return (PhrSharingToken) this.sessionFactory.getCurrentSession().get(PhrSharingToken.class, id);
     }
@@ -62,7 +62,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#savePhrSharingToken(org.openmrs.module.personalhr.PhrSharingToken)
      */
-    @Override
+
     public PhrSharingToken savePhrSharingToken(final PhrSharingToken token) {
         //sessionFactory.getCurrentSession().close();
         final Session sess = this.sessionFactory.openSession();
@@ -79,7 +79,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#deletePhrSharingToken(org.openmrs.module.personalhr.PhrSharingToken)
      */
-    @Override
+
     public void deletePhrSharingToken(final PhrSharingToken token) {
         //sessionFactory.getCurrentSession().delete(token);
         //sessionFactory.getCurrentSession().close();
@@ -94,7 +94,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getAllPhrSharingTokens()
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public List<PhrSharingToken> getAllPhrSharingTokens() {
         final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
@@ -106,7 +106,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingTokenByPatient(org.openmrs.Patient)
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public List<PhrSharingToken> getSharingTokenByPatient(final Patient pat) {
         final Criteria crit = this.sessionFactory.getCurrentSession().createCriteria(PhrSharingToken.class);
@@ -124,7 +124,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingTokenByPerson(org.openmrs.Person)
      */
-    @Override
+
     @SuppressWarnings("unchecked")
     public List<PhrSharingToken> getSharingTokenByPerson(final Person per) {
         if (per instanceof Patient) {
@@ -147,7 +147,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingToken(org.openmrs.Patient,
      *      org.openmrs.Person, org.openmrs.User)
      */
-    @Override
+
     public PhrSharingToken getSharingToken(final Patient requestedPatient, final Person requestedPerson,
                                            final User requestingUser) {
         Patient pat = requestedPatient;
@@ -178,7 +178,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /**
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#deletePhrSharingToken(java.lang.Integer)
      */
-    @Override
+
     public void deletePhrSharingToken(final Integer id) {
         //sessionFactory.getCurrentSession().close();
         final Session sess = this.sessionFactory.openSession();
@@ -193,7 +193,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /**
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#getSharingToken(java.lang.String)
      */
-    @Override
+
     public PhrSharingToken getSharingToken(final String tokenString) {
         //sessionFactory.getCurrentSession().createQuery("from PhrSharingToken").list();
         final Session sess = this.sessionFactory.getCurrentSession();
@@ -211,7 +211,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
     /* (non-Jsdoc)
      * @see org.openmrs.module.personalhr.db.PhrSharingTokenDAO#updateSharingToken(org.openmrs.Person, java.lang.String)
      */
-    @Override
+
     public void updateSharingToken(final User user, final Person person, final String sharingToken) {
         // TODO Auto-generated method stub
         final PhrSharingToken token = getSharingToken(sharingToken);
