@@ -1,8 +1,12 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 <personalhr:require privilege="View Relationships" otherwise="/phr/login.htm" redirect="../module/personalhr/portlets/newPatientForm.portlet"/>
-
+<%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
-
+<%@ page import="java.util.*, java.lang.*" %>
+<%
+	Date currDate = new Date();
+	pageContext.setAttribute("currentDate", new Date());
+%>
 <script type="text/javascript">	
 	function updateAge() {
 		var birthdateBox = document.getElementById('birthdate');
@@ -189,7 +193,7 @@
 						<input type="text" 
 							name="age" size="5" id="age"
 							onChange="updateBirthdate(this)"
-							value="${2011 - (1900 + patient.birthdate.year)}"/> years
+							value="${currentDate.year - patient.birthdate.year}"/> years
 					</td>
 					<td style="padding-right: 3em">
 						<spring:bind path="patient.birthdate">			

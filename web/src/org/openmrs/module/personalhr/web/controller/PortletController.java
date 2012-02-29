@@ -110,7 +110,7 @@ public class PortletController implements Controller {
     public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response)
                                                                                                            throws ServletException,
                                                                                                            IOException {
-        this.log.debug("Entering PortletController.handleRequest");
+        this.log.warn("Entering PortletController.handleRequest");
         String portletPath = "";
         Map<String, Object> model = null;
         Integer personId = null;
@@ -139,14 +139,14 @@ public class PortletController implements Controller {
                     }
                 }
                 if (model == null) {
-                    this.log.debug("creating new portlet model");
+                    this.log.warn("creating new portlet model");
                     model = new HashMap<String, Object>();
                     session.setAttribute(WebConstants.OPENMRS_PORTLET_LAST_REQ_ID, uniqueRequestId);
                     session.setAttribute(WebConstants.OPENMRS_PORTLET_CACHED_MODEL, model);
                 }
             }
             
-            this.log.debug("PortletController.handleRequest: uri=" + uri);
+            this.log.warn("PortletController.handleRequest: uri=" + uri);
             if (uri != null) {
                 final long timeAtStart = System.currentTimeMillis();
                 portletPath = uri.toString();
@@ -159,7 +159,7 @@ public class PortletController implements Controller {
                             "Illegal extension used for portlet: '.jsp'. Allowable extensions are '' (no extension) and '.portlet'");
                 }
                 
-                this.log.debug("Loading portlet: " + portletPath);
+                this.log.warn("Loading portlet: " + portletPath);
                 
                 final String id = (String) request.getAttribute("org.openmrs.portlet.id");
                 final String size = (String) request.getAttribute("org.openmrs.portlet.size");
@@ -449,7 +449,7 @@ public class PortletController implements Controller {
                 }
                 
                 populateModel(request, model);
-                this.log.debug(portletPath + " took " + (System.currentTimeMillis() - timeAtStart) + " ms");
+                this.log.warn(portletPath + " took " + (System.currentTimeMillis() - timeAtStart) + " ms");
             }
         } finally {
            //PersonalhrUtil.removeTemporayPrivileges();
