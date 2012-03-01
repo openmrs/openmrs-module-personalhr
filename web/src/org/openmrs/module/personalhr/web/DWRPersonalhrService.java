@@ -37,7 +37,7 @@ import org.openmrs.module.personalhr.PhrPrivilege;
  */
 public class DWRPersonalhrService {
     protected final Log log = LogFactory.getLog(getClass());
-    private final String admin_email_address = "cancertoolkit-l@regenstrief.org"; 
+    private final String admin_email_address = "cancertoolkit-l@listserv.regenstrief.org"; 
     
 	/**
 	 * PHR security configuration: add allowed URL
