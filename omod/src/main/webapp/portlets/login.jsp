@@ -24,7 +24,7 @@
 		</tr>
 		<tr>
 			<td></td>
-			<td><a style="font-size: 90%;" href="${pageContext.request.contextPath}/forgotPassword.form"><spring:message code="User.password.forgot"/></a></td>
+			<td><a style="font-size: 90%;" href="${pageContext.request.contextPath}/phr/forgotPassword.form"><spring:message code="User.password.forgot"/></a></td>
 		</tr>
 		<tr>
 			<td><input type="hidden" name="sharingToken" id="sharingToken" value="${model.sharingToken}"/></td>

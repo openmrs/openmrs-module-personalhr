@@ -204,6 +204,7 @@
 	    <th>Relationship</th>
 	    <th>Email</th>
 	    <th>Share Type</th>
+	    <th>Accepted Relationship Invite?</th>
 	    <th>Delete</th>
 	  </tr>
 	  </thead>
@@ -246,6 +247,9 @@
 					  <c:if test="${'SHARE ALL' == status.value}">selected="selected"</c:if>>SHARE ALL</option>
 		    	</select>
 		    </spring:bind>		    
+		    </td>
+		    <td align="center">
+		    	<label>${token.status}</label>
 		    </td>
 		    <td align="center">
  				<input type="image" src="${pageContext.request.contextPath}/images/delete.gif" name="command" value="Delete ${token.id}" onClick="onDelete('${token.id}', 'Do you really want to delete this relationship?');return true;"/>

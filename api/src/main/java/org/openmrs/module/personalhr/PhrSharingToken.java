@@ -50,6 +50,10 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
     
     private String shareType;
     
+    private static final String STATUS_ACCEPTED="Yes";
+    private static final String STATUS_EXPIRED="Expired";
+    private static final String STATUS_NOT_ACCEPTED_YET="Not yet";
+    
     /**
      * @see org.openmrs.OpenmrsObject#getId()
      */
@@ -252,6 +256,21 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
      */
     public int compareTo(final PhrSharingToken newToken) {
         return newToken.getId().compareTo(this.id);
+    }
+    
+    /**
+     * Get a status description on this sharing token
+     * 
+     * @return status description
+     */
+    public String getStatus() {
+        if(activateDate != null) {
+            return STATUS_ACCEPTED;
+        } else if(expireDate.before(new Date())) {
+            return STATUS_EXPIRED;
+        } else {
+            return STATUS_NOT_ACCEPTED_YET;
+        }
     }
     
 }

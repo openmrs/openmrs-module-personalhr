@@ -115,6 +115,8 @@ public class NewPatientFormController extends SimpleFormController {
         binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
+        request.getSession().setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "true");
+        
     }
     
     @Override
@@ -233,7 +235,8 @@ public class NewPatientFormController extends SimpleFormController {
                                     final BindException errors) throws Exception {
         
         final HttpSession httpSession = request.getSession();
-        
+        request.getSession().setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "true");
+       
         this.log.debug("\nNOW GOING THROUGH ONSUBMIT METHOD.......................................\n\n");
         
         if (Context.isAuthenticated()) {
@@ -369,7 +372,7 @@ public class NewPatientFormController extends SimpleFormController {
                 }
                 
                 // if there is an error displaying the attribute, the value will be null
-                if (value != null) {
+                if (!isError) {
                     final PersonAttribute attribute = new PersonAttribute(type, value);
                     try {
                         final Object hydratedObject = attribute.getHydratedObject();
@@ -615,8 +618,10 @@ public class NewPatientFormController extends SimpleFormController {
                 // evict from session so that nothing temporarily added here is saved
                 Context.evictFromSession(patient);
                 
-                //return this.showForm(request, response, errors, model);
-                return new ModelAndView(new RedirectView(this.getSuccessView() + "?patientId=" + patient.getPatientId()));
+                httpSession.setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "false");
+                
+                return this.showForm(request, response, errors, model);
+                //return new ModelAndView(new RedirectView("findPatient.htm"));
             } else {
                 httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
                 this.log.debug("Patient saved! Redirect to " + this.getSuccessView() + "?patientId="
