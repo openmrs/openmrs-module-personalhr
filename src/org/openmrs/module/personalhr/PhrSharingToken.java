@@ -52,7 +52,7 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
     
     private static final String STATUS_ACCEPTED="Yes";
     private static final String STATUS_EXPIRED="Expired";
-    private static final String STATUS_NOT_ACCEPTED_YET="No";
+    private static final String STATUS_NOT_ACCEPTED_YET="Not yet";
     
     /**
      * @see org.openmrs.OpenmrsObject#getId()
@@ -269,7 +269,7 @@ public class PhrSharingToken extends BaseOpenmrsMetadata implements Comparable<P
     public String getStatus() {
       if(activateDate != null) {
           return STATUS_ACCEPTED;
-      } else if(expireDate != null) {
+      } else if(expireDate.before(new Date())) {
           return STATUS_EXPIRED;
       } else {
           return STATUS_NOT_ACCEPTED_YET;

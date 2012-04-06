@@ -69,6 +69,7 @@ import org.springframework.web.context.request.WebRequest;
 public class PhrUserFormController {
     
     protected static final Log log = LogFactory.getLog(PhrUserFormController.class);
+    private static final String NOTIFICATION_TEMPLATE = "Dear OPENMRS_PHR_RELATED_PERSON,\n\nThank you for registering with the Personal Cancer Toolkit. You are now able to access this toolkit through the following link:\n\nOPENMRS_URL\n\nYour user details are as follows: \n\nUsername: OPENMRS_USERNAME\n\nPassword: OPENMRS_PASSWORD\n\nIf you have any questions or require further clarification, please contact the site administrator here:\n\ncancertoolkit-l@listserv.regenstrief.org\n\nThank You!\nSincerely,\nThe Personal Cancer Toolkit Development Team";
     
     @InitBinder
     public void initBinder(final WebDataBinder binder) {
@@ -212,6 +213,7 @@ public class PhrUserFormController {
             Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
             Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
             Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+            Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
             Context.addProxyPrivilege("PHR Restricted Patient Access");
             isTemporary = true;
             log.debug("Added proxy privileges!");
@@ -223,6 +225,7 @@ public class PhrUserFormController {
               Context.addProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
               Context.addProxyPrivilege(OpenmrsConstants.PRIV_PURGE_USERS);
               Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
+              Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
           }
         }
         
@@ -366,6 +369,7 @@ public class PhrUserFormController {
                             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
                             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
                             Context.removeProxyPrivilege("PHR Restricted Patient Access");
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
                             Context.logout();
                             log.debug("Removed proxy privileges!");
                         }
@@ -383,6 +387,7 @@ public class PhrUserFormController {
                             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
                             Context.removeProxyPrivilege("PHR Restricted Patient Access");
                             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
+                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
                             Context.logout();
                             log.debug("Removed proxy privileges!");
                         }
@@ -447,7 +452,20 @@ public class PhrUserFormController {
                         
                         //set default messaging alert address
                         boolean shouldAlert = true;
-                        PersonalhrUtil.setMessagingAlertSettings(user.getPerson(), shouldAlert, addressId);                       
+                        PersonalhrUtil.setMessagingAlertSettings(user.getPerson(), shouldAlert, addressId);
+                        
+                        //send email notification
+                        final String deployUrl= Context.getRuntimeProperties().getProperty("deployment.url");//"https://65.111.248.164:8443/"; //"172.30.201.24";
+                        final String url = deployUrl + "/openmrs/phr/index.htm";
+                        final String passwordOption= Context.getAdministrationService().getGlobalProperty("personalhr.show.password");
+                                  
+                        String notification = NOTIFICATION_TEMPLATE;
+                        notification = notification.replaceAll("OPENMRS_PHR_RELATED_PERSON", user.getPerson().getGivenName());
+                        notification = notification.replaceAll("OPENMRS_USERNAME", user.getUsername());
+                        notification = notification.replaceAll("OPENMRS_PASSWORD", showPassword(password, passwordOption));
+                        notification = notification.replaceAll("OPENMRS_URL", url);
+                        
+                        PersonalhrUtil.sendEmail(emailEntered, notification);
                     } else {
                         httpSession.setAttribute(
                             WebConstants.OPENMRS_MSG_ATTR,
@@ -492,6 +510,7 @@ public class PhrUserFormController {
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
                 Context.removeProxyPrivilege("PHR Restricted Patient Access");
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
                 Context.logout();
                 log.debug("Removed proxy privileges for self registration!");
             } else if (isAdministrator) {
@@ -500,12 +519,41 @@ public class PhrUserFormController {
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_PURGE_USERS);
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
                 log.debug("Removed proxy privileges for PHR Administrator!");
             }            
         }
         return "redirect:/phr/index.htm?noredirect=true";
     }
     
+    /**
+     * Auto generated method comment
+     * 
+     * @param password full length password
+     * @param passwordOption length of password to expose
+     * @return
+     */
+    private String showPassword(String password, String passwordOption) {
+        if(passwordOption==null || password==null) {
+            return password;
+        }
+        try{
+            int numToShow = Integer.parseInt(passwordOption); 
+            StringBuffer sb = new StringBuffer();
+            for(int ii=0; ii<password.length(); ii++) {
+                if(ii<numToShow) {
+                    sb.append(password.charAt(ii));
+                } else {
+                    sb.append('*');
+                }
+            }
+            return sb.toString();
+            
+        } catch (NumberFormatException e) {
+            return password;
+        }                
+    }
+
     /**
      * Superficially determines if this form is being filled out for a new user (basically just
      * looks for a primary key (user_id)

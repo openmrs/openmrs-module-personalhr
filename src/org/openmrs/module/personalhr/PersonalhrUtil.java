@@ -28,6 +28,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.messaging.MessagingModuleActivator;
+import org.openmrs.module.messaging.MessagingService;
 import org.openmrs.module.messaging.PersonAttributeService;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -346,4 +347,23 @@ public class PersonalhrUtil {
         //save the attributes 
         Context.getPersonService().savePerson(per);
     }    
+    
+    /**
+     * Auto generated method comment
+     * 
+     * @param emailAddress
+     * @param email
+     */
+    public static void sendEmail(final String emailAddress, final String email) {
+        // TODO Auto-generated method stub
+        try {
+            Context.getService(MessagingService.class).sendMessage(email, emailAddress,
+                org.openmrs.module.messaging.email.EmailProtocol.class);
+        } catch (final Exception e) {
+            log.debug("Unable to send message to " + emailAddress, e);
+        } catch (final NoClassDefFoundError e) {
+            log.debug("Messaging module is not found, unable to send message to " + emailAddress, e);           
+        }
+    }
+    
 }

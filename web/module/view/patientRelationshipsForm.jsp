@@ -248,7 +248,7 @@
 		    	</select>
 		    </spring:bind>		    
 		    </td>
-		    <td>
+		    <td align="center">
 		    	<label>${token.status}</label>
 		    </td>
 		    <td align="center">
