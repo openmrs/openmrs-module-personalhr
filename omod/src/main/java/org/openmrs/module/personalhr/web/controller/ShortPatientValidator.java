@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.validator.PersonNameValidator;
-import org.openmrs.web.controller.patient.ShortPatientModel;
+import org.openmrs.module.personalhr.web.controller.ShortPatientModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
