@@ -133,6 +133,15 @@ insert into phr_security_rule (privilege, required_role, creator, date_created) 
 insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Messages','Administrator, Owner, Share Medical, Share Journal',1,now() );
 insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Relationships','Administrator, Owner',1,now() );
 
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Add Recommended Care','Administrator, Share Medical and Doctor',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Create/Delete Treatment Summary','Administrator, Owner, Share Medical',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Edit Treatment Summary','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Update Follow-up Care','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Follow-up Care','Administrator, Owner, Share Medical',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Side Effects','Administrator, Owner, Share Medical',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Treatment Summary','Administrator, Owner, Share Medical',1,now() );
+
+
 insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/dwr/call/plaincall/Multiple.*','View Messages','used by messaginphr module',1,now());
 insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRConceptService*','PHR Authenticated','used by personalhr module',1,now());
 insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRJournalEntryService*','View Journal','Used by phrjournal module',1,now());
@@ -147,6 +156,16 @@ insert into phr_allowed_url (allowed_url, required_privilege, description, creat
 insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/messaging/*','View Messages','used by messaging module',1,now());
 insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/messagingphr/*','View Messages','used by messaging module',1,now());
 insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/phrjournal/*','View Journal','used by phrjournal module',1,now());
+
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRHtmlFormEntryService*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRLafService*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRModuleMessageService*','View Messages','used by messaging module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/HtmlFlowsheetDWR*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/htmlformentry/*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/htmlformflowsheet/*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/lancearmstrong/*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/moduleResources/htmlformflowsheet/*','View Treatment Summary','used by lancearmstrong module',1,now());
+
 
 insert into privilege (privilege, description, uuid) values('PHR All Patients Access','A privilege to access all patients. Only PHR Administrator role can have this privilege.',uuid() );
 insert into privilege (privilege, description, uuid) values('PHR Restricted Patient Access','A privilege to access data of patients who explicitly grant this access. Only PHR Restricted User role can have this privilege. ',uuid() );
