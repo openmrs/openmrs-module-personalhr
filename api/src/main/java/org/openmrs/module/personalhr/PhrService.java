@@ -188,6 +188,28 @@ public interface PhrService {
     public List<Person> getRelatedPersons(Person person);
     
     /**
+     * Get all PHR Users
+     * 
+     * @return person objects of all PHR Users
+     */
+    public List<Person> getAllPhrUsers();
+
+    /**
+     * Get all PHR Patient Users
+     * 
+     * @return person objects of all PHR Patient Users
+     */
+    public List<Person> getAllPhrPatients();
+
+    /**
+     * Get patient object of a given person
+     * 
+     * @param person given person obhect
+     * @return patient object
+     */
+    public Patient getPatient(final Person person);
+    
+    /**
      * Log a specific event
      * 
      * @param eventType event type

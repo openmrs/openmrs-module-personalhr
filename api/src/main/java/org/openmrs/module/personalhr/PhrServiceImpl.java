@@ -399,7 +399,7 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
      * 
      * @return person objects of all PHR Users
      */
-    private List<Person> getAllPhrUsers() {
+    public List<Person> getAllPhrUsers() {
         final List<Person> persons = new ArrayList<Person>();
         final List<User> users = new ArrayList<User>();
         
@@ -415,13 +415,33 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
         return persons;
     }
     
+    
+    /**
+     * Get all PHR Patient Users
+     * 
+     * @return person objects of all PHR Patient Users
+     */
+    public List<Person> getAllPhrPatients() {
+        final List<Person> persons = new ArrayList<Person>();
+        final List<User> users = new ArrayList<User>();
+        
+        users.addAll(Context.getUserService().getUsersByRole(Context.getUserService().getRole(PhrBasicRole.PHR_PATIENT.getValue())));
+        
+        for (final User user : users) {
+            if(user != null && user.getPerson()!=null) {
+                persons.add(user.getPerson());
+            }
+        }
+        return persons;
+    }
+    
     /**
      * Get patient object of a given person
      * 
-     * @param person given person obhect
+     * @param person given person object
      * @return patient object
      */
-    private Patient getPatient(final Person person) {
+    public Patient getPatient(final Person person) {
         // TODO Auto-generated method stub
         if (person != null) {
             return Context.getPatientService().getPatient(person.getPersonId());
