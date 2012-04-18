@@ -164,7 +164,7 @@ public class OptionsFormController extends SimpleFormController {
 				}
 			}
 			
-			if (!opts.getSecretQuestionPassword().equals("")) {
+			if (!opts.getSecretQuestionPassword().equals("") && !opts.getSecretAnswerNew().equals("")) {
 				if (!errors.hasErrors()) {
 					try {
 						user.setSecretQuestion(opts.getSecretQuestionNew());
