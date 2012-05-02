@@ -62,6 +62,8 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
+import org.openmrs.module.personalhr.PersonalhrUtil;
+import org.openmrs.module.personalhr.PhrService;
 import org.openmrs.module.personalhr.web.controller.ShortPatientModel;
 import org.openmrs.module.personalhr.web.controller.ShortPatientValidator;
 import org.openmrs.web.controller.person.PersonFormController;
@@ -617,7 +619,7 @@ public class NewPatientFormController extends SimpleFormController {
                 }
             }
             
-            if (p == null) {
+            if (p == null && PersonalhrUtil.getService().hasBasicRole(Context.getAuthenticatedUser().getPerson(), PhrService.PhrBasicRole.PHR_ADMINISTRATOR)) {
                 try {
                     Person person = Context.getPersonService().getPerson(id);
                     if (person != null)
@@ -627,6 +629,9 @@ public class NewPatientFormController extends SimpleFormController {
                     log.warn("There is no patient or person with id: '" + id + "'", noPersonEx);
                     throw new ServletException("There is no patient or person with id: '" + id + "'");
                 }
+            } else if(p == null) {
+                log.warn("You're not allowed to access this page! username = '" + Context.getAuthenticatedUser().getUsername() + "'");
+                throw new ServletException("You're not allowed to access this page! username = '" + Context.getAuthenticatedUser().getUsername() + "'");            	
             }
         }
         
