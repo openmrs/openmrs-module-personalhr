@@ -150,7 +150,18 @@ public class PhrLogEvent {
      * Event type
      */
     public static final String CHANGE_TAB = "CHANGE_TAB";
+    /**
+     * Event type
+     */
     public static final String CONTACT_US = "CONTACT_US";
+    /**
+     * Event type
+     */
+	public static final String USER_REGISTER = "USER_REGISTER";
+    /**
+     * Event type
+     */
+	public static final String USER_REGISTER_FAILED = "USER_REGISTER_FAILED";
     
     /**
      * Construct the event log object

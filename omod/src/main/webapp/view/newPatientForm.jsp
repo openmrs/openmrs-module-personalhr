@@ -1,6 +1,5 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 <personalhr:require privilege="View Relationships" otherwise="/phr/login.htm" redirect="../module/personalhr/portlets/newPatientForm.portlet"/>
-<%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <%@ page import="java.util.*, java.lang.*" %>
 <%
@@ -210,19 +209,14 @@
 	</div>
 </spring:hasBindErrors>
 
-<form method="post" action="newPatient.form" onSubmit="removeHiddenRows()">
-	<c:if test="${patient.patientId == null}"><h2><spring:message code="Patient.create"/></h2></c:if>
-	<c:if test="${patient.patientId != null}"><h2><spring:message code="Patient.edit"/></h2></c:if>
-
-	<c:if test="${patient.patientId != null}">
-		<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patient.patientId}">
-			<spring:message code="patientDashboard.viewDashboard"/>
-		</a>
-		<br/>
-	</c:if>
-	
-	<br/>
-	
+<form method="post" action="newPatientForm.form" onSubmit="removeHiddenRows()">
+	<c:set var="isPhrAdministrator" value="false" />
+	<openmrs:hasPrivilege privilege="PHR All Patients Access">
+		<c:if test="${patient.patientId == null}"><h2><spring:message code="Patient.create"/></h2></c:if>
+		<c:if test="${patient.patientId != null}"><h2><spring:message code="Patient.edit"/></h2></c:if>
+		<c:set var="isPhrAdministrator" value="true" />
+	</openmrs:hasPrivilege>
+    
 	<table cellspacing="0" cellpadding="7">
 	<tr>
 		<th class="headerCell"><spring:message code="Person.name"/></th>
@@ -424,66 +418,12 @@
 		</tr>
 	</openmrs:forEachDisplayAttributeType>
 	
-	<tr>
-		<th class="headerCell lastCell"><spring:message code="Person.dead"/></th>
-		<td class="inputCell lastCell">
-			<spring:message code="Person.dead.checkboxInstructions"/>
-			<spring:bind path="patient.dead">
-				<input type="hidden" name="_${status.expression}"/>
-				<input type="checkbox" name="${status.expression}" 
-					   <c:if test="${status.value == true}">checked</c:if>
-					   onclick="personDeadClicked(this)" id="personDead"
-				/>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-			<script type="text/javascript">
-				function personDeadClicked(input) {
-					if (input.checked) {
-						document.getElementById("deathInformation").style.display = "";
-					}
-					else {
-						document.getElementById("deathInformation").style.display = "none";
-						document.getElementById("deathDate").value = "";
-						var cause = document.getElementById("causeOfDeath");
-						if (cause != null)
-							cause.value = "";
-					}
-				}
-			</script>
-			<br/>
-			<div id="deathInformation">
-				<b><spring:message code="Person.deathDate"/>:</b>
-
-				<spring:bind path="patient.deathDate">
-					<input type="text" name="deathDate" size="10" 
-						   value="${status.value}" onClick="showCalendar(this)" 
-						   id="deathDate" />
-					<i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-				&nbsp; &nbsp; 
-				<spring:message code="Person.causeOfDeath"/>
-				<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
-				<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
-				<spring:bind path="patient.causeOfDeath">
-					<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="causeOfDeath" val="${status.value}" parameters="showAnswers=${conceptCauseOfDeath}|showOther=${conceptOther}|otherValue=${causeOfDeathOther}" />
-					<%--<input type="text" name="causeOfDeath" value="${status.value}" id="causeOfDeath"/>--%>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-				<script type="text/javascript">				
-					//set up death info fields
-					personDeadClicked(document.getElementById("personDead"));
-				</script>
-			</div>
-		</td>
-	</tr>
 	</table>
 	
 	<input type="hidden" name="patientId" value="${param.patientId}" />
 	
 	<br />
 	<input type="submit" value="<spring:message code="general.save" />" name="action" id="addButton"> &nbsp; &nbsp; 
-	<input type="button" value="<spring:message code="general.back" />" onclick="history.go(-1);">
 </form>
 
 <script type="text/javascript">

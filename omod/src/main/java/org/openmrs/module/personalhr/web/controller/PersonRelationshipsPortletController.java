@@ -45,7 +45,7 @@ public class PersonRelationshipsPortletController extends PortletController {
                 .getSharingTokenByPerson(per);
         model.put("phrSharingTokens", sharingTokens);
         this.log.debug("Exiting PersonRelationshipsPortletController:populateModel -> personId|sharingTokens.size = "
-                + personId + "|" + sharingTokens == null ? null : sharingTokens.size());
+                + personId + "|" + (sharingTokens == null ? null : sharingTokens.size()));
     }
     
 }

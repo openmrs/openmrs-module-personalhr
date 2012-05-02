@@ -15,6 +15,7 @@ package org.openmrs.module.personalhr.web.controller;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -25,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Attributable;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
@@ -32,7 +35,15 @@ import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.DuplicateIdentifierException;
+import org.openmrs.api.IdentifierNotUniqueException;
+import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.InvalidCheckDigitException;
+import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PasswordException;
+import org.openmrs.api.PatientIdentifierException;
+import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
@@ -126,7 +137,7 @@ public class PhrUserFormController {
         return roles;
     }
     
-    @RequestMapping(value = "/phr/user.form", method = RequestMethod.GET)
+    @RequestMapping(value = "/phr/user.form", method = RequestMethod.GET)    
     public String showForm(@RequestParam(required = false, value = "userId") final Integer userId,
                            @RequestParam(required = false, value = "createNewPerson") final String createNewPerson,
                            @RequestParam(required = false, value = "sharingToken") final String sharingToken,
@@ -140,9 +151,16 @@ public class PhrUserFormController {
                 .getSharingToken(sharingToken);
         if (!Context.isAuthenticated() && (token == null)) {
             //Not allowed to register without a sharing token
-            session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, mss.getMessage("personalhr.error.valid.invitation"));
-            log.error("Failed to register without a valid sharing token");
-            return "redirect:/phr/index.htm?noredirect=true";
+            //session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, mss.getMessage("personalhr.error.valid.invitation"));
+            //log.error("Failed to register without a valid sharing token");
+            //return "redirect:/phr/index.htm?noredirect=true";
+
+        	String mrn = (String) session.getAttribute("USER_REGISTRATION_MRN");
+            String insitution = (String) session.getAttribute("USER_REGISTRATION_INSTITUTION");
+            if(insitution == null || mrn == null) {
+	        	//Ask for a study-assigned patient id and password to continue
+	            return "redirect:/phr/register.htm";
+            } 
         } else if (!Context.isAuthenticated() && (token.getRelatedPerson() != null)) {
             //Not allowed to register without a sharing token
             session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, mss.getMessage("personalhr.error.valid.invitation"));
@@ -197,11 +215,15 @@ public class PhrUserFormController {
                                    @RequestParam(required = false, value = "roleStrings") final String[] roles,
                                    @RequestParam(required = false, value = "createNewPerson") final String createNewPerson,
                                    @RequestParam(required = false, value = "sharingToken") String sharingToken,
-                                   @ModelAttribute("user") final User user, final BindingResult errors) {
+                                   @ModelAttribute("user") final User user, final BindingResult errors) throws Exception {
         
         if (sharingToken == null) {
             sharingToken = (String) model.get("sharingToken");
         }
+        
+        String emailEntered = request.getParameter("9");
+    	String mrn = (String) httpSession.getAttribute("USER_REGISTRATION_MRN");
+        String institution = (String) httpSession.getAttribute("USER_REGISTRATION_INSTITUTION");
         
         log.debug("Entering PhrUserFormController:handleSubmission..." + sharingToken);
         //add temporary privileges
@@ -215,6 +237,10 @@ public class PhrUserFormController {
             Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
             Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
             Context.addProxyPrivilege("PHR Restricted Patient Access");
+            Context.addProxyPrivilege("PHR Single Patient Access");
+            Context.addProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
+            Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
+            Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
             isTemporary = true;
             log.debug("Added proxy privileges!");
         } else {
@@ -314,11 +340,13 @@ public class PhrUserFormController {
                         }
                         newRoles.add(role);
                     }
-                } else {
-                    final Role role = us.getRole("PHR Restricted User");
+                } else { //user is doing a self registration when roles = null
+                    Role role = us.getRole("PHR Restricted User");
+                    if(institution != null && mrn != null) { //if a patient is doing a self registration
+                    	role = us.getRole("PHR Patient");
+                    }
                     newRoles.add(role);
                     user.addRole(role);
-                    log.debug("Added PHR Restricted User role only: " + role);
                 }
                 
                 if (user.getRoles() == null) {
@@ -347,53 +375,144 @@ public class PhrUserFormController {
                     log.debug("errors validating user: " + errors.getErrorCount() + errors.toString());
                     return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
                 }
-                
-                String emailEntered = request.getParameter("9");
-                
+                                
                 if (isNewUser(user) && !isAdministrator) {
                     log.debug("Saving new user " + user.getUsername() + ", sharingToken=" + sharingToken);
                     final PhrSharingToken token = PersonalhrUtil.getService().getSharingTokenDao().getSharingToken(sharingToken);
                     
-                    //check token existence and name matching
-                    if (token == null || token.getExpireDate().before(new Date())) {
-                        httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-                            "Failed to register without a valid sharing token");
-                        log.error("Failed to register without a valid sharing token");
-                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
-                            httpSession.getId(), null, 
-                            "error=Failed to register without a valid sharing token; user_name=" + user.getName());
-    
-                        if (isTemporary) {
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
-                            Context.removeProxyPrivilege("PHR Restricted Patient Access");
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
-                            Context.logout();
-                            log.debug("Removed proxy privileges!");
-                        }
-                        return "redirect:/phr/index.htm?noredirect=true";
-                    } else if ((token != null) && (token.getRelatedPerson() != null)) {
-                        httpSession
-                                .setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register with a used sharing token");
-                        log.error("Failed to register with a used sharing token");
-                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
-                            httpSession.getId(), null, 
-                            "error=Failed to register with a used sharing token; user_name=" + user.getName() + "; sharingToken="+token);
-                        if (isTemporary) {
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-                            Context.removeProxyPrivilege("PHR Restricted Patient Access");
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
-                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
-                            Context.logout();
-                            log.debug("Removed proxy privileges!");
-                        }
-                        
-                        return "redirect:/phr/index.htm?noredirect=true";
-                    } else if (emailEntered != null && token.getRelatedPersonEmail().equalsIgnoreCase(emailEntered)) {                        
+                    if(institution == null || mrn == null) { //if a patient is not doing a self registration
+	                    if (token == null || token.getExpireDate().before(new Date())) { //check token existence and name matching
+	                        httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+	                            "Failed to register without a valid sharing token");
+	                        log.error("Failed to register without a valid sharing token");
+	                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
+	                            httpSession.getId(), null, 
+	                            "error=Failed to register without a valid sharing token; user_name=" + user.getName());
+	    
+	                        if (isTemporary) {
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
+	                            Context.removeProxyPrivilege("PHR Restricted Patient Access");
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+	                            Context.removeProxyPrivilege("PHR Single Patient Access");
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+	                            Context.logout();
+	                            log.debug("Removed proxy privileges!");
+	                        }
+	                        return "redirect:/phr/index.htm?noredirect=true";
+	                    } else if ((token != null) && (token.getRelatedPerson() != null)) {
+	                        httpSession
+	                                .setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Failed to register with a used sharing token");
+	                        log.error("Failed to register with a used sharing token");
+	                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
+	                            httpSession.getId(), null, 
+	                            "error=Failed to register with a used sharing token; user_name=" + user.getName() + "; sharingToken="+token);
+	                        if (isTemporary) {
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+	                            Context.removeProxyPrivilege("PHR Restricted Patient Access");
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+	                            Context.removeProxyPrivilege("PHR Single Patient Access");
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
+	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+	                            Context.logout();
+	                            log.debug("Removed proxy privileges!");
+	                        }
+	                        
+	                        return "redirect:/phr/index.htm?noredirect=true";
+	                    } 
+                    
+	                    if (emailEntered != null && token.getRelatedPersonEmail().equalsIgnoreCase(emailEntered)) {                        
+	                        // look for person attributes (including email entered) in the request and save to user
+	                        for (final PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PATIENT,
+	                            ATTR_VIEW_TYPE.VIEWING)) {
+	                            final String paramName = type.getPersonAttributeTypeId().toString();
+	                            final String value = request.getParameter(paramName);
+	                            
+	                            this.log.debug("paramName=" + paramName);
+	                            
+	                            // if there is an error displaying the attribute, the value will be null
+	                            if (value != null) {
+	                                final PersonAttribute attribute = new PersonAttribute(type, value);
+	                                try {
+	                                    final Object hydratedObject = attribute.getHydratedObject();
+	                                    if ((hydratedObject == null) || "".equals(hydratedObject.toString())) {
+	                                        // if null is returned, the value should be blanked out
+	                                        attribute.setValue("");
+	                                    } else if (hydratedObject instanceof Attributable) {
+	                                        attribute.setValue(((Attributable) hydratedObject).serialize());
+	                                    } else if (!hydratedObject.getClass().getName().equals(type.getFormat())) {
+	                                        // if the classes doesn't match the format, the hydration failed somehow
+	                                        // TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
+	                                        throw new APIException();
+	                                    }
+	                                } catch (final APIException e) {
+	                                    errors.rejectValue("attributeMap[" + type.getName() + "]", "Invalid value for " + type.getName()
+	                                            + ": '" + value + "'");
+	                                    this.log.warn("Got an invalid value: " + value + " while setting personAttributeType id #"
+	                                            + paramName, e);
+	                                    
+	                                    // setting the value to empty so that the user can reset the value to something else
+	                                    attribute.setValue("");
+	                                    
+	                                }
+	                                user.getPerson().addAttribute(attribute);
+	                            }
+	                        }
+	                                                                        
+	                        //create a new user by self registration
+	                        us.saveUser(user, password);
+	                        
+	                        //update sharing token
+	                        token.setRelatedPerson(user.getPerson());
+	                        token.setChangedBy(user);
+	                        final Date date = new Date();
+	                        token.setDateChanged(date);
+	                        token.setActivateDate(date);
+	                        PersonalhrUtil.getService().getSharingTokenDao().savePhrSharingToken(token);
+	                        httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "personalhr.user.signed.up");
+	                        log.debug("New self-registered user created: " + user.getUsername());
+	                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), user, 
+	                            httpSession.getId(), null, 
+	                            "info=New self-registered user created; user_name=" + user.getName() + "; sharingToken="+token);
+	                        
+	                        //save email to messaging service
+	                        Integer addressId = saveEmail(user.getPerson(), emailEntered);
+	                        
+	                        //set default messaging alert address
+	                        boolean shouldAlert = true;
+	                        PersonalhrUtil.setMessagingAlertSettings(user.getPerson(), shouldAlert, addressId);
+	                        
+	                        //send email notification
+	                        final String deployUrl= Context.getRuntimeProperties().getProperty("deployment.url");//"https://65.111.248.164:8443/"; //"172.30.201.24";
+	                        final String url = deployUrl + "/openmrs/phr/index.htm";
+	                        final String passwordOption= Context.getAdministrationService().getGlobalProperty("personalhr.show.password");
+	                                  
+	                        String notification = NOTIFICATION_TEMPLATE;
+	                        notification = notification.replaceAll("OPENMRS_PHR_RELATED_PERSON", user.getPerson().getGivenName());
+	                        notification = notification.replaceAll("OPENMRS_USERNAME", user.getUsername());
+	                        notification = notification.replaceAll("OPENMRS_PASSWORD", showPassword(password, passwordOption));
+	                        notification = notification.replaceAll("OPENMRS_URL", url);
+	                        
+	                        PersonalhrUtil.sendEmail(emailEntered, notification);
+	                    } else {
+	                        httpSession.setAttribute(
+	                            WebConstants.OPENMRS_MSG_ATTR,
+	                            "Failed to create new user due to email mismatch: " + emailEntered);
+	                        log.debug("Failed to create new user due to email mismatch: " + token.getRelatedPersonEmail() + " vs "
+	                                + emailEntered);
+	                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
+	                            httpSession.getId(), null, 
+	                            "info=Failed to create new user due to email mismatch: " + token.getRelatedPersonEmail() + "vs " + emailEntered + "; sharingToken="+token);
+	                    }
+                    } else { //patient is doing a self registration                        
                         // look for person attributes (including email entered) in the request and save to user
                         for (final PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PATIENT,
                             ATTR_VIEW_TYPE.VIEWING)) {
@@ -434,13 +553,12 @@ public class PhrUserFormController {
                         //create a new user by self registration
                         us.saveUser(user, password);
                         
-                        //update sharing token
-                        token.setRelatedPerson(user.getPerson());
-                        token.setChangedBy(user);
-                        final Date date = new Date();
-                        token.setDateChanged(date);
-                        token.setActivateDate(date);
-                        PersonalhrUtil.getService().getSharingTokenDao().savePhrSharingToken(token);
+                        //create a patient object for this user if a patient is doing a self registration
+                        if(institution != null && mrn != null) {
+                        	savePatient(user, institution, mrn, httpSession);
+                        }
+                        
+                        //log event and success message
                         httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "personalhr.user.signed.up");
                         log.debug("New self-registered user created: " + user.getUsername());
                         PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), user, 
@@ -455,7 +573,7 @@ public class PhrUserFormController {
                         PersonalhrUtil.setMessagingAlertSettings(user.getPerson(), shouldAlert, addressId);
                         
                         //send email notification
-                        final String deployUrl= Context.getRuntimeProperties().getProperty("deployment.url");//"https://65.111.248.164:8443/"; //"172.30.201.24";
+                        final String deployUrl= Context.getRuntimeProperties().getProperty("deployment.url");
                         final String url = deployUrl + "/openmrs/phr/index.htm";
                         final String passwordOption= Context.getAdministrationService().getGlobalProperty("personalhr.show.password");
                                   
@@ -466,16 +584,8 @@ public class PhrUserFormController {
                         notification = notification.replaceAll("OPENMRS_URL", url);
                         
                         PersonalhrUtil.sendEmail(emailEntered, notification);
-                    } else {
-                        httpSession.setAttribute(
-                            WebConstants.OPENMRS_MSG_ATTR,
-                            "Failed to create new user due to email mismatch: " + emailEntered);
-                        log.debug("Failed to create new user due to email mismatch: " + token.getRelatedPersonEmail() + " vs "
-                                + emailEntered);
-                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
-                            httpSession.getId(), null, 
-                            "info=Failed to create new user due to email mismatch: " + token.getRelatedPersonEmail() + "vs " + emailEntered + "; sharingToken="+token);
-                    }
+                    } 
+                    	
                 } else if (isNewUser(user) && isAdministrator) {
                     //create a new user by PHR Administrator
                     us.saveUser(user, password);                
@@ -511,6 +621,10 @@ public class PhrUserFormController {
                 Context.removeProxyPrivilege("PHR Restricted Patient Access");
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
                 Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+                Context.removeProxyPrivilege("PHR Single Patient Access");
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
                 Context.logout();
                 log.debug("Removed proxy privileges for self registration!");
             } else if (isAdministrator) {
@@ -602,4 +716,87 @@ public class PhrUserFormController {
             return null;
         }         
     }    
+
+    protected boolean savePatient(User user, String institution, String mrn, final HttpSession httpSession) throws Exception {
+                
+        log.debug("\nNOW GOING THROUGH ONSUBMIT METHOD.......................................\n\n");
+        boolean isError = false;
+        
+        if (Context.isAuthenticated()) {
+            PatientService ps = Context.getPatientService();
+            PersonService personService = Context.getPersonService();
+                        
+            Patient patient = new Patient(user.getPerson());
+            
+            PatientIdentifier pid = new PatientIdentifier();
+			PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByName(institution);
+			if (pit == null) {
+				log.error("Can't find PatientIdentifierType named '" + institution + "'");
+				isError = true;
+			}            
+            pid.setIdentifierType(pit);
+            pid.setIdentifier(mrn);
+            pid.setLocation(Context.getLocationService().getLocation(institution)); //assuming location name and identifier name are the same
+            pid.setPreferred(true);
+            patient.addIdentifier(pid);
+            
+            
+            Patient newPatient = null;
+            
+            if (!isError) {
+                // save or add the patient
+                try {
+            		Context.clearSession();                	
+                    newPatient = ps.savePatient(patient);
+                }
+                catch (InvalidIdentifierFormatException iife) {
+                    log.error(iife);
+                    patient.removeIdentifier(iife.getPatientIdentifier());
+                    httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
+                    //errors = new BindException(new InvalidIdentifierFormatException(msa.getMessage("PatientIdentifier.error.formatInvalid")), "givenName");
+                    isError = true;
+                }
+                catch (InvalidCheckDigitException icde) {
+                    log.error(icde);
+                    patient.removeIdentifier(icde.getPatientIdentifier());
+                    httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
+                    //errors = new BindException(new InvalidCheckDigitException(msa.getMessage("PatientIdentifier.error.checkDigit")), "givenName");
+                    isError = true;
+                }
+                catch (IdentifierNotUniqueException inue) {
+                    log.error(inue);
+                    patient.removeIdentifier(inue.getPatientIdentifier());
+                    httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
+                    //errors = new BindException(new IdentifierNotUniqueException(msa.getMessage("PatientIdentifier.error.notUnique")), "givenName");
+                    isError = true;
+                }
+                catch (DuplicateIdentifierException die) {
+                    log.error(die);
+                    patient.removeIdentifier(die.getPatientIdentifier());
+                    httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
+                    //errors = new BindException(new DuplicateIdentifierException(msa.getMessage("PatientIdentifier.error.duplicate")), "givenName");
+                    isError = true;
+                }
+                catch (InsufficientIdentifiersException iie) {
+                    log.error(iie);
+                    patient.removeIdentifier(iie.getPatientIdentifier());
+                    httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+                        "PatientIdentifier.error.insufficientIdentifiers");
+                    //errors = new BindException(new InsufficientIdentifiersException(msa.getMessage("PatientIdentifier.error.insufficientIdentifiers")), "givenName");
+                    isError = true;
+                }
+                catch (PatientIdentifierException pie) {
+                    log.error(pie);
+                    patient.removeIdentifier(pie.getPatientIdentifier());
+                    httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, pie.getMessage());
+                    //errors = new BindException(new PatientIdentifierException(msa.getMessage("PatientIdentifier.error.general")), "givenName");
+                    isError = true;
+                }
+                
+            }            
+        }
+        
+        return isError;
+    }    
+    
 }

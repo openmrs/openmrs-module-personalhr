@@ -101,6 +101,11 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>phrRegisterServlet</servlet-name>
+		<servlet-class>org.openmrs.module.personalhr.web.servlet.RegisterServlet</servlet-class>
+	</servlet>
+
+	<servlet>
 		<servlet-name>phrLogoutServlet</servlet-name>
 		<servlet-class>org.openmrs.module.personalhr.web.servlet.LogoutServlet</servlet-class>
 	</servlet>
