@@ -125,7 +125,7 @@ public class NewPatientFormController extends SimpleFormController {
         newIdentifiers = new HashSet<PatientIdentifier>();
         
         ShortPatientModel shortPatient = (ShortPatientModel) obj;
-        
+      
         log.debug("\nNOW GOING THROUGH PROCESSFORMSUBMISSION METHOD.......................................\n\n");
         
         if (Context.isAuthenticated()) {
@@ -599,9 +599,12 @@ public class NewPatientFormController extends SimpleFormController {
             PatientService ps = Context.getPatientService();
             String patientId = request.getParameter("patientId"); 
             if(patientId == null) {
-            	patientId = ((Integer) request.getAttribute("org.openmrs.portlet.patientId")).toString();
+            	id = (Integer) request.getAttribute("org.openmrs.portlet.patientId");
+            	if(id!=null) {
+            		 p = ps.getPatient(id);
+            	}
             }
-            if (StringUtils.hasText(patientId)) {
+            if (id==null && StringUtils.hasText(patientId)) {
                 try {
                     id = Integer.valueOf(patientId);
                     p = ps.getPatient(id);
@@ -670,6 +673,13 @@ public class NewPatientFormController extends SimpleFormController {
         if (Context.isAuthenticated()) {
             PatientService ps = Context.getPatientService();
             String patientId = request.getParameter("patientId");
+            if(patientId == null) {
+            	Integer id = (Integer) request.getAttribute("org.openmrs.portlet.patientId");
+            	if(id!=null) {
+            		patientId = id.toString();
+            	}
+            }
+            
             if (patientId != null && !patientId.equals("")) {
                 
                 // our current patient
