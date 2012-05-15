@@ -21,7 +21,8 @@
 	
 	<require_modules>  	
 	     <require_module>org.openmrs.module.personalhr</require_module>  	
-	     <require_module>org.openmrs.module.htmlformentry</require_module>  	
+	     <require_module>org.openmrs.module.htmlformentry</require_module>  
+	     <require_module>org.openmrs.module.webservices.rest</require_module>  	     	
 	</require_modules> 
 
 	<!-- Extensions -->

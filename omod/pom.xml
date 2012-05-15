@@ -70,17 +70,16 @@
 			<scope>test</scope>
 		</dependency>
 		
+
 		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>webservices.rest-api</artifactId>
-			<version>0.9-SNAPSHOT</version>
-			<type>jar</type>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1-jbossorg-1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>webservices.rest-omod</artifactId>
 			<version>0.9-SNAPSHOT</version>
-			<type>jar</type>
 		</dependency>
 	</dependencies>
 

@@ -62,18 +62,6 @@
 		</dependency>
 				
 		<!-- End OpenMRS core -->
-		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>webservices.rest-api</artifactId>
-			<version>0.9-SNAPSHOT</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>webservices.rest-omod</artifactId>
-			<version>0.9-SNAPSHOT</version>
-			<type>jar</type>
-		</dependency>
 		
 		<dependency>
 			<groupId>org.openmrs.module</groupId>

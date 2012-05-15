@@ -13,45 +13,29 @@
  */
 package org.openmrs.module.medadherence.rest;
 
-import java.io.Serializable;
-import org.openmrs.BaseOpenmrsObject;
-import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.Concept;
-import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.webservices.rest.web.RequestContext;
 import org.openmrs.module.webservices.rest.web.representation.Representation;
-import org.openmrs.module.webservices.rest.web.resource.impl.*;
 import org.openmrs.module.webservices.rest.web.response.ResponseException;
 import org.openmrs.module.medadherence.MedBarriers;
-import org.openmrs.module.medadherence.MedicationAdherenceBarrier;
 import org.openmrs.module.medadherence.api.MedicationAdherenceBarriersService;
-import org.openmrs.module.webservices.rest.SimpleObject;
-import org.openmrs.module.webservices.rest.web.ConversionUtil;
-import org.openmrs.module.webservices.rest.web.RequestContext;
-import org.openmrs.module.webservices.rest.web.RestConstants;
-import org.openmrs.module.webservices.rest.web.annotation.PropertyGetter;
-import org.openmrs.module.webservices.rest.web.annotation.PropertySetter;
 import org.openmrs.module.webservices.rest.web.annotation.Resource;
-import org.openmrs.module.webservices.rest.web.api.RestService;
 import org.openmrs.module.webservices.rest.web.representation.DefaultRepresentation;
-import org.openmrs.module.webservices.rest.web.representation.FullRepresentation;
-import org.openmrs.module.webservices.rest.web.representation.Representation;
 import org.openmrs.module.webservices.rest.web.resource.impl.DataDelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
-import org.openmrs.module.webservices.rest.web.resource.impl.NeedsPaging;
-import org.openmrs.module.webservices.rest.web.response.ConversionException;
-import org.openmrs.module.webservices.rest.web.response.ObjectNotFoundException;
-import org.openmrs.module.webservices.rest.web.response.ResponseException;
 
 /**
  * {@link Resource} for Obs, supporting standard CRUD operations
  */
 @Resource("medbarriers")
-@Handler(supports = MedBarriers.class, order = 0)
+@Handler(supports = MedBarriers.class, order = 1)
 public class MedBarriersResource extends DataDelegatingCrudResource<MedBarriers> {
 
+	public MedBarriersResource() {
+		System.out.println("Constructor MedBarriersResource called");
+	}
+	
 	/**
 	 * @parsm uniqueId unique id of patient
 	 */
