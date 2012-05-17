@@ -626,8 +626,10 @@ public class NewPatientFormController extends SimpleFormController {
                 httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
                 this.log.debug("Patient saved! Redirect to " + this.getSuccessView() + "?patientId="
                         + newPatient.getPatientId());
+                request.getSession().setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "false");
                 return new ModelAndView(new RedirectView(this.getSuccessView() + "?patientId=" + newPatient.getPatientId()));
-            }
+            }       
+
         } else {
             return new ModelAndView(new RedirectView(getFormView()));
         }
