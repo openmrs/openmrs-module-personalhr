@@ -108,7 +108,7 @@ public class MedicationAdherenceBarriersServiceImpl extends BaseOpenmrsService i
 		obsList.addAll(obsSet);
 		Collections.sort(obsList, new ObsComparable());
 		
-		MedBarriers topFive = new MedBarriers();
+		MedBarriers topFive = new MedBarriers(pat);
 		for(int ii = 0; ii<5; ii++) {
 			Obs obs = obsList.get(ii);
 			Concept barrier = obs.getConcept();

@@ -13,6 +13,9 @@
  */
 package org.openmrs.module.medadherence.rest;
 
+import java.util.List;
+
+import org.openmrs.Patient;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.webservices.rest.web.RequestContext;
@@ -25,6 +28,7 @@ import org.openmrs.module.webservices.rest.web.representation.DefaultRepresentat
 import org.openmrs.module.webservices.rest.web.resource.impl.DataDelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
 
+
 /**
  * {@link Resource} for Obs, supporting standard CRUD operations
  */
@@ -33,7 +37,7 @@ import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceD
 public class MedBarriersResource extends DataDelegatingCrudResource<MedBarriers> {
 
 	public MedBarriersResource() {
-		System.out.println("Constructor MedBarriersResource called");
+		log.debug("Constructor MedBarriersResource called");
 	}
 	
 	/**
@@ -42,7 +46,17 @@ public class MedBarriersResource extends DataDelegatingCrudResource<MedBarriers>
 	@Override
 	public MedBarriers getByUniqueId(String uniqueId) {
 		// TODO Auto-generated method stub
-		return Context.getService(MedicationAdherenceBarriersService.class).getTopFiveBarriers(Context.getPatientService().getPatientByUuid(uniqueId));
+		Patient pat = Context.getPatientService().getPatientByUuid(uniqueId);
+		if(pat == null) {			
+			List<Patient> pats = Context.getPatientService().getPatients(uniqueId);
+			if(pats!=null && !pats.isEmpty()) {
+				if(pats.size() > 1) {
+					log.warn("More than one patients are found for uniqueId=" + uniqueId + ". Only the first one found will be returned.");
+				} 
+				pat = pats.get(0);
+			}
+		}
+		return Context.getService(MedicationAdherenceBarriersService.class).getTopFiveBarriers(pat);
 	}
 
 	@Override
@@ -77,8 +91,9 @@ public class MedBarriersResource extends DataDelegatingCrudResource<MedBarriers>
 			Representation rep) {
 		if (rep instanceof DefaultRepresentation) {
 			DelegatingResourceDescription description = new DelegatingResourceDescription();
-			description.addProperty("uuid");
-			description.addProperty("display", findMethod("getDisplayString"));
+			description.addProperty("patient_name", findMethod("getPatientName"));
+			description.addProperty("patient_identifiers", findMethod("getPatientIdentiers"));
+			description.addProperty("medication_barriers", findMethod("getMedicationBarriers"));
 			return description;
 		} 
 		return null;	
@@ -88,11 +103,25 @@ public class MedBarriersResource extends DataDelegatingCrudResource<MedBarriers>
 	 * @param patient
 	 * @return identifier + name (for concise display purposes)
 	 */
-	public String getDisplayString(MedBarriers barriers) {
+	public String getMedicationBarriers(MedBarriers barriers) {
 		if (barriers == null)
 			return "";
 		
-		return barriers.getDisplayString();
+		return barriers.getMedicationBarriers();
 	}
+	
+	public String getPatientName(MedBarriers barriers) {
+		if (barriers == null)
+			return "";
+		
+		return barriers.getPatientName();
+	}	
+	
+	public String getPatientIdentiers(MedBarriers barriers) {
+		if (barriers == null)
+			return "";
+		
+		return barriers.getPatientIdentifiers();
+	}		
 
 }

@@ -21,6 +21,8 @@ import org.openmrs.BaseOpenmrsData;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 
 /**
  * It is a model class. It should extend either {@link BaseOpenmrsData} or {@link BaseOpenmrsMetadata}.
@@ -35,9 +37,15 @@ public class MedBarriers extends BaseOpenmrsData implements Serializable {
 	private Integer id;
 	
 	Set<MedicationAdherenceBarrier> barriers = null;
+	
+	Patient patient = null;
 
 	public MedBarriers () {
+	}
+	
+	public MedBarriers (Patient pat) {
 		barriers = new HashSet<MedicationAdherenceBarrier>();
+		patient = pat;
 	}
 	
 	@Override
@@ -63,7 +71,7 @@ public class MedBarriers extends BaseOpenmrsData implements Serializable {
 		barriers.add(barrier);
 	}
 	
-	public String getDisplayString() {
+	public String getMedicationBarriers() {
 		if(barriers==null) { 
 			return null;
 		}
@@ -72,12 +80,35 @@ public class MedBarriers extends BaseOpenmrsData implements Serializable {
 		for(MedicationAdherenceBarrier barrier : barriers) {
 			String barrierType = barrier.getBarrierType().getName().getName();
 			String score = barrier.getBarrierAnswer().getName().getName();
+			String solution = barrier.getBarrierType().getDescription().getDescription();
 			if(displayString == null) {
-				displayString = barrierType + "^" + score;
+				displayString = barrierType + "=" + score + "=" + solution;
 			} else {
-				displayString += "~" + barrierType + "^" + score;				
+				displayString += "~" + barrierType + "=" + score + "=" + solution;				
 			}
 		}
 		return displayString;		
 	}
+	
+	public String getPatientName() {
+		String info = null;
+		if(patient!=null) {
+			info = patient.getPersonName().getFullName();			
+		}
+		return info;
+	}
+	
+	public String getPatientIdentifiers() {
+		String info = null;
+		if(patient!=null) {
+			for(PatientIdentifier id : patient.getIdentifiers()) {
+				if(info != null) {
+					info += ("~" + id.getIdentifierType().getName() + "=" + id.getIdentifier()); 
+				} else {
+					info = id.getIdentifierType().getName() + "=" + id.getIdentifier();
+				}
+			}
+		}
+		return info;
+	}	
 }
