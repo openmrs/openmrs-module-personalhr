@@ -1,20 +1,17 @@
 package org.openmrs.module.medadherence;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.medadherence.api.MedicationAdherenceBarriersService;
-import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessageService;
 import org.openmrs.scheduler.Task;
@@ -102,7 +99,7 @@ public class PatientReminderTask implements Task {
 	        }    	
 	        
 	    	//find patients who meet the criteria of email notification
-	    	List<Person> allPatients = PersonalhrUtil.getService().getAllPhrPatients();
+	    	List<Person> allPatients = getAllPhrPatients();
 	    	
 	    	MedicationAdherenceBarriersService mabService = Context.getService(org.openmrs.module.medadherence.api.MedicationAdherenceBarriersService.class);
 	    	Integer emailAttrId = Context.getPersonService().getPersonAttributeTypeByName("Email").getId();
@@ -110,7 +107,7 @@ public class PatientReminderTask implements Task {
             final String url = deployUrl + "/openmrs/phr/index.htm";            
 	    	for(Person per : allPatients) {
 	    		String patName = per.getPersonName().getFullName();
-	    		Patient pat = PersonalhrUtil.getService().getPatient(per);
+	    		Patient pat = getPatient(per);
 	    		Date latestEntry = mabService.getLatestFormEntryDate(pat);
 	    		if(shouldNotify(latestEntry)) {
 			    	//send email to patients found above; crate a log entry for every email sent
@@ -125,7 +122,7 @@ public class PatientReminderTask implements Task {
 							MessageService messageService = Context.getMessageService();
 							messageService.sendMessage(messageService.createMessage(recipients, sender, subject, content));
 							
-							PersonalhrUtil.getService().logEvent("EMAIL_SENT", new Date(), Context.getAuthenticatedUser(), null, pat, recipients);
+							//PersonalhrUtil.getService().logEvent("EMAIL_SENT", new Date(), Context.getAuthenticatedUser(), null, pat, recipients);
 					}	    			
 	    		}
 	    	}
@@ -181,4 +178,38 @@ public class PatientReminderTask implements Task {
 		}
 		return false;
 	}
+	
+    /**
+     * Get all PHR Patient Users
+     * 
+     * @return person objects of all PHR Patient Users
+     */
+    public List<Person> getAllPhrPatients() {
+        final List<Person> persons = new ArrayList<Person>();
+        final List<User> users = new ArrayList<User>();
+        
+        users.addAll(Context.getUserService().getUsersByRole(Context.getUserService().getRole("PHR Patient")));
+        
+        for (final User user : users) {
+            if(user != null && user.getPerson()!=null) {
+                persons.add(user.getPerson());
+            }
+        }
+        return persons;
+    }	
+    
+    /**
+     * Get patient object of a given person
+     * 
+     * @param person given person object
+     * @return patient object
+     */
+    public Patient getPatient(final Person person) {
+        // TODO Auto-generated method stub
+        if (person != null) {
+            return Context.getPatientService().getPatient(person.getPersonId());
+        } else {
+            return null;
+        }
+    }    
 }

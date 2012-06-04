@@ -62,12 +62,13 @@
 		</dependency>
 				
 		<!-- End OpenMRS core -->
-		
+		<!-- 
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>personalhr-api</artifactId>
 			<version>0.0.3-SNAPSHOT</version>
 		</dependency>
+		-->
 	</dependencies>
 	
 	<build>
