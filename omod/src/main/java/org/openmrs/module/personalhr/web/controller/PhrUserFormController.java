@@ -221,7 +221,7 @@ public class PhrUserFormController {
             sharingToken = (String) model.get("sharingToken");
         }
         
-        String emailEntered = request.getParameter("9");
+        String emailEntered = request.getParameter("Email");
     	String mrn = (String) httpSession.getAttribute("USER_REGISTRATION_MRN");
         String institution = (String) httpSession.getAttribute("USER_REGISTRATION_INSTITUTION");
         
@@ -380,6 +380,9 @@ public class PhrUserFormController {
                     removeTemporaryPrivileges(isTemporary, isAdministrator);
                     return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
                 }
+                
+                // look for person attributes (including email entered) in the request and save to user
+            	setPersonAttribute(user, request, errors);
                                 
                 if (isNewUser(user) && !isAdministrator) {
                     log.debug("Saving new user " + user.getUsername() + ", sharingToken=" + sharingToken);
@@ -407,44 +410,7 @@ public class PhrUserFormController {
 	                        return "redirect:/phr/index.htm?noredirect=true";
 	                    } 
                     
-	                    if (emailEntered != null && token.getRelatedPersonEmail().equalsIgnoreCase(emailEntered)) {                        
-	                        // look for person attributes (including email entered) in the request and save to user
-	                        for (final PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PATIENT,
-	                            ATTR_VIEW_TYPE.VIEWING)) {
-	                            final String paramName = type.getPersonAttributeTypeId().toString();
-	                            final String value = request.getParameter(paramName);
-	                            
-	                            this.log.debug("paramName=" + paramName);
-	                            
-	                            // if there is an error displaying the attribute, the value will be null
-	                            if (value != null) {
-	                                final PersonAttribute attribute = new PersonAttribute(type, value);
-	                                try {
-	                                    final Object hydratedObject = attribute.getHydratedObject();
-	                                    if ((hydratedObject == null) || "".equals(hydratedObject.toString())) {
-	                                        // if null is returned, the value should be blanked out
-	                                        attribute.setValue("");
-	                                    } else if (hydratedObject instanceof Attributable) {
-	                                        attribute.setValue(((Attributable) hydratedObject).serialize());
-	                                    } else if (!hydratedObject.getClass().getName().equals(type.getFormat())) {
-	                                        // if the classes doesn't match the format, the hydration failed somehow
-	                                        // TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
-	                                        throw new APIException();
-	                                    }
-	                                } catch (final APIException e) {
-	                                    errors.rejectValue("attributeMap[" + type.getName() + "]", "Invalid value for " + type.getName()
-	                                            + ": '" + value + "'");
-	                                    this.log.warn("Got an invalid value: " + value + " while setting personAttributeType id #"
-	                                            + paramName, e);
-	                                    
-	                                    // setting the value to empty so that the user can reset the value to something else
-	                                    attribute.setValue("");
-	                                    
-	                                }
-	                                user.getPerson().addAttribute(attribute);
-	                            }
-	                        }
-	                                                                        
+	                    if (emailEntered != null && token.getRelatedPersonEmail().equalsIgnoreCase(emailEntered)) {                                               	                                                                        
 	                        //create a new user by self registration
 	                        us.saveUser(user, password);
 	                        
@@ -490,44 +456,7 @@ public class PhrUserFormController {
 	                            httpSession.getId(), null, 
 	                            "info=Failed to create new user due to email mismatch: " + token.getRelatedPersonEmail() + "vs " + emailEntered + "; sharingToken="+token);
 	                    }
-                    } else { //patient is doing a self registration                        
-                        // look for person attributes (including email entered) in the request and save to user
-                        for (final PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PATIENT,
-                            ATTR_VIEW_TYPE.VIEWING)) {
-                            final String paramName = type.getPersonAttributeTypeId().toString();
-                            final String value = request.getParameter(paramName);
-                            
-                            this.log.debug("paramName=" + paramName);
-                            
-                            // if there is an error displaying the attribute, the value will be null
-                            if (value != null) {
-                                final PersonAttribute attribute = new PersonAttribute(type, value);
-                                try {
-                                    final Object hydratedObject = attribute.getHydratedObject();
-                                    if ((hydratedObject == null) || "".equals(hydratedObject.toString())) {
-                                        // if null is returned, the value should be blanked out
-                                        attribute.setValue("");
-                                    } else if (hydratedObject instanceof Attributable) {
-                                        attribute.setValue(((Attributable) hydratedObject).serialize());
-                                    } else if (!hydratedObject.getClass().getName().equals(type.getFormat())) {
-                                        // if the classes doesn't match the format, the hydration failed somehow
-                                        // TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
-                                        throw new APIException();
-                                    }
-                                } catch (final APIException e) {
-                                    errors.rejectValue("attributeMap[" + type.getName() + "]", "Invalid value for " + type.getName()
-                                            + ": '" + value + "'");
-                                    this.log.warn("Got an invalid value: " + value + " while setting personAttributeType id #"
-                                            + paramName, e);
-                                    
-                                    // setting the value to empty so that the user can reset the value to something else
-                                    attribute.setValue("");
-                                    
-                                }
-                                user.getPerson().addAttribute(attribute);
-                            }
-                        }
-                                                                        
+                    } else { //patient is doing a self registration                                                                                              
                         //create a new user by self registration
                         us.saveUser(user, password);
                         
@@ -779,5 +708,44 @@ public class PhrUserFormController {
             Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
             log.debug("Removed proxy privileges for PHR Administrator!");
         }                	    	
+    }
+    
+    private void setPersonAttribute(User user, WebRequest request, BindingResult errors) {
+        // look for person attributes (including email entered) in the request and save to user
+        for (final PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.USER,
+            ATTR_VIEW_TYPE.LISTING)) {
+            final String paramName = type.getName();
+            final String value = request.getParameter(paramName);
+            
+            this.log.debug("paramName=" + paramName);
+            
+            // if there is an error displaying the attribute, the value will be null
+            if (value != null) {
+                final PersonAttribute attribute = new PersonAttribute(type, value);
+                try {
+                    final Object hydratedObject = attribute.getHydratedObject();
+                    if ((hydratedObject == null) || "".equals(hydratedObject.toString())) {
+                        // if null is returned, the value should be blanked out
+                        attribute.setValue("");
+                    } else if (hydratedObject instanceof Attributable) {
+                        attribute.setValue(((Attributable) hydratedObject).serialize());
+                    } else if (!hydratedObject.getClass().getName().equals(type.getFormat())) {
+                        // if the classes doesn't match the format, the hydration failed somehow
+                        // TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
+                        throw new APIException();
+                    }
+                } catch (final APIException e) {
+                    errors.rejectValue("attributeMap[" + type.getName() + "]", "Invalid value for " + type.getName()
+                            + ": '" + value + "'");
+                    this.log.warn("Got an invalid value: " + value + " while setting personAttributeType id #"
+                            + paramName, e);
+                    
+                    // setting the value to empty so that the user can reset the value to something else
+                    attribute.setValue("");
+                    
+                }
+                user.getPerson().addAttribute(attribute);
+            }   
+        }
     }
 }

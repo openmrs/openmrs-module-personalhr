@@ -126,7 +126,7 @@
 						<td>
 						<openmrs:fieldGen 
 							type="java.lang.String" 
-							formFieldName="9" 
+							formFieldName="Email" 
 							val="${user.person.attributeMap['Email'].hydratedObject}" 
 							parameters="optionHeader=[blank]|isNullable=false" /> <%-- isNullable=false so booleans don't have 'unknown' radiobox --%>
 						
