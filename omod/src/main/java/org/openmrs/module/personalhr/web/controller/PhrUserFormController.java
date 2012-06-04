@@ -263,16 +263,19 @@ public class PhrUserFormController {
                 Context.becomeUser(user.getSystemId());
                 httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.assumeIdentity.success");
                 httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, user.getPersonName());
+                removeTemporaryPrivileges(isTemporary, isAdministrator);
                 return "redirect:/phr/index.htm";
                 
             } else if (mss.getMessage("User.delete").equals(action)) {
                 try {
                     Context.getUserService().purgeUser(user);
                     httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.delete.success");
+                    removeTemporaryPrivileges(isTemporary, isAdministrator);
                     return "redirect:/phr/user.list";
                 } catch (final Exception ex) {
                     httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.delete.failure");
                     log.error("Failed to delete user", ex);
+                    removeTemporaryPrivileges(isTemporary, isAdministrator);
                     return "redirect:/phr/user.form?userId=" + request.getParameter("userId");
                 }
                 
@@ -280,6 +283,7 @@ public class PhrUserFormController {
                 final String retireReason = request.getParameter("retireReason");
                 if (!(StringUtils.hasText(retireReason))) {
                     errors.rejectValue("retireReason", "User.disableReason.empty");
+                    removeTemporaryPrivileges(isTemporary, isAdministrator);
                     return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
                 } else {
                     us.retireUser(user, retireReason);
@@ -373,6 +377,7 @@ public class PhrUserFormController {
                 
                 if (errors.hasErrors()) {
                     log.debug("errors validating user: " + errors.getErrorCount() + errors.toString());
+                    removeTemporaryPrivileges(isTemporary, isAdministrator);
                     return showForm(user.getUserId(), createNewPerson, sharingToken, user, model, httpSession);
                 }
                                 
@@ -389,20 +394,7 @@ public class PhrUserFormController {
 	                            httpSession.getId(), null, 
 	                            "error=Failed to register without a valid sharing token; user_name=" + user.getName());
 	    
-	                        if (isTemporary) {
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
-	                            Context.removeProxyPrivilege("PHR Restricted Patient Access");
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
-	                            Context.removeProxyPrivilege("PHR Single Patient Access");
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-	                            Context.logout();
-	                            log.debug("Removed proxy privileges!");
-	                        }
+	                        removeTemporaryPrivileges(isTemporary, isAdministrator);
 	                        return "redirect:/phr/index.htm?noredirect=true";
 	                    } else if ((token != null) && (token.getRelatedPerson() != null)) {
 	                        httpSession
@@ -411,21 +403,7 @@ public class PhrUserFormController {
 	                        PersonalhrUtil.getService().logEvent(PhrLogEvent.USER_SIGN_UP, new Date(), null, 
 	                            httpSession.getId(), null, 
 	                            "error=Failed to register with a used sharing token; user_name=" + user.getName() + "; sharingToken="+token);
-	                        if (isTemporary) {
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-	                            Context.removeProxyPrivilege("PHR Restricted Patient Access");
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
-	                            Context.removeProxyPrivilege("PHR Single Patient Access");
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
-	                            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-	                            Context.logout();
-	                            log.debug("Removed proxy privileges!");
-	                        }
-	                        
+	                        removeTemporaryPrivileges(isTemporary, isAdministrator);	                        
 	                        return "redirect:/phr/index.htm?noredirect=true";
 	                    } 
                     
@@ -614,28 +592,7 @@ public class PhrUserFormController {
             }
         } finally {
             //remove temporary privileges
-            if (isTemporary) {
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-                Context.removeProxyPrivilege("PHR Restricted Patient Access");
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
-                Context.removeProxyPrivilege("PHR Single Patient Access");
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-                Context.logout();
-                log.debug("Removed proxy privileges for self registration!");
-            } else if (isAdministrator) {
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_PURGE_USERS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
-                log.debug("Removed proxy privileges for PHR Administrator!");
-            }            
+        	removeTemporaryPrivileges(isTemporary, isAdministrator);
         }
         return "redirect:/phr/index.htm?noredirect=true";
     }
@@ -799,4 +756,28 @@ public class PhrUserFormController {
         return isError;
     }    
     
+    void removeTemporaryPrivileges(boolean isTemporary, boolean isAdministrator) {
+        if (isTemporary) {
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+            Context.removeProxyPrivilege("PHR Restricted Patient Access");
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+            Context.removeProxyPrivilege("PHR Single Patient Access");
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+            Context.logout();
+            log.debug("Removed proxy privileges for self registration!");
+        } else if (isAdministrator) {
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_DELETE_USERS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_PURGE_USERS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PERSONS);
+            Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+            log.debug("Removed proxy privileges for PHR Administrator!");
+        }                	    	
+    }
 }

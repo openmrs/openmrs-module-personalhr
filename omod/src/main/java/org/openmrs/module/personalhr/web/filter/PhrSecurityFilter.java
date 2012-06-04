@@ -31,6 +31,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrLogEvent;
@@ -108,12 +109,12 @@ public class PhrSecurityFilter implements Filter {
         //This filter applies to authenticated users only
         if (Context.isAuthenticated()) {
             final User user = Context.getAuthenticatedUser();
-            phrRole = PersonalhrUtil.getService().getPhrRole(user);
             
             //Check if the URL is in the excluded (for checking) list
             if(shouldCheckAccessToUrl(requestURI)) {                
                 try{                    
                     PersonalhrUtil.addMinimumTemporaryPrivileges();  
+                    phrRole = PersonalhrUtil.getService().getPhrRole(user);
              
                     final Integer patId = PersonalhrUtil.getParamAsInteger(patientId);
                     
@@ -257,6 +258,8 @@ public class PhrSecurityFilter implements Filter {
                             "requestURI="+requestURI+"; client_ip=" + request.getLocalAddr());
                         }
                     }
+                } catch(APIException e) {
+                	this.log.warn("PHR Service is not loaded yet.", e);
                 } finally {
                     PersonalhrUtil.removeMinimumTemporaryPrivileges();
                 }

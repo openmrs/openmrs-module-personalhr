@@ -420,8 +420,6 @@
 	
 	</table>
 	
-	<input type="hidden" name="patientId" value="${param.patientId}" />
-	
 	<br />
 	<input type="submit" value="<spring:message code="general.save" />" name="action" id="addButton"> &nbsp; &nbsp; 
 </form>

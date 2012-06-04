@@ -74,7 +74,7 @@
     }
 </script>
 
-<div id="patientTabs">
+<div id="patientPhrTabs${patientVariation}">
 	<ul>
 		<%-- 
 		<openmrs:hasPhrPrivilege privilege="PHR - View Overview Section">
@@ -98,6 +98,9 @@
 	</openmrs:hasPhrPrivilege>
 	--%>
 		<div id="restrictedUserRelationships" style="display:none;">
+			<div class="tooltipPhr">
+			<spring:message code="personalhr.tooltip.restricted.user.relationships"/>		
+			</div>
 			
 			<personalhr:portlet url="../module/personalhr/portlets/restrictedUserRelationships.portlet" personId="${person.personId}" id="restrictedUserDashboardRelationships"/>
 			

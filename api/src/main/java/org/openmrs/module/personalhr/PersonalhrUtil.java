@@ -345,7 +345,11 @@ public class PersonalhrUtil {
         //per.setAttributes(attrSet);
         
         //save the attributes 
-        Context.getPersonService().savePerson(per);
+        try{
+        	Context.getPersonService().savePerson(per);
+        } catch(Exception e) {
+        	log.error("Failed to set Messaging Alert Settings for this person: " + per, e);
+        }
     }    
     
     /**

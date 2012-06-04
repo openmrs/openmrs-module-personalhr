@@ -118,6 +118,7 @@ public class NewPatientFormController extends SimpleFormController {
         binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
+        request.getSession().setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "true");
     }
     
     @Override
@@ -229,6 +230,7 @@ public class NewPatientFormController extends SimpleFormController {
                                     BindException errors) throws Exception {
         
         HttpSession httpSession = request.getSession();
+        httpSession.setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "true");
         
         log.debug("\nNOW GOING THROUGH ONSUBMIT METHOD.......................................\n\n");
         
@@ -572,11 +574,13 @@ public class NewPatientFormController extends SimpleFormController {
                 
                 // evict from session so that nothing temporarily added here is saved
                 Context.evictFromSession(patient);
+                httpSession.setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "false");
                 
                 return this.showForm(request, response, errors, model);
                 //return new ModelAndView(new RedirectView(getFormView()));
             } else {
                 httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
+                httpSession.setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "false");
                 return new ModelAndView(new RedirectView(view + "?patientId=" + newPatient.getPatientId()));
             }
         } else {
@@ -600,10 +604,13 @@ public class NewPatientFormController extends SimpleFormController {
         if (Context.isAuthenticated()) {
             PatientService ps = Context.getPatientService();
             String patientId = request.getParameter("patientId"); 
-            if(patientId == null) {
+            if(!StringUtils.hasText(patientId)) {
             	id = (Integer) request.getAttribute("org.openmrs.portlet.patientId");
             	if(id!=null) {
             		 p = ps.getPatient(id);
+            	} else {
+            		id = (Integer) request.getSession().getAttribute("org.openmrs.portlet.patientId");
+            		p = ps.getPatient(id);
             	}
             }
             if (id==null && StringUtils.hasText(patientId)) {
