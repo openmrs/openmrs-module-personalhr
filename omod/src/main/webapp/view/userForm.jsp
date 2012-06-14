@@ -132,6 +132,17 @@
 						
 						</td>
 					</tr>
+					<tr>
+						<td><spring:message code="personalhr.date_of_birth"/></td>
+						<td>
+						<openmrs:fieldGen 
+							type="org.openmrs.util.AttributableDate" 
+							formFieldName="Date of Birth" 
+							val="${user.person.attributeMap['Date of Birth'].hydratedObject}" 
+							parameters="optionHeader=[blank]|isNullable=false" /> <%-- isNullable=false so booleans don't have 'unknown' radiobox --%>
+						
+						</td>
+					</tr>					
 				</table>
 	</fieldset>	
 
