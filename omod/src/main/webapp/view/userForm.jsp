@@ -133,16 +133,17 @@
 						</td>
 					</tr>
 					<tr>
-						<td><spring:message code="personalhr.date_of_birth"/></td>
+						<td><spring:message code="Person.birthdate"/> <i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i></td>
 						<td>
-						<openmrs:fieldGen 
-							type="org.openmrs.util.AttributableDate" 
-							formFieldName="Date of Birth" 
-							val="${user.person.attributeMap['Date of Birth'].hydratedObject}" 
-							parameters="optionHeader=[blank]|isNullable=false" /> <%-- isNullable=false so booleans don't have 'unknown' radiobox --%>
-						
+							<spring:bind path="user.person.birthdate">			
+								<input type="text" 
+										name="birthdate" size="10" id="birthdate"
+										value="${status.value}"
+										onClick="showCalendar(this,60)" />
+								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+							</spring:bind>
 						</td>
-					</tr>					
+					</tr>
 				</table>
 	</fieldset>	
 

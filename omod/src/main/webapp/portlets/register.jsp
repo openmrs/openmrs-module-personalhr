@@ -10,12 +10,12 @@
 
 <form method="post" action="/openmrs/moduleServlet/personalhr/phrRegisterServlet" style="padding:15px; width: 300px;" autocomplete="off">
 	<table>
-		<tr>
+		<tr style="display:none;">
 			<td><spring:message code="personalhr.mrn"/>:</td>
-			<td><input type="text" name="uname" value="<request:parameter name="username" />" id="username" size="25" maxlength="50" title="<spring:message code='personalhr.mrn.tooltip'/>"/></td>
+			<td><input type="hidden" name="uname" value="<request:parameter name='username' />" id="username" size="25" maxlength="50" title="<spring:message code='personalhr.mrn.tooltip'/>"/></td>
 		</tr>
 		<tr>
-			<td><spring:message code="User.password"/>:</td>
+			<td><spring:message code="personalhr.register.password"/>:</td>
 			<td><input type="password" name="pw" value="" id="password" size="25" title="<spring:message code='personalhr.password.tooltip'/>"/></td>
 		</tr>
 		<tr>

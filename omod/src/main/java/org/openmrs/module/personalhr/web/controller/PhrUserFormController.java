@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.personalhr.web.controller;
 
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -25,6 +26,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Attributable;
+import org.openmrs.Concept;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -54,6 +57,9 @@ import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrLogEvent;
 import org.openmrs.module.personalhr.PhrService;
 import org.openmrs.module.personalhr.PhrSharingToken;
+import org.openmrs.module.personalhr.web.servlet.RegisterServlet;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.RoleEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -61,6 +67,8 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.validator.UserValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -83,7 +91,12 @@ public class PhrUserFormController {
     private static final String NOTIFICATION_TEMPLATE = "Dear OPENMRS_PHR_RELATED_PERSON,\n\nThank you for registering with the Personal Cancer Toolkit. You are now able to access this toolkit through the following link:\n\nOPENMRS_URL\n\nYour user details are as follows: \n\nUsername: OPENMRS_USERNAME\n\nPassword: OPENMRS_PASSWORD\n\nIf you have any questions or require further clarification, please contact the site administrator here:\n\ncancertoolkit-l@listserv.regenstrief.org\n\nThank You!\nSincerely,\nThe Personal Cancer Toolkit Development Team";
     
     @InitBinder
-    public void initBinder(final WebDataBinder binder) {
+    public void initBinder(final WebDataBinder binder) {       
+        NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
+        binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, nf, true));
+        binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
+        binder.registerCustomEditor(Location.class, new LocationEditor());
+        binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
         binder.registerCustomEditor(Role.class, new RoleEditor());
     }
     
@@ -219,8 +232,12 @@ public class PhrUserFormController {
         
         if (sharingToken == null) {
             sharingToken = (String) model.get("sharingToken");
-        }
+        } 
         
+        String birthdate = request.getParameter("birthdate"); 
+        if(user.getPerson().getBirthdate() == null) {
+        	user.getPerson().setBirthdate(Context.getDateFormat().parse(birthdate));
+        }
         String emailEntered = request.getParameter("Email");
     	String mrn = (String) httpSession.getAttribute("USER_REGISTRATION_MRN");
         String institution = (String) httpSession.getAttribute("USER_REGISTRATION_INSTITUTION");
@@ -323,6 +340,21 @@ public class PhrUserFormController {
                         errors.reject(e.getMessage());
                     }
                 }
+                
+                //check email address
+                if (PersonalhrUtil.isNullOrEmpty(emailEntered)) {
+                    //errors.reject("Email address cannot be empty!");
+                	errors.reject("Email address cannot be empty!");
+                } else if (!PersonalhrUtil.isValidEmail(emailEntered)) {
+                    //errors.reject("Invalid email address: " + value);
+                	errors.reject("Invalid email address: " + emailEntered);
+                } 
+                
+                //check birthdate
+                if (PersonalhrUtil.isNullOrEmpty(birthdate)) {
+                    //errors.reject("Email address cannot be empty!");
+                	errors.reject("Birthdate cannot be empty!");
+                }                 
                 
                 final Set<Role> newRoles = new HashSet<Role>();
                 if (roles != null) {
@@ -613,7 +645,6 @@ public class PhrUserFormController {
             PersonService personService = Context.getPersonService();
                         
             Patient patient = new Patient(user.getPerson());
-            
             PatientIdentifier pid = new PatientIdentifier();
 			PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByName(institution);
 			if (pit == null) {
@@ -625,15 +656,15 @@ public class PhrUserFormController {
             pid.setLocation(Context.getLocationService().getLocation(institution)); //assuming location name and identifier name are the same
             pid.setPreferred(true);
             patient.addIdentifier(pid);
-            
-            
-            Patient newPatient = null;
-            
+                        
             if (!isError) {
                 // save or add the patient
                 try {
             		Context.clearSession();                	
-                    newPatient = ps.savePatient(patient);
+            		Patient newPatient = ps.savePatient(patient);
+            		if(newPatient != null) {
+            			log.info("Patient saved successfully!");
+            		}
                 }
                 catch (InvalidIdentifierFormatException iife) {
                     log.error(iife);

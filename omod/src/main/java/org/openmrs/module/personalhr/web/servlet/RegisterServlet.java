@@ -63,6 +63,8 @@ public class RegisterServlet extends HttpServlet {
      */
     private final Map<String, Date> lockoutDateByIP = new HashMap<String, Date>();
     
+    public static final String DEAULT_MRN_FOR_ALL = "TEMPID_WILL_BE_REPLACED";
+    
     /**
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
@@ -119,18 +121,18 @@ public class RegisterServlet extends HttpServlet {
         } else {
             try {
                 
-                final String username = request.getParameter("uname");
+                String username = request.getParameter("uname");
                 final String password = request.getParameter("pw");
                 final String sharingToken = request.getParameter("sharingToken");
                 
-                // only try to authenticate if they actually typed in a username
-                if ((username == null) || (username.length() == 0)) {
-                    throw new ContextAuthenticationException("Unable to authenticate with an empty medical record number");
-                }
-                
-                String instituion = getRegistrationInstitution(username, password);
+                // only try to authenticate if they actually typed in a username                
+                String instituion = getRegistrationInstitution(password);
                 
                 if (instituion != null) {
+                    if ((username == null) || (username.length() == 0)) {
+                    	username = DEAULT_MRN_FOR_ALL; //do not need to provide MRN when doing self registration
+                    }
+                	
                     httpSession.setAttribute("USER_REGISTRATION_MRN", username);
                     httpSession.setAttribute("USER_REGISTRATION_INSTITUTION", instituion);
                     httpSession.setAttribute("loginAttempts", 0);
@@ -185,14 +187,10 @@ public class RegisterServlet extends HttpServlet {
     
     /**
      * 
-     * @param mrn: medical record number as assigned by study team
      * @param password: password that also indicate the associated institution id
      * @return true if the user is allowed for self registration
      */
-    private String getRegistrationInstitution(String mrn, String password) {
-    	if(mrn==null || mrn.trim().isEmpty()) {
-    		return null;
-    	}
+    private String getRegistrationInstitution(String password) {
         String registrationPassword = Context.getAdministrationService().getGlobalProperty("personalhr.registration.password");
         String registrationInstitution = Context.getAdministrationService().getGlobalProperty("personalhr.registration.institution");
         if(registrationPassword==null || registrationInstitution==null) {

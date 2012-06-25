@@ -293,8 +293,10 @@
 			<table>
 				<tr>
 					<td><spring:message code="Person.gender"/></td>
+					
 					<td><spring:message code="Person.age"/></td>
 					<td><spring:message code="Person.birthdate"/> <i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i></td>
+					
 				</tr>
 				<tr>
 					<td style="padding-right: 3em">
@@ -306,6 +308,7 @@
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
 					</td>
+					
 					<td style="padding-right: 3em">
 						<span id="age"></span>
 					</td>
@@ -348,6 +351,7 @@
 							updateAge();
 						</script>
 					</td>
+					
 				</tr>
 			</table>
 		</td>

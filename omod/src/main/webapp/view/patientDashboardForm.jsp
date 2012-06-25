@@ -131,7 +131,7 @@
 		</openmrs:hasPhrPrivilege>
 		--%>
 		
-	<personalhr:hasPrivilege privilege="View Relationships">	
+	<personalhr:hasPrivilege privilege="Edit Relationships">	
 		<li><a id="patientRelationshipsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="personalhr.relationships"/></a></li>
 		<c:if test="${enableFormEntry}">
 			<li><a id="formEntryTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.formEntry"/></a></li>
@@ -153,7 +153,7 @@
 	<openmrs:hasPhrPrivilege privilege="PHR - View Overview Section">
 	</openmrs:hasPhrPrivilege>
 	--%>
-	<personalhr:hasPrivilege privilege="View Relationships">	
+	<personalhr:hasPrivilege privilege="Edit Relationships">	
 		<div id="patientRelationships" style="display:none;">
 				<div class="tooltipPhr">
 				<spring:message code="personalhr.tooltip.patient.relationships"/>		
