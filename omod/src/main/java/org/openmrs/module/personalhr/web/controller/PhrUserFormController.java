@@ -235,8 +235,17 @@ public class PhrUserFormController {
         } 
         
         String birthdate = request.getParameter("birthdate"); 
+        //check birthdate
+        if (PersonalhrUtil.isNullOrEmpty(birthdate)) {
+            //errors.reject("Email address cannot be empty!");
+        	errors.reject("Birthdate cannot be empty!");
+        }                 
         if(user.getPerson().getBirthdate() == null) {
-        	user.getPerson().setBirthdate(Context.getDateFormat().parse(birthdate));
+        	try{
+        		user.getPerson().setBirthdate(Context.getDateFormat().parse(birthdate));
+        	} catch (Exception e) {
+            	errors.reject("Birthdate format is invalid!" + birthdate);        		
+        	}
         }
         String emailEntered = request.getParameter("Email");
     	String mrn = (String) httpSession.getAttribute("USER_REGISTRATION_MRN");
@@ -350,11 +359,6 @@ public class PhrUserFormController {
                 	errors.reject("Invalid email address: " + emailEntered);
                 } 
                 
-                //check birthdate
-                if (PersonalhrUtil.isNullOrEmpty(birthdate)) {
-                    //errors.reject("Email address cannot be empty!");
-                	errors.reject("Birthdate cannot be empty!");
-                }                 
                 
                 final Set<Role> newRoles = new HashSet<Role>();
                 if (roles != null) {
