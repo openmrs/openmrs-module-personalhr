@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.medadherence.rest;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Patient;
@@ -27,6 +29,7 @@ import org.openmrs.module.webservices.rest.web.annotation.Resource;
 import org.openmrs.module.webservices.rest.web.representation.DefaultRepresentation;
 import org.openmrs.module.webservices.rest.web.resource.impl.DataDelegatingCrudResource;
 import org.openmrs.module.webservices.rest.web.resource.impl.DelegatingResourceDescription;
+import org.openmrs.util.OpenmrsConstants;
 
 
 /**
@@ -45,6 +48,95 @@ public class MedBarriersResource extends DataDelegatingCrudResource<MedBarriers>
 	 */
 	@Override
 	public MedBarriers getByUniqueId(String uniqueId) {
+		MedBarriers barriers = null;
+		try {
+			barriers = lookupByNameAndBirthday(uniqueId);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			barriers = new MedBarriers();
+			barriers.setMessage("No data is found for this patient: " + uniqueId + " because " + e.getMessage());
+		} finally {
+			if(barriers==null) {
+				barriers = new MedBarriers();
+				barriers.setMessage("No data is entered by this patient: " + uniqueId);				
+			}
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+		}
+		return barriers;
+	}
+	
+	public MedBarriers lookupByNameAndBirthday(String uniqueId) throws Exception {
+		if(uniqueId != null) {
+			String[] fields = uniqueId.split("~");
+			String firstName = fields[0];
+			String middleName = fields[1];
+			String lastName = fields[2];
+			String dobString = fields[3]; 
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+			List<Patient> pats = Context.getPatientService().getAllPatients();
+			boolean isFound = false;
+			Patient patFound = null;
+			for(Patient pat : pats) {
+				if(equalsIgnoreCase(pat.getFamilyName(), lastName) && equalsIgnoreCase(pat.getGivenName(),firstName)
+					&& equalsIgnoreCase(pat.getMiddleName(),middleName) 
+					&& equalsBirthday(pat.getBirthdate(), dobString)) {
+					if(!isFound) {
+						isFound = true;
+						patFound = pat;
+					} else {
+						log.warn("More than one patients are found for uniqueId=" + uniqueId + ". Returns null.");
+						throw new Exception("More than one patients are found for the patient: " + uniqueId);
+					}
+				}
+			}
+			if(patFound != null) {
+				log.info("Ono patient is found for uniqueId=" + uniqueId);
+				return Context.getService(MedicationAdherenceBarriersService.class).getTopFiveBarriers(patFound);
+			} else {
+				log.warn("No patient is found for uniqueId=" + uniqueId);
+				throw new Exception("No patient is found for the patient: " + uniqueId);
+			}
+			
+		} else {
+			log.warn("UniqueId is null!");
+			throw new Exception("No patient information is given: " + uniqueId);
+		}
+	}
+	
+	private boolean equalsBirthday(Date birthdate, String dobString) {
+		if(birthdate==null) {
+			if(dobString == null || dobString.trim().isEmpty()) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+			String s = formatter.format(birthdate);			
+			if(s.equalsIgnoreCase(dobString)) {
+				return true;
+			} else if (s.substring(0,6).equalsIgnoreCase(s.substring(0, 6))) {
+				log.warn("The two birthdates are not the same but similar: " + birthdate + " vs " + dobString);
+			}
+			return false;
+		}
+	}
+
+	private boolean equalsIgnoreCase(String name1, String name2) {
+		if(name1 == null && name2 == null) {
+			name1 = "";
+		}
+		if(name2 == null) {
+			name1 = "";
+		}
+		name1 = name1.trim();
+		name2 = name2.trim();				
+		return name1.equalsIgnoreCase(name2);
+	}
+
+	public MedBarriers lookupByUniqueId(String uniqueId) {
 		// TODO Auto-generated method stub
 		Patient pat = Context.getPatientService().getPatientByUuid(uniqueId);
 		if(pat == null) {			
@@ -57,7 +149,7 @@ public class MedBarriersResource extends DataDelegatingCrudResource<MedBarriers>
 			}
 		}
 		return Context.getService(MedicationAdherenceBarriersService.class).getTopFiveBarriers(pat);
-	}
+	}	
 
 	@Override
 	protected MedBarriers newDelegate() {

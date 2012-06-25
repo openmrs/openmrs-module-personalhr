@@ -108,6 +108,9 @@ public class PatientReminderTask implements Task {
 	    	for(Person per : allPatients) {
 	    		String patName = per.getPersonName().getFullName();
 	    		Patient pat = getPatient(per);
+	    		if(pat == null) {
+	    			continue;
+	    		}
 	    		Date latestEntry = mabService.getLatestFormEntryDate(pat);
 	    		if(shouldNotify(latestEntry)) {
 			    	//send email to patients found above; crate a log entry for every email sent

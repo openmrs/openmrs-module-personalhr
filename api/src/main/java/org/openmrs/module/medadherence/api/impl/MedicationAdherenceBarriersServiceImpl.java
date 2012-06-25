@@ -54,7 +54,7 @@ public class MedicationAdherenceBarriersServiceImpl extends BaseOpenmrsService i
 		@Override
 		public int compare(Obs o1, Obs o2) {
 			String score1 = o1.getValueCoded().getName().getName();
-			String score2 = o1.getValueCoded().getName().getName();
+			String score2 = o2.getValueCoded().getName().getName();
 			
 			return (scoreMap.get(score1)>scoreMap.get(score2) ? -1 : (scoreMap.get(score1)==scoreMap.get(score2) ? 0 : 1));
 		}

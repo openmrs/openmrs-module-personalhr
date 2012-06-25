@@ -39,6 +39,8 @@ public class MedBarriers extends BaseOpenmrsData implements Serializable {
 	Set<MedicationAdherenceBarrier> barriers = null;
 	
 	Patient patient = null;
+	
+	String message = null;
 
 	public MedBarriers () {
 	}
@@ -73,7 +75,11 @@ public class MedBarriers extends BaseOpenmrsData implements Serializable {
 	
 	public String getMedicationBarriers() {
 		if(barriers==null) { 
-			return null;
+			if(message==null) {
+				return null;
+			} else {
+				return message;
+			}
 		}
 		
 		String displayString = null;
@@ -110,5 +116,13 @@ public class MedBarriers extends BaseOpenmrsData implements Serializable {
 			}
 		}
 		return info;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}	
 }

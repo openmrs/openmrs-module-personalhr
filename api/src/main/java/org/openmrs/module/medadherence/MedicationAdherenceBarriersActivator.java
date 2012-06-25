@@ -78,6 +78,7 @@ public class MedicationAdherenceBarriersActivator implements ModuleActivator {
 	 * @see ModuleActivator#willStop()
 	 */
 	public void willStop() {
+		shutdownPatientReminderTask();
 		log.info("Stopping Medication Adherence Barriers Module");
 	}
 	
@@ -107,6 +108,21 @@ public class MedicationAdherenceBarriersActivator implements ModuleActivator {
 			dispatchMessagesTaskDef.setTaskClass("org.openmrs.module.medadherence.PatientReminderTask");
 			try {
 				Context.getSchedulerService().scheduleTask(dispatchMessagesTaskDef);
+			} catch (SchedulerException e) {
+				log.error("Error creating the patient reminder task in the scheduler", e);
+			}
+		}
+		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+	}	
+	
+	private void shutdownPatientReminderTask(){
+		//temporarily add the privilege to manage the scheduler
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+		TaskDefinition dispatchMessagesTaskDef = Context.getSchedulerService().getTaskByName(TASK_NAME);
+
+		if(dispatchMessagesTaskDef != null){
+			try {
+				Context.getSchedulerService().shutdownTask(dispatchMessagesTaskDef);
 			} catch (SchedulerException e) {
 				log.error("Error creating the patient reminder task in the scheduler", e);
 			}

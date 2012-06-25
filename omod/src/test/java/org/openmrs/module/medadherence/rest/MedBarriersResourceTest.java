@@ -29,19 +29,21 @@ public class MedBarriersResourceTest {
 		// GET a patient's latest medication barriers data given this person's uuid
 		GetMethod method = new GetMethod(//"http://172.30.204.50:8080/openmrs/ws/rest/v1/patient/8520ea49-b0f8-4b5d-8037-9d8736f38032");
 		                               //"http://172.30.204.50:8080/openmrs/ws/rest/v1/medadherence/medbarriers/8520ea49-b0f8-4b5d-8037-9d8736f38032");
-										"http://172.30.204.50:8080/openmrs/ws/rest/v1/medadherence/medbarriers/iu0002");
+									   //"http://172.30.204.50:8080/openmrs/ws/rest/v1/medadherence/medbarriers/iu0002");
+									   //"http://172.30.204.50:8080/openmrs/ws/rest/v1/medadherence/medbarriers/firstname~middlename~lastname~19780526");	
+										"http://172.30.204.50:8080/openmrs/ws/rest/v1/medadherence/medbarriers/test~~patienta~19570101");	
 		client.executeMethod(method);
 		InputStream in = method.getResponseBodyAsStream();
 		String result = streamToString(in);
-		System.out.print(result);
+		System.out.println(result);
 		
 		// GET a patient's latest EMR data given this person's uuid
-		method = new GetMethod("http://172.30.204.50:8080/openmrs/ws/rest/v1/patient/8520ea49-b0f8-4b5d-8037-9d8736f38032");
+		//method = new GetMethod("http://172.30.204.50:8080/openmrs/ws/rest/v1/patient/8520ea49-b0f8-4b5d-8037-9d8736f38032");
 		                               //"http://172.30.204.50:8080/openmrs/ws/rest/v1/medadherence/medbarriers/8520ea49-b0f8-4b5d-8037-9d8736f38032");
-		client.executeMethod(method);
-		in = method.getResponseBodyAsStream();
-		result = streamToString(in);
-		System.out.println(result);
+		//client.executeMethod(method);
+		//in = method.getResponseBodyAsStream();
+		//result = streamToString(in);
+		//System.out.println(result);
 		
 		// Use dom4j to parse the response and print nicely to the output stream
 		//SAXReader reader = new SAXReader();
