@@ -32,6 +32,7 @@ import org.openmrs.module.messaging.MessagingService;
 import org.openmrs.module.messaging.PersonAttributeService;
 import org.openmrs.util.OpenmrsConstants;
 
+
 /**
  * Contains utility methods used internally or by other modules for convenience
  * 
@@ -51,14 +52,28 @@ public class PersonalhrUtil {
             OpenmrsConstants.PRIV_EDIT_ENCOUNTERS, OpenmrsConstants.PRIV_EDIT_OBS, OpenmrsConstants.PRIV_DELETE_ENCOUNTERS,
             OpenmrsConstants.PRIV_DELETE_OBS, OpenmrsConstants.PRIV_VIEW_PERSONS, OpenmrsConstants.PRIV_ADD_PERSONS,
             OpenmrsConstants.PRIV_EDIT_PERSONS, OpenmrsConstants.PRIV_ADD_PATIENTS, OpenmrsConstants.PRIV_EDIT_PATIENTS,
-            OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS };
+            OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS,
+			OpenmrsConstants.PRIV_VIEW_PROGRAMS, OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS, 
+			OpenmrsConstants.PRIV_VIEW_ALLERGIES, OpenmrsConstants.PRIV_VIEW_PROBLEMS, OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS,
+			OpenmrsConstants.PRIV_ADD_PATIENT_PROGRAMS, OpenmrsConstants.PRIV_ADD_ALLERGIES,
+			OpenmrsConstants.PRIV_EDIT_ALLERGIES, OpenmrsConstants.PRIV_DELETE_ALLERGIES,
+			OpenmrsConstants.PRIV_ADD_PROBLEMS, OpenmrsConstants.PRIV_EDIT_PROBLEMS, OpenmrsConstants.PRIV_DELETE_PROBLEMS,
+			OpenmrsConstants.PRIV_EDIT_ORDERS, OpenmrsConstants.PRIV_DELETE_ORDERS, "Manage Orders", "View Providers", "View Visits",
+			OpenmrsConstants.PRIV_DELETE_RELATIONSHIPS, OpenmrsConstants.PRIV_ADD_RELATIONSHIPS, OpenmrsConstants.PRIV_EDIT_RELATIONSHIPS,
+			"Manage Encounter Roles", "View Encounter Roles"
+			};
  
     private final static String temporaryPrivilegesMin[] = {
         OpenmrsConstants.PRIV_VIEW_CONCEPTS,
         OpenmrsConstants.PRIV_VIEW_GLOBAL_PROPERTIES,
         OpenmrsConstants.PRIV_VIEW_PATIENTS,
         OpenmrsConstants.PRIV_VIEW_PERSONS,
-        OpenmrsConstants.PRIV_VIEW_ENCOUNTERS
+        OpenmrsConstants.PRIV_VIEW_ENCOUNTERS,
+		OpenmrsConstants.PRIV_VIEW_PROGRAMS,
+		OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS,
+		OpenmrsConstants.PRIV_VIEW_ALLERGIES,
+		OpenmrsConstants.PRIV_VIEW_PROBLEMS,
+		
    };   
     
     private static int privCount = 0;

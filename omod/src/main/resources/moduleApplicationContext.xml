@@ -16,18 +16,40 @@
 			   <prop key="phr/patientRelationshipsForm.form">phrPatientRelationshipsForm</prop>
 				<prop key="phr/newPatient.form">phrNewPatientForm</prop>
 				<prop key="phr/options.form">phrOptionsForm</prop>
-				<prop key="phr/forgotPassword.form">phrForgotPasswordForm</prop>
+				<!--<prop key="phr/forgotPassword.form">phrForgotPasswordForm</prop>-->
 				<!--<prop key="phr/user.form">phrUserForm</prop>-->
 			   <prop key="**/personalhr/portlets/newPatientForm.portlet">phrNewPatientForm</prop>
 			   <prop key="phr/newPatientForm.form">phrNewPatientForm</prop>
 				<prop key="**/personalhr/portlets/phrNameLayout.portlet">phrNameLayoutPortletController</prop>
 				<prop key="**/personalhr/portlets/personFormEntry.portlet">personFormEntryPortletController</prop>
-			   <prop key="**/personalhr/portlets/personRelationships.portlet">phrPersonRelationshipsPortletController</prop>
-			   <prop key="**/personalhr/portlets/restrictedUserRelationships.portlet">phrPersonRelationshipsPortletController</prop>
+			   <prop key="**/personalhr/portlets/personRelationship.portlet">phrPersonRelationshipPortletController</prop>  
+			  <prop key="**/personalhr/portlets/restrictedUserRelationships.portlet">phrPersonRelationshipsPortletController</prop> 
 	    	   <prop key="**/personalhr/portlets/*.portlet">phrPortletController</prop>			   
 				<prop key="phr/user.list">phrUserList</prop>
 				<prop key="admin/phr/manageAllowedUrl.form">phrManageAllowedUrlController</prop>
 				<prop key="admin/phr/managePhrPrivilege.form">phrManagePhrPrivilegeController</prop>
+				<prop key="**/activeListAllergy.portlet">activeListPortletController</prop>
+				<prop key="**/activeListProblem.portlet">activeListPortletController</prop>
+				<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
+				<prop key="**/patientRegimens.portlet">patientRegimenPortletController</prop>
+				<prop key="**/patientRegimenCurrent.portlet">patientRegimenPortletController</prop>
+				<prop key="**/patientRegimenCompleted.portlet">patientRegimenPortletController</prop>
+				<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
+				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
+				<prop key="phr/phrOrderDrugForm.form">phrOrderDrugForm</prop>
+				<!-- <prop key="phr/visitForm.form">phrVisitForm</prop> -->
+				<!-- <prop key="**/personalhr/portlets/patientVisits.portlet">patientVisitsPortletController</prop> -->
+				<prop key="/phr/patientForm.form">phrPatientForm</prop> 
+				<prop key="/phr/phrUser.list">phrUser</prop>
+				<!-- <prop key="/phr/phrUserReg.form">phrUserReg</prop>-->
+				<prop key="phr/phrEncounter.form">phrEncounterForm</prop>
+				<prop key="phr/phrObs.form">phrObsForm</prop>
+				<prop key="phr/phrEncounterDisplay.list">encounterDisplayController</prop>
+				
+				<prop key="phr/phrForgotPassword.form">phrForgotPasswordForm</prop>
+				<prop key="phr/phrOptions.form">PHROptionsForm</prop>
+				
+				<prop key="phr/userRegUniqueid.form">phrUserRegUniqueid</prop>
 			</props>
 		</property>
     </bean>
@@ -108,6 +130,48 @@
 		<property name="formView"><value>/module/personalhr/view/patientRelationshipsForm</value></property>
 		<property name="successView"><value>patientRelationshipsForm.form</value></property>
 	</bean>
+	
+	<bean id="phrOrderDrugForm" 
+		class="org.openmrs.module.personalhr.web.controller.OrderDrugFormController">
+		<property name="commandName"><value>order</value></property>
+		<property name="validator">
+			<ref bean="drugOrderValidator" />
+		</property>
+		<property name="formView"><value>/module/personalhr/view/phrOrderDrugForm</value></property>
+		<property name="successView"><value>patientDashboard.form</value></property>
+	</bean>
+	
+	<bean id="phrEncounterForm" class="org.openmrs.module.personalhr.web.controller.EncounterFormController">
+		<property name="commandName"><value>encounter</value></property>
+		<property name="formView"><value>/module/personalhr/view/phrEncounterForm</value></property>
+		<property name="successView"><value>phrEncounter.form</value></property>
+	</bean>
+	
+	<bean id="phrObsForm" class="org.openmrs.module.personalhr.web.controller.ObsFormController">
+		<property name="commandName"><value>obs</value></property>
+		<property name="formView"><value>/module/personalhr/view/phrObsForm</value></property>
+		<property name="successView"><value>phrEncounter.form</value></property>
+		<property name="validator">
+			<ref bean="obsValidator" />
+		</property>
+	</bean>
+	
+	<bean id="phrPatientForm" class="org.openmrs.module.personalhr.web.controller.PatientFormController">
+		<property name="commandName"><value>patient</value></property>
+		<property name="validator">
+			<ref bean="patientValidator" />
+		</property>
+		<property name="formView"><value>/module/personalhr/view/patientForm</value></property>
+		<property name="successView"><value>patientDashboard.form</value></property>
+	</bean>
+
+	<!-- <bean id="phrVisitForm" 
+		class="org.openmrs.module.personalhr.web.controller.visitFormController">
+		<property name="commandName"><value>visit</value></property>
+		<property name="formView"><value>/module/personalhr/view/visitForm</value></property>
+		<property name="successView"><value>patientDashboard.form</value></property>
+	</bean> -->
+	
 	<!-- ** New (mini) Patient ** -->
 	<bean id="phrShortPatientValidator" class="org.openmrs.module.personalhr.web.controller.ShortPatientValidator" />
 	<bean id="phrNewPatientForm" class="org.openmrs.module.personalhr.web.controller.NewPatientFormController">
@@ -140,11 +204,26 @@
 		<property name="successView"><value>/phr/user.list</value></property>
 	</bean>
 	
+	<bean id="phrUser" class="org.openmrs.module.personalhr.web.controller.PhrUserListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>userList</value></property>
+		<property name="formView"><value>/module/personalhr/view/users</value></property>
+		<property name="successView"><value>/phr/addPerson.htm</value></property>
+	</bean>
+
     <!-- Portlet Controllers -->
 	<bean id="phrPortletController" class="org.openmrs.module.personalhr.web.controller.PortletController" />
-	<bean id="phrPersonRelationshipsPortletController" class="org.openmrs.module.personalhr.web.controller.PersonRelationshipsPortletController" />	    
+	<bean id="phrPersonRelationshipPortletController" class="org.openmrs.module.personalhr.web.controller.PersonRelationshipPortletController" />
+	<bean id="phrPersonRelationshipsPortletController" class="org.openmrs.module.personalhr.web.controller.PersonRelationshipsPortletController" />  	    
 	<bean id="phrNameLayoutPortletController" class="org.openmrs.module.personalhr.web.controller.PhrNameLayoutPortletController" />
+	<bean id="activeListPortletController" class="org.openmrs.module.personalhr.web.controller.ActiveListPortletController" />	    
+	<bean id="patientProgramsPortletController" class="org.openmrs.module.personalhr.web.controller.PatientProgramsPortletController" />
+	<bean id="patientRegimenPortletController" class="org.openmrs.module.personalhr.web.controller.RegimenPortletController" />
+	<!-- <bean id="patientVisitsPortletController" class="org.openmrs.module.personalhr.web.controller.PatientVisitsPortletController" /> -->
 	
+	
+	<bean id="encounterDisplayController"
+		class="org.openmrs.module.personalhr.web.controller.EncounterDisplayController" />
 	<!--  Used for finding duplicate patients / users -->
 	<bean id="phrAddPerson" class="org.openmrs.module.personalhr.web.controller.AddPersonController">
 		<property name="commandName"><value>people</value></property>
@@ -166,11 +245,40 @@
 		<property name="successView"><value>managePhrPrivilege.form</value></property>
 	</bean>	
 
-	<bean id="phrForgotPasswordForm"
+	<!-- <bean id="phrForgotPasswordForm"
 		class="org.openmrs.module.personalhr.web.controller.ForgotPasswordFormController">
 		<property name="commandName"><value>forgotPassword</value></property>
 		<property name="formView"><value>/module/personalhr/view/forgotPasswordForm</value></property>
-		<property name="successView"><value>phrForgotPassword.form</value></property>
+		<property name="successView"><value>options.form</value></property>
 	</bean>
 	
+	<bean id="phrUserReg"
+		class="org.openmrs.module.personalhr.web.controller.phrUserRegFormController">
+		<property name="commandName"><value>forgotPassword</value></property>
+		<property name="formView"><value>/module/personalhr/view/phrUserReg</value></property>
+		<property name="successView"><value>phrUserReg</value></property>
+	</bean> -->
+	
+	
+	<bean id="phrForgotPasswordForm"
+		class="org.openmrs.module.personalhr.web.controller.phrForgotPasswordFormController">
+		<property name="commandName"><value>forgotPassword</value></property>
+		<property name="formView"><value>/module/personalhr/view/phrForgotPasswordForm</value></property>
+		<property name="successView"><value>phrForgotPassword.form</value></property>
+	</bean>
+	<bean id="PHROptionsForm" class="org.openmrs.module.personalhr.web.controller.phrOptionsFormController">
+		<property name="commandName"><value>opts</value></property>
+		<property name="commandClass"><value>org.openmrs.web.OptionsForm</value></property>
+		<property name="formView"><value>/module/personalhr/view/phrOptionsForm</value></property>
+		<property name="successView"><value>phrOptions.form</value></property>
+	</bean>
+	
+	
+	<bean id="phrUserRegUniqueid"
+		class="org.openmrs.module.personalhr.web.controller.phrUserRegUniqueidFormController">
+		<property name="commandName"><value>forgotPassword</value></property>
+		<property name="formView"><value>/module/personalhr/view/phrUserRegUniqueidForm</value></property>
+		<property name="successView"><value>userRegUniqueid.form</value></property>
+	</bean>
+
 </beans>

@@ -1,9 +1,10 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 
+<openmrs:require privilege="" otherwise="/phr/login.htm"
+	redirect="/phr/login.htm" />
+	
 <spring:message var="pageTitle" code="optionsForm.title" scope="page"/>
-<%@ include file="/WEB-INF/view/module/personalhr/template/headerForOptions.jsp"%>
-
-<openmrs:htmlInclude file="/moduleResources/personalhr/personalhr.css" /> 
+<%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 
 <script type="text/javascript">
 
@@ -58,10 +59,20 @@ function init() {
 	if (hash.length > 1) {
 		var autoSelect = hash.substring(1, hash.length);
 		for(i=0;i<sections.length;i++) {
-			if (sections[i].text == autoSelect)
-				uncoversection(sections[i].secid + "_link");
+			if (sections[i].text == autoSelect){
+                uncoversection(sections[i].secid + "_link");
+            }
 		}
 	}
+
+    //If a section has errors, then it should be selected.
+    for(i=0;i<sections.length;i++){
+        if(sections[i].error){
+           uncoversection(sections[i].secid + "_link");
+           break;
+        }
+    }
+
 }
 
 function uncoversection(secid) {
@@ -107,32 +118,39 @@ function containsError(element) {
 
 </script>
 
-<personalhr:hasPrivilege role="PHR Patient">
-<div class="boxHeader${model.patientVariation}"><spring:message code="personalhr.demographics"/></div>
-	<div id="patientDemographics2" class="box${model.patientVariation}">
-			<openmrs:portlet url="../module/personalhr/portlets/newPatientForm" patientId="${opts.personName.person.personId}" />
-	</div>
-</personalhr:hasPrivilege>
-
-<br/><br/>
-
-<div class="boxHeader${model.patientVariation}"><spring:message code="options.title"/></div>
+<h2><spring:message code="options.title" /></h2>
 
 <spring:hasBindErrors name="opts">
 	<spring:message code="fix.error" />
 	<div class="error"><c:forEach items="${errors.allErrors}" var="error">
 		<spring:message code="${error.code}" text="${error.code}" />
 		<br />
+		<!-- ${error} -->
 	</c:forEach></div>
 	<br />
 </spring:hasBindErrors>
 
 <form method="post">
 
-<div id="optionsForm" class="box${model.patientVariation}">
-
+<div id="optionsForm">
 <fieldset><legend><spring:message code="options.default.legend" /></legend>
 <table>
+	<tr>
+		<td><spring:message code="options.default.location" /></td>
+		<td>
+			<spring:bind path="opts.defaultLocation">
+				<select name="${status.expression}">
+					<option value=""></option>
+					<c:forEach items="${locations}" var="loc">
+						<option value="${loc.locationId}" <c:if test="${loc.locationId == status.value}">selected</c:if>>${loc.name}</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
 	<tr>
 		<td><spring:message code="options.default.locale" /></td>
 		<td>
@@ -142,6 +160,43 @@ function containsError(element) {
 						<option value="${locale}" <c:if test="${locale == status.value}">selected</c:if>>${locale.displayName}</option>
 					</c:forEach>
 				</select>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.proficient.locales" /></td>
+		<td>
+			<spring:bind path="opts.proficientLocales">
+				<input type="text" name="${status.expression}" value="${status.value}" 
+					size="35" />
+				<span class="description">example: "en_US, en_GB, en, fr_RW"</span>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.showRetiredMessage" /></td>
+		<td>
+			<label for="${status.expression}"> <spring:bind path="opts.showRetiredMessage"> </label>
+				<input type="hidden" name="_${status.expression}" value="true" />
+				<input type="checkbox" name="${status.expression}" value="true" id="${status.expression}" <c:if test="${status.value == true}">checked</c:if> />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.default.verbose" /></td>
+		<td>
+			<label for="${status.expression}"><spring:bind path="opts.verbose"></label>
+				<input type="hidden" name="_${status.expression}" value="true" />
+				<input type="checkbox" name="${status.expression}" value="true" id="${status.expression}" <c:if test="${status.value == true}">checked</c:if> />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
@@ -260,9 +315,72 @@ function containsError(element) {
 <br /><br />
 <br />
 </fieldset>
+
+<fieldset><legend><spring:message code="options.notify.legend" /></legend>
+<table>
+	<tr>
+		<td><input type="radio" name="notification" value="internalOnly" id="internalOnly" <c:if test="${opts.notification == 'internalOnly'}">checked</c:if> /></td>
+		<td><label for="internalOnly"><spring:message code="options.notify.internalOnly" /></label></td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="notification" value="internal" id="internal" <c:if test="${opts.notification == 'internal'}">checked</c:if> /></td>
+		<td><label for="internal"><spring:message code="options.notify.internal" /></label></td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="notification" value="internalProtected" id="internalProtected" <c:if test="${opts.notification == 'internalProtected'}">checked</c:if> /></td>
+		<td><label for="internalProtected"><spring:message code="options.notify.internalProtected" /></label></td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="notification" value="email" id="email" <c:if test="${opts.notification == 'email'}">checked</c:if> /></td>
+		<td><label for="email"><spring:message code="options.notify.email" /></label></td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<td><spring:message code="options.notify.notificationAddress" /></td>
+		<td>
+			<spring:bind path="opts.notificationAddress">
+				<input type="text" name="${status.expression}" value="${status.value}" size="35"/>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+</table>
+<br />
+<br />
+</fieldset>
+<openmrs:extensionPoint pointId="org.openmrs.userOptionExtension" requiredClass="org.openmrs.module.web.extension.UserOptionExtension"  type="html">
+	<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+		<c:catch var="ex">
+			<c:choose>
+				<c:when
+					test="${extension.portletUrl == '' || extension.portletUrl == null}">
+							portletId is null: '${extension.extensionId}'
+						</c:when>
+				<c:otherwise>
+					<fieldset><legend>${extension.tabName}</legend> <openmrs:portlet
+						url="${extension.portletUrl}" id="${extension.tabId}"
+						moduleId="${extension.moduleId}" parameters="${extension.portletParameters}" /></fieldset>
+				</c:otherwise>
+			</c:choose>
+		</c:catch>
+		<c:if test="${not empty ex}">
+			<div class="error"><spring:message code="fix.error.plain" /> <br />
+			<b>${ex}</b>
+			<div style="height: 200px; width: 800px; overflow: scroll"><c:forEach
+				var="row" items="${ex.cause.stackTrace}">
+								${row}<br />
+			</c:forEach></div>
+			</div>
+		</c:if>
+
+
+	</openmrs:hasPrivilege>
+</openmrs:extensionPoint></div>
 <br />
 <input type="submit" value="<spring:message code="options.save"/>">
-</div>
 </form>
 
-<%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp"%>
+<%@ include file="/WEB-INF/view/module/personalhr/template/footer.jsp" %>

@@ -56,7 +56,9 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
      */
 
     public PhrSharingToken getPhrSharingToken(final Integer id) {
-        return (PhrSharingToken) this.sessionFactory.getCurrentSession().get(PhrSharingToken.class, id);
+        PhrSharingToken token = (PhrSharingToken)this.sessionFactory.getCurrentSession().get(PhrSharingToken.class, id);
+		this.sessionFactory.getCurrentSession().close();
+		return (token); 
     }
     
     /* (non-Jsdoc)
@@ -181,10 +183,11 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
 
     public void deletePhrSharingToken(final Integer id) {
         //sessionFactory.getCurrentSession().close();
+		PhrSharingToken token = getPhrSharingToken(id);
         final Session sess = this.sessionFactory.openSession();
         final Transaction tx = sess.beginTransaction();
         sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
-        sess.delete(getPhrSharingToken(id));
+        sess.delete(token);
         tx.commit();
         sess.close();
         //sessionFactory.getCurrentSession().delete(getPhrSharingToken(id));        
@@ -200,6 +203,7 @@ public class HibernatePhrSharingTokenDAO implements PhrSharingTokenDAO {
         final Criteria crit = sess.createCriteria(PhrSharingToken.class);
         crit.add(Restrictions.eq("sharingToken", tokenString));
         final List<PhrSharingToken> list = crit.list();
+		sess.close();
         this.log.debug("HibernatePhrSharingTokenDAO:getSharingToken->" + tokenString + "|token count=" + list.size());
         if (list.size() >= 1) {
             return list.get(0);

@@ -344,6 +344,21 @@ public class PortletController implements Controller {
                                         new Date(), null, false));
                             }
                             
+							if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ALLERGIES)) {
+                                model.put(
+                                    "patientAllergies",
+                                    Context.getPatientService().getAllergies(p));
+                                
+                            }
+							
+							if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROBLEMS)) {
+                                model.put(
+                                    "patientProblems",
+                                    Context.getPatientService().getProblems(p));
+                                
+                            }
+							
+						
                             model.put("patientId", patientId);
                             if (p != null) {
                                 personId = p.getPatientId();
@@ -372,6 +387,7 @@ public class PortletController implements Controller {
                         model.put("person", p);
                         
                         if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS)) {
+					
                             final List<Relationship> relationships = new ArrayList<Relationship>();
                             relationships.addAll(Context.getPersonService().getRelationshipsByPerson(p));
                             final Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
@@ -386,6 +402,7 @@ public class PortletController implements Controller {
                             
                             model.put("personRelationships", relationships);
                             model.put("personRelationshipsByType", relationshipsByType);
+							
                         }
                     }
                 }

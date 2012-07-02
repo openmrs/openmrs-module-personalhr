@@ -27,6 +27,8 @@
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>messaging-api</artifactId>
 			<version>0.9.0-beta</version>
+			<scope>system</scope>
+			<systemPath>C:\0.0.3\lib-common\messaging-api-0.9.0-beta.jar</systemPath>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
