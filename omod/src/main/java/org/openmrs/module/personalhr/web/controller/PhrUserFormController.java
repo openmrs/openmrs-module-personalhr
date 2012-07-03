@@ -88,7 +88,7 @@ import org.springframework.web.context.request.WebRequest;
 public class PhrUserFormController {
     
     protected static final Log log = LogFactory.getLog(PhrUserFormController.class);
-    private static final String NOTIFICATION_TEMPLATE = "Dear OPENMRS_PHR_RELATED_PERSON,\n\nThank you for registering with the Personal Cancer Toolkit. You are now able to access this toolkit through the following link:\n\nOPENMRS_URL\n\nYour user details are as follows: \n\nUsername: OPENMRS_USERNAME\n\nPassword: OPENMRS_PASSWORD\n\nIf you have any questions or require further clarification, please contact the site administrator here:\n\ncancertoolkit-l@listserv.regenstrief.org\n\nThank You!\nSincerely,\nThe Personal Cancer Toolkit Development Team";
+    private static final String NOTIFICATION_TEMPLATE = "Dear OPENMRS_PHR_RELATED_PERSON,\n\nThank you for registering with the Personal Health Toolkit. You are now able to access this toolkit through the following link:\n\nOPENMRS_URL\n\nYour user details are as follows: \n\nUsername: OPENMRS_USERNAME\n\nPassword: OPENMRS_PASSWORD\n\nIf you have any questions or require further clarification, please contact the site administrator here:\n\nhxiao@regenstrief.org\n\nThank You!\nSincerely,\nThe Personal Health Toolkit Development Team";
     
     @InitBinder
     public void initBinder(final WebDataBinder binder) {       
