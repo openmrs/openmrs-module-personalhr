@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+  version="2.0">
+
+	<description>Personal Health Record Module tag library</description>
+	<tlib-version>1.0</tlib-version>
+	<short-name>personalhr</short-name>
+	
+<tag>
+	<description>
+		Enforces user privileges and redirects if the active user
+		does not have the required privileges.  At least one of
+		"privilege", "allPrivileges", or "anyPrivilege" must be 
+		filled in.
+	</description>
+	<name>require</name>
+	<tag-class>org.openmrs.module.personalhr.web.taglib.RequireTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>privilege</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>allPrivileges</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>anyPrivilege</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>role</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>otherwise</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>redirect</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Determines if a user is currently logged in.
+		authenticatedUser will be set if a user is logged in
+	</description>
+	<name>authentication</name>
+	<tag-class>org.openmrs.module.personalhr.web.taglib.AuthTag</tag-class>
+	<body-content>JSP</body-content>
+</tag>
+
+<tag>
+	<description>
+		Determines if the current user has the given privilege (comma delimited)
+	</description>
+	<name>hasPrivilege</name>
+	<tag-class>org.openmrs.module.personalhr.web.taglib.PrivilegeTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>privilege</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>role</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>inverse</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>	
+
+<tag>
+	<description>
+		Includes the portlet from the given /WEB-INF/portlets/{url}
+	</description>
+	<name>portlet</name>
+	<tag-class>org.openmrs.module.personalhr.web.taglib.PortletTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>url</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>id</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>size</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>
+			A string in the form of "key=value|key2=value2".   
+			e.g. "size=compact|order=date"
+		</description>
+		<name>parameters</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>
+			A Map(String,Object) of extra parameter values
+		</description>
+		<name>parameterMap</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Map</type>
+	</attribute>
+	<attribute>
+		<name>moduleId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>patientId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>personId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>encounterId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>userId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>patientIds</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+<tag>
+	<description>
+		Gets the value of the given global property.
+		If the var attribute is specified, then the value of the global property is 
+		placed into that in the pageContext. Otherwise, value is printed
+	</description>
+	<name>globalProperty</name>
+	<tag-class>org.openmrs.module.personalhr.web.taglib.GlobalPropertyTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>key</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>defaultValue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>If specified, then the property will be returned as a List of Strings. This property should be given as a Java regular expression, as would be passed to String.split(String)</description>
+		<name>listSeparator</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+<tag>
+	<description>
+		Loops over all the alerts for a user.  If user is not defined, the
+		authenticated user is searched.  
+	</description>
+	<name>forEachAlert</name>
+	<tag-class>org.openmrs.module.personalhr.web.taglib.ForEachAlertTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>user</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>role</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>includeRead</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>includeExpired</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+</taglib>

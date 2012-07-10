@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqldiff PUBLIC "-//OpenMRS//DTD OpenMRS SQL Diff Config 1.0//EN" "http://resources.openmrs.org/doctype/sqldiff-1.0.dtd">
+
+<sqldiff version="1.0">
+	<help>
+		USE:
+The diffs are ordered by datamodel version number.
+The script can be run in a top down fashion and is
+expected to not failor overwrite old data
+		
+		EXPECT:
+- "use business-database-name;" was called prior to
+   calling this script
+	</help>
+	
+	<diff>
+		<version>1.0.0</version>
+		<author>Hui Xiao</author>
+		<date>Nov 22 2010</date>
+		<description>
+Create phr_sharing_token table, for storing patient initiated relationships and data sharing authorization
+		</description>
+		<sql>	
+CREATE TABLE IF NOT EXISTS `phr_sharing_token` (
+  `id` int(11) NOT NULL auto_increment,
+  `sharing_token` varchar(30),
+  `patient_id` int(11) NOT NULL default '0',
+  `relationship_person_id` int(11) NULL,
+  `relationship_person_name` varchar(100),
+  `relationship_person_email` varchar(100),
+  `relationship_type` varchar(50),
+  `share_start_date` datetime NOT NULL default '2000-01-01 00:00:00',
+  `share_activate_date` datetime,
+  `share_expire_date` datetime NOT NULL default '2000-01-01 00:00:00',
+  `creator` int(11) NOT NULL default '0',
+  `share_type` varchar(30),
+  `date_created` datetime NOT NULL default '2000-01-01 00:00:00',
+  `changed_by` int(11) default NULL,
+    `date_changed` datetime default NULL,
+  `retired` tinyint(1) NOT NULL default '0',
+  `uuid` char(38),
+  `retired_by` int(11) default NULL,
+  `date_retired` datetime default NULL,
+  `retire_reason` varchar(255) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `User who created phr_sharing_token` (`creator`),
+  KEY `Token used by 3rd party` (`sharing_token`),
+  KEY `Patient who initiated relationship and sharing` (`patient_id`),
+  KEY `Person with whom the patient specified a relationship` (`relationship_person_id`),
+  KEY `User who changed phr_sharing_token` (`changed_by`),
+  CONSTRAINT `User who created phr_sharing_token` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `Patient who initiated relationship and sharing` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
+  CONSTRAINT `Person with whom the patient specified a relationship` FOREIGN KEY (`relationship_person_id`) REFERENCES `person` (`person_id`),
+  CONSTRAINT `User who changed phr_sharing_token` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+              CONSTRAINT `User who retired phr_sharing_token` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`),  
+  UNIQUE (`sharing_token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>1.0.0</version>
+		<author>Hui Xiao</author>
+		<date>Nov 22 2010</date>
+		<description>
+Create phr_security_rule  table, for storing dynamic role based security configuration (PHR privilege *--* PHR dynamic role)
+		</description>
+		<sql>	
+CREATE TABLE IF NOT EXISTS `phr_security_rule` (
+  `id` int(11) NOT NULL auto_increment,
+  `privilege` varchar(100),
+  `required_role` varchar(100),
+  `description` varchar(100),
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '2000-01-01 00:00:00',
+  `changed_by` int(11) default NULL,
+    `date_changed` datetime default NULL,
+  `retired` tinyint(1) NOT NULL default '0',
+  `uuid` char(38),
+  `retired_by` int(11) default NULL,
+  `date_retired` datetime default NULL,
+  `retire_reason` varchar(255) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `User who created phr_security_rule` (`creator`),
+  KEY `name of privilege` (`privilege`),
+  KEY `name of a dynamic role required` (`required_role`),
+  CONSTRAINT `User who created phr_security_rule` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `User who changed phr_security_rule` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+              CONSTRAINT `User who retired phr_security_rule` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`)                
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>1.0.0</version>
+		<author>Hui Xiao</author>
+		<date>Nov 22 2010</date>
+		<description>
+Create phr_allowed_url  table, for storing dynamic role based security configuration (PHR allowed URL *--* PHR privilege)
+		</description>
+		<sql>	
+CREATE TABLE IF NOT EXISTS `phr_allowed_url` (
+  `id` int(11) NOT NULL auto_increment,
+  `allowed_url` varchar(200),
+  `required_privilege` varchar(100),
+  `description` varchar(100),
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '2000-01-01 00:00:00',
+  `changed_by` int(11) default NULL,
+    `date_changed` datetime default NULL,
+  `retired` tinyint(1) NOT NULL default '0',
+  `uuid` char(38),
+  `retired_by` int(11) default NULL,
+  `date_retired` datetime default NULL,
+  `retire_reason` varchar(255) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `User who created phr_allowed_url` (`creator`),
+  KEY `Name of privilege required` (`required_privilege`),
+  KEY `URL allowed for PHR user to access` (`allowed_url`),
+  CONSTRAINT `User who created phr_allowed_url` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `User who changed phr_allowed_url` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+              CONSTRAINT `User who retired phr_allowed_url` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`)  
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Create Messages','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Create Relationships','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Edit Journal','Administrator, Owner, Share Journal',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('PHR Administrator','Administrator',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('PHR Authenticated','Administrator, Owner, Share Medical, Share Journal',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View All Messages','Administrator',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Journal','Administrator, Owner, Share Journal',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Messages','Administrator, Owner, Share Medical, Share Journal',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Relationships','Administrator, Owner',1,now() );
+
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Add Recommended Care','Administrator, Share Medical and Doctor',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Create/Delete Treatment Summary','Administrator, Owner, Share Medical',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Edit Treatment Summary','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Update Follow-up Care','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Follow-up Care','Administrator, Owner, Share Medical',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Side Effects','Administrator, Owner, Share Medical',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Treatment Summary','Administrator, Owner, Share Medical',1,now() );
+
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Regimens','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Problems','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Overview','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Programs','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Allergies','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Add Programs','Administrator',1,now() );insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Treatment Summary','Administrator, Owner, Share Medical',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Add Problems','Administrator',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Add Allergies','Administrator',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Edit Demographics','Administrator',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Demographics','Administrator, Owner',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('View Encounters','Administrator, Owner, Share Medical',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Add Regimens','Administrator',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Edit Encounters','Administrator',1,now() );
+insert into phr_security_rule (privilege, required_role, creator, date_created) values('Edittable Links','Administrator',1,now() );
+
+
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/dwr/call/plaincall/Multiple.*','View Messages','used by messaginphr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRConceptService*','PHR Authenticated','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRJournalEntryService*','View Journal','Used by phrjournal module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRMessagingAddressService*','View Messages','used by messaging module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRMessagingSettingsService*','View Messages','used by messaginphr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPatientService*','PHR Administrator','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPersonalhrService.add*','Manage Modules','used by personalhr module to configure security rules by OpenMRS administrator',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPersonalhrService.logChangeTabEvent*','PHR Authenticated','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPersonalhrService.send*','','everybody can send message to Contact Us; used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRPersonService*','PHR Administrator','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRUserService*','PHR Administrator','used by personalhr module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/messaging/*','View Messages','used by messaging module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/messagingphr/*','View Messages','used by messaging module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/phrjournal/*','View Journal','used by phrjournal module',1,now());
+
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRHtmlFormEntryService*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRLafService*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/DWRModuleMessageService*','View Messages','used by messaging module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/HtmlFlowsheetDWR*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/htmlformentry/*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/htmlformflowsheet/*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/lancearmstrong/*','View Treatment Summary','used by lancearmstrong module',1,now());
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/moduleResources/htmlformflowsheet/*','View Treatment Summary','used by lancearmstrong module',1,now());
+
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/images/openmrs-favicon.ico',1,now());
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/admin/programs/patientProgram.form',1,now());
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/patientDashboard.form',1,now());
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/dwr/call/plaincall/DWRProgramWorkflowService.*',1,now());
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/dwr/call/plaincall/DWROrderService.*',1,now());
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/admin/visits/datatable.list',1,now());
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/dwr/call/plaincall/DWRRelationshipService.*',1,now());
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/dwr/call/plaincall/DWRProviderService.*',1,now());
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/options.form',1,now());
+
+
+insert into privilege (privilege, description, uuid) values('PHR All Patients Access','A privilege to access all patients. Only PHR Administrator role can have this privilege.',uuid() );
+insert into privilege (privilege, description, uuid) values('PHR Restricted Patient Access','A privilege to access data of patients who explicitly grant this access. Only PHR Restricted User role can have this privilege. ',uuid() );
+insert into privilege (privilege, description, uuid) values('PHR Single Patient Access','A privilege to access a patient user\'s own data. Only PHR Patient role can have this privilege.',uuid() );
+
+insert into role (role, description, uuid) values('PHR Administrator','A user who can have full access to any data of any patient with a PHR Patient role',uuid() );
+insert into role (role, description, uuid) values('PHR Patient','A patient user who can view, update and share his/her own data in a PHR system',uuid() );
+insert into role (role, description, uuid) values('PHR Restricted User','A user who can access a patient\'s data only after receiving appropriate authority from that patient.',uuid() );
+
+insert into role_privilege (role, privilege) values('PHR Administrator','PHR All Patients Access' );
+insert into role_privilege (role, privilege) values('PHR Patient','PHR Single Patient Access' );
+insert into role_privilege (role, privilege) values('PHR Restricted User','PHR Restricted Patient Access' );
+		</sql>
+	</diff>
+
+	<diff>
+		<version>1.0.0</version>
+		<author>Hui Xiao</author>
+		<date>15 Mar 2011</date>
+		<description>
+Create phr_event_log  table to track user activities for research purpose 
+		</description>
+		<sql>	
+create table IF NOT EXISTS phr_event_log (
+id int(16) NOT NULL auto_increment,
+event_type varchar(50),
+event_date datetime,
+user_id int(11),
+session_id varchar(36),
+patient_id int(11),
+event_content text,
+PRIMARY KEY (`id`),
+CONSTRAINT `fk_phr_event_log_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),	   
+CONSTRAINT `fk_phr_event_log_patient_id` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`)	   
+);	
+		</sql>
+	</diff>
+
+</sqldiff>

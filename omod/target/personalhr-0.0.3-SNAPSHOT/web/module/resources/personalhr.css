@@ -1,0 +1,93 @@
+#addUrlDetailDiv{
+	display:none;
+	margin-top:10px;
+}
+
+#addUrlDiv{
+	margin-top:10px;
+}
+
+#cancelAddUrl{
+	display:none;
+}
+
+#saveAddUrl{
+	display:none;
+}
+
+.sub_title{
+	font-weight:bold;
+	margin-top:7px;
+	margin-bottom:7px;	
+}
+
+#addPrivilegeDetailDiv{
+	display:none;
+	margin-top:10px;
+}
+
+#addPrivilegeDiv{
+	margin-top:10px;
+}
+
+#cancelAddPrivilege{
+	display:none;
+}
+
+#saveAddPrivilege{
+	display:none;
+}
+
+.sub_title{
+	font-weight:bold;
+	margin-top:7px;
+	margin-bottom:7px;	
+}
+
+#patientPhrTabs {
+	font-size: 0.6em;
+	margin: 10px auto 0px auto;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-bottom: 2px;
+	border-bottom: 1px solid navy;
+	width: 99%;
+}
+
+#patientPhrTabs ul, #patientPhrTabs li {
+	display: inline;
+	list-style-type: none;
+	padding: 0px 0px 0px 0px;
+}
+
+#patientPhrTabs a:link, #patientPhrTabs a:visited {
+	border: 1px solid navy;
+	font-size: small;
+	font-weight: bold;
+	margin-right: 8px;
+	padding: 2px 10px 2px 10px;
+	text-decoration: none;
+	color: navy;
+	background: #E0E0F0;
+}
+#patientPhrTabs a:link.active, #patientPhrTabs a:visited.active {
+	border-bottom: 1px solid #ffff80;
+}
+#patientPhrTabs a.current, #patientPhrTabs a:link.current, #patientPhrTabs a:visited.current, #patientPhrTabs a.current:hover {
+	background: #ffff80;
+	border-bottom: 1px solid #ffff80;
+	color: navy;
+	text-decoration: none;
+}
+#patientPhrTabs a:hover {
+	text-decoration: underline;
+}
+
+.tooltipPhr {
+	border: none;
+	background-color: #ffff80;
+	margin-top: 0x;
+	margin-bottom: 2px;
+	padding: 3px;
+}
+

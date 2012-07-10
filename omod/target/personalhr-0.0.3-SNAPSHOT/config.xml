@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.2//EN" "http://resources.openmrs.org/doctype/config-1.2.dtd">
+
+<module configVersion="1.2">
+	
+	<!-- Base Module Properties -->
+	<id>personalhr</id>
+	<name>Personal Health Record</name>
+	<version>0.0.3-SNAPSHOT</version>
+	<package>org.openmrs.module.personalhr</package>
+	<author>Hui Xiao</author>
+	<description>
+			Support PHR related functionalities including single patient access, restricted patient access, patient profile sharing, proxy designation, relationship expansion, authorized self-registration and/or administrator backed registration.			
+	</description>
+
+	<activator>org.openmrs.module.personalhr.PersonalhrActivator</activator>
+	
+	<!-- <updateURL>https://dev.openmrs.org/modules/download/personalhr/update.rdf</updateURL> -->
+	<!-- /Base Module Properties -->
+	
+	<require_version>1.2.0.3400</require_version>
+	<require_modules>  	
+	     <require_module>org.openmrs.module.messaging</require_module>  	
+	</require_modules> 
+	
+	<!-- Extensions -->
+	<extension>
+		<point>org.openmrs.admin.list</point>
+		<class>org.openmrs.module.personalhr.extension.html.AdminList</class>
+	</extension>
+	
+	
+	<!-- AOP
+	<advice>
+		<point>org.openmrs.api.FormService</point>
+		<class>org.openmrs.module.personalhr.advice.DuplicateFormAdvisor</class>
+	</advice>
+	 /AOP -->
+	
+	
+	<!-- Required Privileges 
+	<privilege>
+		<name>Form Entry</name>
+		<description>Allows user to access Form Entry pages/functions</description>
+	</privilege>
+	 /Required Privileges -->
+
+
+	<!-- Required Global Properties
+	<globalProperty>
+		<property>personalhr.ENABLE_PHR</property>
+		<defaultValue>false</defaultValue>
+		<description>
+		   Set to true when personalhr module is started, false when shutdown 
+		</description>
+	</globalProperty>
+	/Required Global Properties -->
+	
+	<dwr>
+		<allow>
+			<create creator="new" javascript="DWRPersonalhrService">
+				<param name="class" value="org.openmrs.module.personalhr.web.DWRPersonalhrService"/>
+				<include method="addAllowedUrl"/>
+				<include method="addPhrPrivilege"/>
+				<include method="logChangeTabEvent"/>
+				<include method="sendMessageToUs"/>
+			</create>
+		</allow>
+	</dwr>
+	
+	<!-- Servlets -->
+	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> 
+	<servlet>
+		<servlet-name>formDownload</servlet-name>
+		<servlet-class>org.openmrs.module.personalhr.web.FormDownloadServlet</servlet-class>
+	</servlet>
+	-->
+	<!-- /Servlets -->
+	
+	
+	<!-- Internationalization -->
+	<!-- All message codes should start with personalhr.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+
+	<!-- /Module servlets, accessed via http://.../openmrs/moduleServlet/formEntry/servletName -->
+	<servlet>
+		<servlet-name>phrLoginServlet</servlet-name>
+		<servlet-class>org.openmrs.module.personalhr.web.servlet.LoginServlet</servlet-class>
+	</servlet>
+
+	<servlet>
+		<servlet-name>phrLogoutServlet</servlet-name>
+		<servlet-class>org.openmrs.module.personalhr.web.servlet.LogoutServlet</servlet-class>
+	</servlet>
+	
+	<!-- PHR Security Filter -->
+	<filter>
+		<filter-name>PhrSecurityFilter</filter-name> 
+		<filter-class>org.openmrs.module.personalhr.web.filter.PhrSecurityFilter</filter-class> 
+		<init-param>
+			<param-name>loginForm</param-name>
+			<param-value>/phr/phr_security_checking.htm</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excludeURL</param-name>
+			<param-value>changePasswordForm,logout,login,.js,.css,.gif,.jpg,.jpeg,.png</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>PhrSecurityFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+
+	
+	<!-- hibernate-mapping -->
+	<mappingFiles>
+		personalhr.hbm.xml
+
+	</mappingFiles>
+	
+</module>
+
