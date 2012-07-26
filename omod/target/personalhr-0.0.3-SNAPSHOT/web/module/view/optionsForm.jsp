@@ -107,6 +107,7 @@ function containsError(element) {
 
 </script>
 
+<%--
 <personalhr:hasPrivilege role="PHR Patient">
 <div class="boxHeader${model.patientVariation}"><spring:message code="personalhr.demographics"/></div>
 	<div id="patientDemographics2" class="box${model.patientVariation}">
@@ -115,6 +116,8 @@ function containsError(element) {
 </personalhr:hasPrivilege>
 
 <br/><br/>
+--%>
+
 
 <div class="boxHeader${model.patientVariation}"><spring:message code="options.title"/></div>
 

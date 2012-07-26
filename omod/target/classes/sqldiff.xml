@@ -190,7 +190,7 @@ insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmr
 insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/dwr/call/plaincall/DWRRelationshipService.*',1,now());
 insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/dwr/call/plaincall/DWRProviderService.*',1,now());
 insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/options.form',1,now());
-
+insert into phr_allowed_url (allowed_url, creator, date_created) values('/openmrs/dwr/call/plaincall/DWREncounterService.*',1,now());
 
 insert into privilege (privilege, description, uuid) values('PHR All Patients Access','A privilege to access all patients. Only PHR Administrator role can have this privilege.',uuid() );
 insert into privilege (privilege, description, uuid) values('PHR Restricted Patient Access','A privilege to access data of patients who explicitly grant this access. Only PHR Restricted User role can have this privilege. ',uuid() );

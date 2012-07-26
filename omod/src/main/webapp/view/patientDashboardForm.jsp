@@ -175,7 +175,7 @@
 		<div id="patientEncounters" style="display:none;">			
 			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.EncountersTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 			<openmrs:globalProperty var="maxEncs" key="dashboard.maximumNumberOfEncountersToShow" defaultValue="" />
-			<openmrs:portlet url="../module/personalhr/portlets/patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=${maxEncs}|showPagination=true|formEntryReturnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
+			<openmrs:portlet url="../module/personalhr/portlets/patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=${maxEncs}|showPagination=true|formEntryReturnUrl=${pageContext.request.contextPath}/phr/patientDashboard.form"/>
 		</div>		
 		
 		<div id="patientDemographics" style="display:none;">

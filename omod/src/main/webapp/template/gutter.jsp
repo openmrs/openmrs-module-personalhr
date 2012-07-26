@@ -21,5 +21,10 @@
 				</li>
 			</personalhr:hasPrivilege>
 		</openmrs:extensionPoint>				
-								
+							
+		<personalhr:hasPrivilege role="PHR Administrator">
+		<li id="administrationNavLink">
+			<a href="${pageContext.request.contextPath}/phr/adminindex.htm"><spring:message code="Navigation.administration"/></a>
+		</li>
+		</personalhr:hasPrivilege>	
 </ul>

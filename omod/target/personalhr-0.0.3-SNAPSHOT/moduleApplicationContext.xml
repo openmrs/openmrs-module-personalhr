@@ -36,7 +36,7 @@
 				<prop key="**/patientRegimenCompleted.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
-				<prop key="phr/phrOrderDrugForm.form">phrOrderDrugForm</prop>
+				
 				<!-- <prop key="phr/visitForm.form">phrVisitForm</prop> -->
 				<!-- <prop key="**/personalhr/portlets/patientVisits.portlet">patientVisitsPortletController</prop> -->
 				<prop key="/phr/patientForm.form">phrPatientForm</prop> 
@@ -45,12 +45,23 @@
 				<prop key="phr/phrEncounter.form">phrEncounterForm</prop>
 				<prop key="phr/phrObs.form">phrObsForm</prop>
 				<prop key="phr/phrEncounterDisplay.list">encounterDisplayController</prop>
+				<prop key="phr/phrEncounterType.list">phrEncounterTypeList</prop>
+				<prop key="phr/phrEncounterType.form">phrEncounterTypeForm</prop>
 				
 				<prop key="phr/phrForgotPassword.form">phrForgotPasswordForm</prop>
 				<prop key="phr/phrOptions.form">PHROptionsForm</prop>
 				
 				<prop key="phr/userRegUniqueid.form">phrUserRegUniqueid</prop>
-			</props>
+				
+				<prop key="phr/phrOrderDrugForm.form">phrOrderDrugForm</prop>
+				<prop key="phr/phrOrder.list">phrOrderList</prop>
+				<prop key="phr/phrOrder.form">phrOrderForm</prop>
+				<prop key="phr/phrOrderDrug.list">phrOrderListByPatient</prop>
+				<prop key="phr/phrOrderType.list">phrOrderTypeList</prop>
+				<prop key="phr/phrOrderType.form">phrOrderTypeForm</prop>
+
+
+				</props>
 		</property>
     </bean>
     
@@ -141,6 +152,54 @@
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
 	
+	<bean id="phrOrderList" class="org.openmrs.module.personalhr.web.controller.OrderListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>orderList</value></property>
+		<property name="formView"><value>/module/personalhr/view/orders/phrOrderList</value></property>
+		<property name="successView"><value>phrOrder.list</value></property>
+	</bean>
+	
+	<bean id="phrOrderForm" class="org.openmrs.module.personalhr.web.controller.OrderFormController">
+		<property name="commandName"><value>order</value></property>
+		<property name="validator">
+			<ref bean="orderValidator" />
+		</property>
+		<property name="formView"><value>/module/personalhr/view/orders/phrOrderForm</value></property>
+		<property name="successView"><value>phrOrder.list</value></property>
+	</bean>
+	
+	<bean id="phrOrderListByPatient"
+		class="org.openmrs.module.personalhr.web.controller.OrderListByPatientController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>orderDrugList</value></property>
+		<property name="formView"><value>/module/personalhr/view/orders/phrOrderListByPatient</value></property>
+		<property name="successView"><value>phrOrderDrug.list</value></property>
+	</bean>
+	
+	<bean id="phrOrderDrugList" class="org.openmrs.module.personalhr.web.controller.OrderDrugListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>orderDrugList</value></property>
+		<property name="formView"><value>/module/personalhr/view/orders/phrOrderDrugList</value></property>
+		<property name="successView"><value>phrOrderDrug.list</value></property>
+	</bean>
+	
+	<bean id="phrOrderTypeList" class="org.openmrs.module.personalhr.web.controller.OrderTypeListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>orderTypeList</value></property>
+		<property name="formView"><value>/module/personalhr/view/orders/phrOrderTypeList</value></property>
+		<property name="successView"><value>phrOrderType.list</value></property>
+	</bean>
+	
+	<bean id="phrOrderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
+		<property name="commandName"><value>orderType</value></property>
+		<property name="validator">
+			<ref bean="orderTypeValidator" />
+		</property>
+		<property name="formView"><value>/module/personalhr/view/orders/phrOrderTypeForm</value></property>
+		<property name="successView"><value>phrOrderType.list</value></property>
+	</bean>
+	
+	
 	<bean id="phrEncounterForm" class="org.openmrs.module.personalhr.web.controller.EncounterFormController">
 		<property name="commandName"><value>encounter</value></property>
 		<property name="formView"><value>/module/personalhr/view/phrEncounterForm</value></property>
@@ -164,6 +223,7 @@
 		<property name="formView"><value>/module/personalhr/view/patientForm</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
+
 
 	<!-- <bean id="phrVisitForm" 
 		class="org.openmrs.module.personalhr.web.controller.visitFormController">
@@ -230,6 +290,24 @@
 		<property name="formView"><value>/module/personalhr/view/addPerson</value></property>
 		<property name="successView"><value>newPatient.htm</value></property>
 	</bean>
+	
+	<bean id="phrEncounterTypeList"
+		class="org.openmrs.module.personalhr.web.controller.EncounterTypeListController">
+		<property name="commandName"><value>encounterTypeList</value></property>
+		<property name="formView"><value>/module/personalhr/view/encounters/phrEncounterTypeList</value></property>
+		<property name="successView"><value>phrEncounterType.list</value></property>
+	</bean>
+	
+	<bean id="phrEncounterTypeForm"
+		class="org.openmrs.module.personalhr.web.controller.EncounterTypeFormController">
+		<property name="commandName"><value>encounterType</value></property>
+		<property name="validator">
+			<ref bean="encounterTypeValidator" />
+		</property>
+		<property name="formView"><value>/module/personalhr/view/encounters/phrEncounterTypeForm</value></property>
+		<property name="successView"><value>phrEncounterType.list</value></property>
+	</bean>
+	
 	
 	<bean id="phrManageAllowedUrlController" class="org.openmrs.module.personalhr.web.controller.ManageAllowedUrlFormController">
 		<property name="commandName"><value>phrSecurity</value></property>

@@ -234,7 +234,9 @@ public class PhrUserFormController {
 			Context.addProxyPrivilege("View Visits");
 			Context.addProxyPrivilege("Manage Encounter Roles");
 			Context.addProxyPrivilege("View Encounter Roles");
-			
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_PURGE_ORDER_TYPES);
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
 			
             Context.addProxyPrivilege("PHR Restricted Patient Access");
             isTemporary = true;
@@ -269,7 +271,9 @@ public class PhrUserFormController {
 			  Context.addProxyPrivilege("View Visits");
 			  Context.addProxyPrivilege("Manage Encounter Roles");
 			  Context.addProxyPrivilege("View Encounter Roles");
-
+			  Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
+			  Context.addProxyPrivilege(OpenmrsConstants.PRIV_PURGE_ORDER_TYPES);
+			  Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
 			  
           }
         }
@@ -434,6 +438,9 @@ public class PhrUserFormController {
 							Context.removeProxyPrivilege("View Visits");
 							Context.removeProxyPrivilege("Manage Encounter Roles");
 							Context.removeProxyPrivilege("View Encounter Roles");
+							Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
+							Context.removeProxyPrivilege(OpenmrsConstants.PRIV_PURGE_ORDER_TYPES);
+							Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
 							
                             Context.logout();
                             log.debug("Removed proxy privileges!");
@@ -472,6 +479,9 @@ public class PhrUserFormController {
 							Context.removeProxyPrivilege("View Visits");
 							Context.removeProxyPrivilege("Manage Encounter Roles");
 							Context.removeProxyPrivilege("View Encounter Roles");
+							Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
+							Context.removeProxyPrivilege(OpenmrsConstants.PRIV_PURGE_ORDER_TYPES);
+							Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
 							
                             Context.logout();
                             log.debug("Removed proxy privileges!");
@@ -615,6 +625,9 @@ public class PhrUserFormController {
 				Context.removeProxyPrivilege("View Providers");
 				Context.removeProxyPrivilege("Manage Encounter Roles");
 				Context.removeProxyPrivilege("View Encounter Roles");
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_PURGE_ORDER_TYPES);
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
 				
                 Context.logout();
                 log.debug("Removed proxy privileges for self registration!");
@@ -645,6 +658,9 @@ public class PhrUserFormController {
 				Context.removeProxyPrivilege("View Visits");
 				Context.removeProxyPrivilege("Manage Encounter Roles");
 				Context.removeProxyPrivilege("View Encounter Roles");
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_PURGE_ORDER_TYPES);
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
 				
                 log.debug("Removed proxy privileges for PHR Administrator!");
             }            

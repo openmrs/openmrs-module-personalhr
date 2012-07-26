@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 
-<openmrs:require privilege="Edit Patients" otherwise="/login.htm" redirect="/admin/patients/patient.form"/>
+<openmrs:require privilege="Edit Patients" otherwise="/login.htm" redirect="/phr/patient.form"/>
 
 <%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 

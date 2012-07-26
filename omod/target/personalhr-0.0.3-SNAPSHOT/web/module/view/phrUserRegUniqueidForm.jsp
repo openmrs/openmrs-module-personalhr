@@ -14,7 +14,7 @@
 			<tr>
 				<td>Unique-id:</td>
 				<td align="left"><input type="text" name="uid" value="" id="uniqueid" size="25" maxlength="50"/>
-					<a href="">
+					<a href="${pageContext.request.contextPath}/phr/applyForID.form">
 						Apply for unique-id
 					</a>
 				</td>

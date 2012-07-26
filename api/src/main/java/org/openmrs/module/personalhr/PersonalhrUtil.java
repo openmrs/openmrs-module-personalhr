@@ -60,7 +60,8 @@ public class PersonalhrUtil {
 			OpenmrsConstants.PRIV_ADD_PROBLEMS, OpenmrsConstants.PRIV_EDIT_PROBLEMS, OpenmrsConstants.PRIV_DELETE_PROBLEMS,
 			OpenmrsConstants.PRIV_EDIT_ORDERS, OpenmrsConstants.PRIV_DELETE_ORDERS, "Manage Orders", "View Providers", "View Visits",
 			OpenmrsConstants.PRIV_DELETE_RELATIONSHIPS, OpenmrsConstants.PRIV_ADD_RELATIONSHIPS, OpenmrsConstants.PRIV_EDIT_RELATIONSHIPS,
-			"Manage Encounter Roles", "View Encounter Roles"
+			"Manage Encounter Roles", "View Encounter Roles", OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES, OpenmrsConstants.PRIV_PURGE_ORDER_TYPES, 
+			OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES
 			};
  
     private final static String temporaryPrivilegesMin[] = {
