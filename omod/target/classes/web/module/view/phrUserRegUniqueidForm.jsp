@@ -12,9 +12,9 @@
 		Enter valid Unique-id<br/>
 		<table>
 			<tr>
-				<td>Unique-id:</td>
+				<td>Unique-id:${pageContext.request.contextPath}/phr/phrApplyForm.form</td>
 				<td align="left"><input type="text" name="uid" value="" id="uniqueid" size="25" maxlength="50"/>
-					<a href="${pageContext.request.contextPath}/phr/applyForID.form">
+					<a href="${pageContext.request.contextPath}/phr/managePhrApply.form">
 						Apply for unique-id
 					</a>
 				</td>

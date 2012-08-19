@@ -29,7 +29,7 @@ import org.openmrs.module.personalhr.PersonalhrUtil;
 import org.openmrs.module.personalhr.PhrAllowedUrl;
 import org.openmrs.module.personalhr.PhrLogEvent;
 import org.openmrs.module.personalhr.PhrPrivilege;
-
+import org.openmrs.module.personalhr.PhrApply;
 /**
  * DWR services called directly from jsp pages
  * 
@@ -73,6 +73,15 @@ public class DWRPersonalhrService {
         rule.setCreator(Context.getAuthenticatedUser());
         rule.setDateCreated(new Date());
         PersonalhrUtil.getService().getPrivilegeDao().savePhrPrivilege(rule);
+    }	
+	
+	public void addPhrApply(String name, String emailId, String description) {
+        log.debug("Calling DWRPersonalhrService.addPhrApply...requiredRole=" + name);
+        PhrApply rule = new PhrApply();
+        rule.setPrivilege(name);
+        rule.setRequiredRole(emailId);
+        rule.setDescription(description);
+        PersonalhrUtil.getService().getApplyDao().savePhrApply(rule);
     }	
     
     /**

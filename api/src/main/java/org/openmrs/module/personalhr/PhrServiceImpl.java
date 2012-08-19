@@ -31,6 +31,7 @@ import org.openmrs.module.personalhr.db.PhrLogEventDAO;
 import org.openmrs.module.personalhr.db.PhrPrivilegeDAO;
 import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
+import org.openmrs.module.personalhr.db.PhrApplyDAO;
 /**
  * Implementation of the services provided by PHR module
  * 
@@ -47,6 +48,8 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     private PhrSharingTokenDAO sharingTokenDao;
     
     private PhrLogEventDAO logEventDao;
+	
+	private PhrApplyDAO applyDao;
     
     /**
      * Check if a given PHR user is allowed to access a given URL   
@@ -303,12 +306,20 @@ public class PhrServiceImpl extends BaseOpenmrsService implements PhrService {
     public PhrPrivilegeDAO getPrivilegeDao() {
         return this.privilegeDao;
     }
+	
+	public PhrApplyDAO getApplyDao() {
+        return this.applyDao;
+    }
     
     /* 
      * @see org.openmrs.module.personalhr.PhrService#setPrivilegeDao(org.openmrs.module.personalhr.db.PhrPrivilegeDAO)
      */
     public void setPrivilegeDao(final PhrPrivilegeDAO privilegeDao) {
         this.privilegeDao = privilegeDao;
+    }
+	
+	public void setApplyDao(final PhrApplyDAO privilegeDao) {
+        this.applyDao = privilegeDao;
     }
     
     /* 

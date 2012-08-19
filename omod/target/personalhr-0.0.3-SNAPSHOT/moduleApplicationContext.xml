@@ -60,7 +60,8 @@
 				<prop key="phr/phrOrderType.list">phrOrderTypeList</prop>
 				<prop key="phr/phrOrderType.form">phrOrderTypeForm</prop>
 
-
+				<prop key="/phr/managePhrApply.form">phrApplyForm</prop> 
+				
 				</props>
 		</property>
     </bean>
@@ -86,6 +87,11 @@
 							</property>	
 							<property name="privilegeDao">
 								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrPrivilegeDAO">
+									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+								</bean>
+							</property>	
+							<property name="applyDao">
+								<bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrApplyDAO">
 									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 								</bean>
 							</property>	
@@ -223,8 +229,7 @@
 		<property name="formView"><value>/module/personalhr/view/patientForm</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
-
-
+	
 	<!-- <bean id="phrVisitForm" 
 		class="org.openmrs.module.personalhr.web.controller.visitFormController">
 		<property name="commandName"><value>visit</value></property>
@@ -323,6 +328,12 @@
 		<property name="successView"><value>managePhrPrivilege.form</value></property>
 	</bean>	
 
+	<bean id="phrApplyForm" class="org.openmrs.module.personalhr.web.controller.ManagePhrApplyFormController">
+		<property name="commandName"><value>phrSecurity</value></property>
+		<property name="commandClass"><value>org.openmrs.module.personalhr.PhrSecurityConfig</value></property>
+		<property name="formView"><value>/module/personalhr/view/managePhrApplyForm</value></property>
+		<property name="successView"><value>managePhrApply.form</value></property>
+	</bean>	
 	<!-- <bean id="phrForgotPasswordForm"
 		class="org.openmrs.module.personalhr.web.controller.ForgotPasswordFormController">
 		<property name="commandName"><value>forgotPassword</value></property>

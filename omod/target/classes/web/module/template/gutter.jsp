@@ -27,4 +27,10 @@
 			<a href="${pageContext.request.contextPath}/phr/adminindex.htm"><spring:message code="Navigation.administration"/></a>
 		</li>
 		</personalhr:hasPrivilege>	
+		
+		<personalhr:hasPrivilege role="PHR Administrator">
+		<li id="UniqueidReq">
+			<a href="${pageContext.request.contextPath}/phr/managePhrApply.form">View Requests for Unique-id</a>
+		</li>
+		</personalhr:hasPrivilege>	
 </ul>

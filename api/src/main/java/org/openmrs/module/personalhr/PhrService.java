@@ -23,6 +23,7 @@ import org.openmrs.module.personalhr.db.PhrAllowedUrlDAO;
 import org.openmrs.module.personalhr.db.PhrPrivilegeDAO;
 import org.openmrs.module.personalhr.db.PhrSharingTokenDAO;
 
+import org.openmrs.module.personalhr.db.PhrApplyDAO;
 /**
  * Interface of the services provided by PHR module
  * 
@@ -230,6 +231,13 @@ public interface PhrService {
      * @return PrivilegeDAO object
      */
     public PhrPrivilegeDAO getPrivilegeDao();
+	
+	/**
+     * Get ApplyDAO object
+     * 
+     * @return ApplyDAO object
+     */
+    public PhrApplyDAO getApplyDao();
     
     /**
      * Set PhrAllowedUrlDAO object
@@ -238,6 +246,9 @@ public interface PhrService {
      */
     public void setPrivilegeDao(PhrPrivilegeDAO privilegeDao);
     
+
+    public void setApplyDao(PhrApplyDAO privilegeDao);
+	
     /**
      * Get PhrAllowedUrlDAO object
      * 

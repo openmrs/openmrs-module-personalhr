@@ -27,7 +27,8 @@ public class PhrSecurityConfig {
     private PhrAllowedUrl newAllowedUrl;
     private PhrPrivilege newPrivilege;
     
-    
+    private List<PhrApply> phrApplyList;
+	private PhrApply newApply;
     /**
      * Default Constructor with data pre-populated
      * 
@@ -35,6 +36,8 @@ public class PhrSecurityConfig {
     public PhrSecurityConfig() {
         allowedUrlList=PersonalhrUtil.getService().getAllowedUrlDao().getAllPhrAllowedUrls();
         phrPrivilegeList=PersonalhrUtil.getService().getPrivilegeDao().getAllPhrPrivileges(); 
+		
+		phrApplyList=PersonalhrUtil.getService().getApplyDao().getAllPhrApplys();
     }
     /**
      * Get allowed URL list
@@ -63,6 +66,10 @@ public class PhrSecurityConfig {
         return phrPrivilegeList;
     }
     
+	
+	public List<PhrApply> getPhrApplyList() {
+        return phrApplyList;
+    }
     /**
      * Set a list of PHR privileges
      * 
@@ -72,6 +79,10 @@ public class PhrSecurityConfig {
         this.phrPrivilegeList = phrPrivilegeLIst;
     }
     
+	
+	public void setPhrApplyList(List<PhrApply> phrApplyLIst) {
+        this.phrApplyList = phrApplyLIst;
+    }
     
     /**
      * Get a newly added allowed URL
@@ -101,6 +112,10 @@ public class PhrSecurityConfig {
         return newPrivilege;
     }
     
+	
+	public PhrApply getNewApply() {
+        return newApply;
+    }
     /**
      * Set a newly added privilege 
      * 
@@ -108,6 +123,10 @@ public class PhrSecurityConfig {
      */
     public void setNewPrivilege(PhrPrivilege newPrivlege) {
         this.newPrivilege = newPrivlege;
+    }        
+
+	public void setNewApply(PhrApply newApply) {
+        this.newApply = newApply;
     }       
 }  
 

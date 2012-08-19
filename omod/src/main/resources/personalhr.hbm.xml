@@ -93,6 +93,23 @@
 
 	</class>
 	
+	<class name="PhrApply" table="phr_apply">
+
+		<id name="id" type="int" column="id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<property name="privilege" type="java.lang.String" column="name"/>
+	
+		<property name="requiredRole" type="java.lang.String" not-null="true" column="email_id" />
+
+		<property name="description" type="java.lang.String" not-null="false" column="description" />
+		
+		<!--  Standard Openmrs MetaData -->
+		
+
+	</class>
+	
 	<class name="PhrAllowedUrl" table="phr_allowed_url">
 
 		<id name="id" type="int" column="id" unsaved-value="0">

@@ -64,6 +64,7 @@
 				<include method="addPhrPrivilege"/>
 				<include method="logChangeTabEvent"/>
 				<include method="sendMessageToUs"/>
+				<include method="addPhrApply"/>
 			</create>
 		</allow>
 	</dwr>
