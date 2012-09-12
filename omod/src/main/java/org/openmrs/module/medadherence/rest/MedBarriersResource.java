@@ -67,6 +67,10 @@ public class MedBarriersResource extends DataDelegatingCrudResource<MedBarriers>
 	}
 	
 	public MedBarriers lookupByNameAndBirthday(String uniqueId) throws Exception {
+		if(!Context.isAuthenticated()) {
+			log.warn("You are not authorized to access this information! " + uniqueId);
+			throw new Exception("You are not authorized to access this information! " + uniqueId);			
+		}
 		if(uniqueId != null) {
 			String[] fields = uniqueId.split("~");
 			String firstName = fields[0];
