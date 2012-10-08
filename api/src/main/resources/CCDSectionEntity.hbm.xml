@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.module.exportccd">
+
+
+	<class name="CCDSectionEntity"
+		table="export_ccd_section_concept_map" >
+		<id name="id" type="int" column="id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		<discriminator column="id" insert="false" />
+	
+		<many-to-one name="concept" class="org.openmrs.Concept"
+			not-null="true" column="concept_id" />
+			<property name="ccdSectionEntity" type="java.lang.String" unique="true" column="ccd_section_entity" />
+			<property name ="category" type="java.lang.String" length="40"/>
+	
+	</class>
+	
+</hibernate-mapping>
