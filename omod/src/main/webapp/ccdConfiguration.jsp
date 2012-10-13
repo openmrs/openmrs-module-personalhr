@@ -92,8 +92,8 @@ function refresh (superParentId) {
  <c:forEach var="concept" items="${VitalSigns}" varStatus="rIndex">
  
 </br>
-<span id="VitalSigns${rIndex.index}_span"> ${concept.getName().getName()} 
-<input type="hidden" id="VitalSigns${rIndex.index}_span_hid" name="VitalSigns${rIndex.index}_span_hid" value="${concept.getId()}"/>
+<span id="VitalSigns${rIndex.index}_span"> ${concept.name.name} 
+<input type="hidden" id="VitalSigns${rIndex.index}_span_hid" name="VitalSigns${rIndex.index}_span_hid" value="${concept.id}"/>
 <input id="'VitalSigns'${rIndex.index}'_remove" type="button" value="remove" onClick="$j(this).parent().remove();refresh('VitalSigns')"/>
 
 </span>
@@ -109,8 +109,8 @@ function refresh (superParentId) {
  <c:forEach var="concept" items="${SocialHistory}" varStatus="rIndex">
  
 </br>
-<span id="SocialHistory${rIndex.index}_span"> ${concept.getName().getName()} 
-<input type="hidden" id="SocialHistory${rIndex.index}_span_hid" name="SocialHistory${rIndex.index}_span_hid" value="${concept.getId()}"/>
+<span id="SocialHistory${rIndex.index}_span"> ${concept.name.name} 
+<input type="hidden" id="SocialHistory${rIndex.index}_span_hid" name="SocialHistory${rIndex.index}_span_hid" value="${concept.id}"/>
 <input id="'SocialHistory'${rIndex.index}'_remove" type="button" value="remove" onClick="$j(this).parent().remove();refresh('SocialHistory')"/>
 
 </span>
@@ -126,8 +126,8 @@ function refresh (superParentId) {
  <c:forEach var="concept" items="${LabResults}" varStatus="rIndex">
  
 </br>
-<span id="LabResults${rIndex.index}_span"> ${concept.getName().getName()} 
-<input type="hidden" id="LabResults${rIndex.index}_span_hid" name="LabResults${rIndex.index}_span_hid" value="${concept.getId()}"/>
+<span id="LabResults${rIndex.index}_span"> ${concept.name.name} 
+<input type="hidden" id="LabResults${rIndex.index}_span_hid" name="LabResults${rIndex.index}_span_hid" value="${concept.id}"/>
 <input id="'LabResults'${rIndex.index}'_remove" type="button" value="remove" onClick="$j(this).parent().remove();refresh('LabResults')"/>
 
 </span>
@@ -144,8 +144,8 @@ function refresh (superParentId) {
  <c:forEach var="concept" items="${PlanOfCare}" varStatus="rIndex">
  
 </br>
-<span id="PlanOfCare${rIndex.index}_span"> ${concept.getName().getName()} 
-<input type="hidden" id="PlanOfCare${rIndex.index}_span_hid" name="PlanOfCare${rIndex.index}_span_hid" value="${concept.getId()}"/>
+<span id="PlanOfCare${rIndex.index}_span"> ${concept.name.name} 
+<input type="hidden" id="PlanOfCare${rIndex.index}_span_hid" name="PlanOfCare${rIndex.index}_span_hid" value="${concept.id}"/>
 <input id="'PlanOfCare'${rIndex.index}'_remove" type="button" value="remove" onClick="$j(this).parent().remove();refresh('PlanOfCare')"/>
 
 </span>
@@ -162,8 +162,8 @@ function refresh (superParentId) {
  <c:forEach var="concept" items="${FamilyHistory}" varStatus="rIndex">
  
 </br>
-<span id="FamilyHistory${rIndex.index}_span"> ${concept.getName().getName()} 
-<input type="hidden" id="FamilyHistory${rIndex.index}_span_hid" name="FamilyHistory${rIndex.index}_span_hid" value="${concept.getId()}"/>
+<span id="FamilyHistory${rIndex.index}_span"> ${concept.name.name} 
+<input type="hidden" id="FamilyHistory${rIndex.index}_span_hid" name="FamilyHistory${rIndex.index}_span_hid" value="${concept.id}"/>
 <input id="'FamilyHistory'${rIndex.index}'_remove" type="button" value="remove" onClick="$j(this).parent().remove();refresh('FamilyHistory')"/>
 
 </span>
