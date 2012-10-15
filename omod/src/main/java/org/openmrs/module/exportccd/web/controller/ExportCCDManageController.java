@@ -124,7 +124,7 @@ private void manageSections(HttpServletRequest request , String section)
 	 }catch(DAOException e )
 	 {
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
-				    "ExportCCD.could.not.save"));
+				    "exportccd.could.not.save"));
 	 }catch(APIException e )
 	 {
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());

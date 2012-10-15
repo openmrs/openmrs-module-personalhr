@@ -44,8 +44,9 @@ public class AdminList extends AdministrationSectionExt {
 	 */
 	public Map<String, String> getLinks() {
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-		map.put("/module/exportccd/ccdConfiguration.form", "ExportCCD.manage.ccd.configuration");
-		map.put("/module/exportccd/exportPatient.form", "ExportCCD.export");
+		map.put("/module/exportccd/ccdConfiguration.form", "exportccd.manage.ccd.configuration");
+		map.put("/module/exportccd/exportPatient.form", "exportccd.export");
+		map.put("/module/exportccd/importPatient.form", "exportccd.import");
 		return map;
 	}
 	

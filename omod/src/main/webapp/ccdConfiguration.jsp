@@ -1,6 +1,10 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="template/localHeader.jsp"%>
+<h2>
+	<spring:message code="exportccd.export.title" />
+</h2>
+
 <openmrs:htmlInclude file="/dwr/interface/DWRMyModuleService.js"/>
 <script type="text/javascript">
 $j(document).ready(function(){
@@ -84,7 +88,7 @@ function refresh (superParentId) {
 
 <form id='ccdSections' method="POST">
 
-<div class="boxHeader"><spring:message code="ExportCCD.configure.vital.signs"/></div>
+<div class="boxHeader"><spring:message code="exportccd.configure.vital.signs"/></div>
 <div id="VitalSigns" class="box">
 <spring:message code="Concept.find"/><openmrs_tag:conceptField formFieldName="VitalSigns_conceptId"  formFieldId="VitalSigns_conceptId" />
 <input type="button" value="ADD" id="addButton" class="addButton"/>
@@ -101,7 +105,7 @@ function refresh (superParentId) {
 
 </div>
 <br>
-<div class="boxHeader"><spring:message code="ExportCCD.configure.social.history"/></div>
+<div class="boxHeader"><spring:message code="exportccd.configure.social.history"/></div>
 <div id="SocialHistory" class="box">
 <spring:message code="Concept.find"/><openmrs_tag:conceptField formFieldName="SocialHistory_conceptId"  formFieldId="SocialHistory_conceptId" />
 <input type="button" value="ADD" id="addButton" class="addButton"/>
@@ -118,7 +122,7 @@ function refresh (superParentId) {
  
 </div>
 <br>
-<div class="boxHeader"><spring:message code="ExportCCD.configure.lab.results"/></div>
+<div class="boxHeader"><spring:message code="exportccd.configure.lab.results"/></div>
 <div id="LabResults" class="box">
 <spring:message code="Concept.find"/><openmrs_tag:conceptField formFieldName="LabResults_conceptId"  formFieldId="LabResults_conceptId" />
 <input type="button" value="ADD" id="addButton" class="addButton"/>
@@ -136,7 +140,7 @@ function refresh (superParentId) {
 </div>
 
 <br>
-<div class="boxHeader"><spring:message code="ExportCCD.configure.planofcare"/></div>
+<div class="boxHeader"><spring:message code="exportccd.configure.planofcare"/></div>
 <div id="PlanOfCare" class="box">
 <spring:message code="Concept.find"/><openmrs_tag:conceptField formFieldName="PlanOfCare_conceptId"  formFieldId="PlanOfCare_conceptId" />
 <input type="button" value="ADD" id="addButton" class="addButton"/>
@@ -154,7 +158,7 @@ function refresh (superParentId) {
 </div>
 <br>
 
-<div class="boxHeader"><spring:message code="ExportCCD.configure.familyhistory"/></div>
+<div class="boxHeader"><spring:message code="exportccd.configure.familyhistory"/></div>
 <div id="FamilyHistory" class="box">
 <spring:message code="Concept.find"/><openmrs_tag:conceptField formFieldName="FamilyHistory_conceptId"  formFieldId="FamilyHistory_conceptId" />
 <input type="button" value="ADD" id="addButton" class="addButton"/>

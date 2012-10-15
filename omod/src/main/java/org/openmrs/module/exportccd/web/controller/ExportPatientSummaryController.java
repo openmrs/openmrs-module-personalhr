@@ -47,7 +47,7 @@ public class  ExportPatientSummaryController {
 	@RequestMapping(method = RequestMethod.POST)
 	public void manage(@RequestParam(value="patientId",required=true)Patient patient, HttpServletResponse response) {
 	if(patient != null)
-		{
+	{
 		System.out.println(patient.getId());
 		PatientSummaryExportService yservice = (PatientSummaryExportService)Context.getService(PatientSummaryExportService.class);
 	    ContinuityOfCareDocument ccd =  yservice.produceCCD(patient.getId());
@@ -65,15 +65,15 @@ public class  ExportPatientSummaryController {
 		  response.setCharacterEncoding("UTF-8");
 		  response.getOutputStream().write(res);
 		   response.flushBuffer();
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
+}
 	
 	
 	
