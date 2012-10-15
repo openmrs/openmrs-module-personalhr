@@ -21,8 +21,39 @@
   		    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 	<!-- Add here beans related to the web context -->
+    <bean id="phrUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="order" value="1"/>
+    	<property name="mappings">
+            <props>
+			   <prop key="/module/exportccd/fileupload.htm">fileupload</prop>
+			</props>
+		</property>
+    </bean>
+ 	<bean id="fileupload" class="org.openmrs.module.exportccd.web.controller.FileUploadController">
+		<property name="commandName"><value>fileUploadForm</value></property>
+		<property name="formView"><value>/module/exportccd/FileUploadForm</value></property>
+		<property name="successView"><value>/module/exportccd/FileUploadSuccess</value></property>
+	</bean>
+ 
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
 
-	 
+	<bean class="org.openmrs.module.exportccd.web.controller.FileUploadController">
+		<property name="formView" value="FileUploadForm" />
+		<property name="successView" value="FileUploadSuccess" />
+ 
+		<!-- Map a validator -->
+		<property name="validator">
+			<bean class="org.openmrs.module.exportccd.FileUploadValidator" />
+		</property>
+	</bean>
+ 
+ 	<!-- Register the Customer.properties -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="message" />
+	</bean>
+ 
 	<!-- Annotation based controllers -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
 	

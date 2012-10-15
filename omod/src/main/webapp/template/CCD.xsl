@@ -365,7 +365,7 @@
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:apply-templates select="$section/n1:entry">
-							<xsl:sort select="$section/n1:entry/n1:substanceAdministration/n1:entryRelationship/n1:supply/n1:effectiveTime/@value"/>
+							<!-- <xsl:sort select="$section/n1:entry/n1:substanceAdministration/n1:entryRelationship/n1:supply/n1:effectiveTime/@value"/> -->
 						</xsl:apply-templates>
 					</xsl:otherwise>
 				</xsl:choose>

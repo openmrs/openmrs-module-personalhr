@@ -63,7 +63,6 @@ public class HibernatePatientSummaryExportDAO implements PatientSummaryExportDAO
 		return e;
 	}
 
-	@Override
 	public java.util.List<Concept> getConceptByCategory(
 			String category) {
 		
@@ -82,7 +81,6 @@ public class HibernatePatientSummaryExportDAO implements PatientSummaryExportDAO
 		
 	}
 
-	@Override
 	public boolean deleteConceptByCategory(CCDSectionEntity e) {
 		// TODO Auto-generated method stub
 		
@@ -90,7 +88,6 @@ public class HibernatePatientSummaryExportDAO implements PatientSummaryExportDAO
 		return true;
 	}
 
-	@Override
 	public CCDSectionEntity getConceptByCcdSectionEntity(Integer conceptId , String category) {
 		// TODO Aut1-generated method stub
 		

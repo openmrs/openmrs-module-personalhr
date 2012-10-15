@@ -23,7 +23,7 @@
 	<li
 		<c:if test='<%=request.getRequestURI().contains("/manage")%>'>class="active"</c:if>>
 		<a
-		href="${pageContext.request.contextPath}/module/exportccd/importPatient.form"><spring:message
+		href="${pageContext.request.contextPath}/module/exportccd/fileupload.htm"><spring:message
 				code="exportccd.import" /></a>
 
 

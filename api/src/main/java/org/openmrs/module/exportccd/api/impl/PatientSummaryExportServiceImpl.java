@@ -373,7 +373,6 @@ public class PatientSummaryExportServiceImpl extends BaseOpenmrsService implemen
 		effectiveTime.setHigh(high);
 		return effectiveTime;
 	}
-	@Override
 	public ContinuityOfCareDocument produceCCD(int patientId) {
 
 		ContinuityOfCareDocument ccd = CCDFactory.eINSTANCE.createContinuityOfCareDocument();

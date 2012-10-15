@@ -58,12 +58,10 @@ private static final long serialVersionUID = 1L;
 		this.category = category;
 	}
 
-	@Override
 	public Integer getId() {
 		return id;
 	}
 	
-	@Override
 	public void setId(Integer id) {
 		this.id = id;
 	}
