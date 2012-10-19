@@ -99,9 +99,9 @@
 			<generator class="native" />
 		</id>
 
-		<property name="privilege" type="java.lang.String" column="name"/>
+		<property name="privilege" type="java.lang.String" column="privilege"/>
 	
-		<property name="requiredRole" type="java.lang.String" not-null="true" column="email_id" />
+		<property name="requiredRole" type="java.lang.String" not-null="true" column="required_role" />
 
 		<property name="description" type="java.lang.String" not-null="false" column="description" />
 		
