@@ -3,16 +3,14 @@ package org.openmrs.module.exportccd.web.controller;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -21,8 +19,9 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.exportccd.FileUpload;
-import org.springframework.ui.ModelMap;
+import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -57,7 +56,9 @@ public class FileUploadController extends SimpleFormController{
 		
 		ModelAndView mv = new ModelAndView(getSuccessView(),"fileName",fileName);
 		mv.addObject("fileContent", content);
-		mv.addObject("displayContent", result);		
+		mv.addObject("displayContent", result);	
+		
+		//request.getSession().setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, true);
 		return mv;
 	}
 	
@@ -105,13 +106,12 @@ public class FileUploadController extends SimpleFormController{
 		return result.toString();	    
 	} 
 
-	/*@Override
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
-		throws ServletException {
-		
+	//@Override
+	//protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
+	//	throws ServletException {
+	//	request.getSession().setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, true);		
 		// Convert multipart object to byte[]
-		binder.registerCustomEditor(byte[].class, new ByteArrayMultipartFileEditor());
-		
-	}*/
+		//binder.registerCustomEditor(byte[].class, new ByteArrayMultipartFileEditor());		
+	//}
 	
 }

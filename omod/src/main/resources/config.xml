@@ -19,6 +19,11 @@
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ExportCCDActivator</activator>
 	
+	<!-- Extensions -->
+	<extension>
+		<point>org.openmrs.module.personalhr.patientDashboardTab</point>
+		<class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.ImportExportCCD</class>
+	</extension>
 	
 	<!-- Adds link to admin page -->
 	<extension>
