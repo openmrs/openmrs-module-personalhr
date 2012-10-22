@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
-<personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/module/exportccd/portlets/importExportCCD.htm" />
+<personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="../module/exportccd/importExportCCD.htm" />
 
 <div class="tooltipPhr">
 <spring:message code="exportccd.tooltip.ccd"/>
