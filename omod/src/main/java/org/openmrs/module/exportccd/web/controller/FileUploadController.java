@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.Transformer;
@@ -18,10 +17,11 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.exportccd.FileUpload;
-import org.openmrs.web.WebConstants;
+import org.openmrs.module.exportccd.api.PatientSummaryImportService;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -44,6 +44,7 @@ public class FileUploadController extends SimpleFormController{
 		
 		MultipartFile multipartFile = file.getFile();
 		
+		//render CCD content
 		String fileName="";
 		String content = "";
 		if(multipartFile!=null){
@@ -53,8 +54,17 @@ public class FileUploadController extends SimpleFormController{
 		}
 		
         String result = transform(multipartFile.getInputStream(), new FileInputStream(request.getRealPath("/")+"/WEB-INF/view/module/exportccd/template/CCD.xsl"));
-		
-		ModelAndView mv = new ModelAndView(getSuccessView(),"fileName",fileName);
+
+        //consume CCD: create OpenMRS patient
+        Patient pat = consumeCCD(multipartFile.getInputStream());
+        if(pat != null) {
+        	Integer patientId = pat.getId();
+        	String identifier = pat.getIdentifiers().iterator().next().getIdentifier();
+           	String identifierName = pat.getIdentifiers().iterator().next().getIdentifierType().getName();
+           	content = "\nThis patient has been added to OpenMRS database successfully!\npatientId=" + patientId + "; OpenMRS identifier=" + identifierName + ": " + identifier + "\n\n" + content;
+        }
+        
+		ModelAndView mv = new ModelAndView(getSuccessView(),"fileName",fileName);		
 		mv.addObject("fileContent", content);
 		mv.addObject("displayContent", result);	
 		
@@ -83,7 +93,8 @@ public class FileUploadController extends SimpleFormController{
 
             bw.flush();
             bw.close();
-            fw.close();                        
+            fw.close();  
+                        
         } catch (Exception e) {
         	log.error(e.getMessage(), e);
         }
@@ -92,6 +103,11 @@ public class FileUploadController extends SimpleFormController{
         return sb.toString();
 	} 	
 
+	public Patient consumeCCD(InputStream is) throws Exception {
+		PatientSummaryImportService importService = Context.getService(PatientSummaryImportService.class);
+		return importService.consumeCCD(is);				
+	}
+	
 	public String transform(InputStream xml, InputStream xsl) { 
 		ByteArrayOutputStream result = new ByteArrayOutputStream();
 	    try {   

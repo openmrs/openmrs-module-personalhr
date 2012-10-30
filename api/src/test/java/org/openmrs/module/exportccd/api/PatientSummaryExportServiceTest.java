@@ -14,17 +14,37 @@
 package org.openmrs.module.exportccd.api;
 
 import static org.junit.Assert.*;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+import org.junit.Ignore;
 import org.junit.Test;
+import org.openhealthtools.mdht.uml.cda.ClinicalDocument;
+import org.openhealthtools.mdht.uml.cda.ccd.CCDPackage;
+import org.openhealthtools.mdht.uml.cda.ccd.ContinuityOfCareDocument;
+import org.openhealthtools.mdht.uml.cda.util.CDAUtil;
+import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.web.controller.patient.ShortPatientModel;
 
 /**
  * Tests {@link ${PatientSummaryExportService}}.
  */
 public class  PatientSummaryExportServiceTest extends BaseModuleContextSensitiveTest {
 	
-	@Test
+	@Ignore
 	public void shouldSetupContext() {
 		assertNotNull(Context.getService(PatientSummaryExportService.class));
 	}
+	
+	@Test
+	public void consumeCCD() throws Exception {
+		PatientSummaryImportService importService = Context.getService(PatientSummaryImportService.class);
+		assertNotNull(importService);
+		//InputStream is = new FileInputStream("G:\\COMMON\\everyone\\hxiao\\laf\\innovation\\CCD.xml");
+		//assertNotNull(importService.consumeCCD(is));		
+	}	
 }
