@@ -140,13 +140,13 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterProvider;
-import org.openmrs.EncounterRole;
+//import org.openmrs.EncounterProvider;
+//import org.openmrs.EncounterRole;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
-import org.openmrs.Provider;
+//import org.openmrs.Provider;
 import org.openmrs.Relationship;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
@@ -588,6 +588,7 @@ public class PatientSummaryExportServiceImpl extends BaseOpenmrsService implemen
 		{
 			buffer.append("<tr>");
 			buffer.append("<td>"+"<content id=\"encounterType"+i+" \">"+encounter.getEncounterType().getName()+"</content></td>");
+			/*
 			Map<EncounterRole, Set<Provider>> encounterProviderMapByRole = encounter.getProvidersByRoles();
 			Set<Provider> encounterProviders;
 			if (encounterProviderMapByRole.values().iterator().hasNext())
@@ -604,6 +605,7 @@ public class PatientSummaryExportServiceImpl extends BaseOpenmrsService implemen
 				}
 				
 			}
+			*/
 			buffer.append("<td>"+encounter.getLocation()+"</td>");
 			 Date date = encounter.getEncounterDatetime();
 			
@@ -671,7 +673,7 @@ public class PatientSummaryExportServiceImpl extends BaseOpenmrsService implemen
 
 			II eid = DatatypesFactory.eINSTANCE.createII();
 			//setting the uuid of the encounter provider
-
+			/*
 			Map<EncounterRole, Set<Provider>> encounterProviderMapByRole1 = encounter.getProvidersByRoles();
 			Set<Provider> encounterProviders1 = null;
 			if (encounterProviderMapByRole1.values().iterator().hasNext())
@@ -715,7 +717,7 @@ public class PatientSummaryExportServiceImpl extends BaseOpenmrsService implemen
 
 				encounterCCD.getPerformers().add(encounterPerformer);
 			}
-
+			*/
 
 			Participant2 participant = CDAFactory.eINSTANCE.createParticipant2();
 			participant.setTypeCode(ParticipationType.LOC);
@@ -1605,11 +1607,11 @@ public class PatientSummaryExportServiceImpl extends BaseOpenmrsService implemen
 
 			case 6:
 				
-				buffer.append("<td>"+s.format(obs.getValueDate())+"</td>");
+				buffer.append("<td>"+s.format(obs.getObsDatetime())+"</td>");
 				break;
 
 			case 7:
-				buffer.append("<td>"+obs.getValueTime()+"</td>");
+				buffer.append("<td>"+obs.getValueDatetime()+"</td>");
 				break;
 
 			case 8:
@@ -1916,11 +1918,11 @@ public class PatientSummaryExportServiceImpl extends BaseOpenmrsService implemen
 						break;
 
 					case 6:
-						buffer.append("<td>"+s.format(obs.getValueDate())+"</td>");
+						buffer.append("<td>"+s.format(obs.getValueDatetime())+"</td>");
 						break;
 
 					case 7:
-						buffer.append("<td>"+obs.getValueTime()+c.getUnits()+"</td>");
+						buffer.append("<td>"+obs.getValueDatetime()+c.getUnits()+"</td>");
 						break;
 
 					case 8:
@@ -2193,13 +2195,13 @@ public class PatientSummaryExportServiceImpl extends BaseOpenmrsService implemen
 				break;
 
 			case 6:
-				value = obs.getValueDate().toString();
-				buffer.append(obs.getValueDate());
+				value = obs.getValueDatetime().toString();
+				buffer.append(obs.getValueDatetime());
 				break;
 
 			case 7:
-				value = obs.getValueTime().toString();
-				buffer.append(obs.getValueTime());
+				value = obs.getValueDatetime().toString();
+				buffer.append(obs.getValueDatetime());
 				break;
 
 			case 8:
