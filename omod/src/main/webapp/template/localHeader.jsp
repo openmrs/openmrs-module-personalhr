@@ -2,7 +2,7 @@
 <ul id="menu">
 	<li class="first">
 		<personalhr:hasPrivilege role="PHR Patient">
-			<a style="color:navy;" href="patientDashboard.form?"><spring:message code="personalhr.myPersonalRecord"/></a>
+			<a style="color:navy;" href="${pageContext.request.contextPath}/phr/patientDashboard.form?"><spring:message code="personalhr.myPersonalRecord"/></a>
 		</personalhr:hasPrivilege>
 
 		<openmrs:hasPrivilege privilege="Administrator">
@@ -10,14 +10,17 @@
 		</openmrs:hasPrivilege>
 	</li>
 
-	<li
-		<c:if test='<%=request.getRequestURI().contains("/manage")%>'>class="active"</c:if>>
-		<a
-		href="${pageContext.request.contextPath}/module/exportccd/ccdConfiguration.form"><spring:message
-				code="exportccd.manage.ccd.configuration" /></a>
-
-
-	</li>
+	<openmrs:hasPrivilege privilege="Administrator">
+		<li
+			<c:if test='<%=request.getRequestURI().contains("/manage")%>'>class="active"</c:if>>
+			<a
+			href="${pageContext.request.contextPath}/module/exportccd/ccdConfiguration.form"><spring:message
+					code="exportccd.manage.ccd.configuration" /></a>
+	
+	
+		</li>
+	</openmrs:hasPrivilege>
+	
 	<li
 		<c:if test='<%=request.getRequestURI().contains("/manage")%>'>class="active"</c:if>>
 		<a

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,13 +23,17 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.exportccd.ImportedCCD;
 import org.openmrs.module.exportccd.api.PatientSummaryImportService;
+import org.openmrs.module.exportccd.api.db.ImportedCCDDAO;
+import org.openmrs.module.exportccd.api.db.PatientSummaryExportDAO;
 
 /**
  * Class to implement processing CCD and updating patient information in OpenMRS database
@@ -40,12 +45,13 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 {   
 	static final String ROOT_SSN = "2.16.840.1.113883.4.1";
 	static final String ATTRIBUTE_NAME_SSN = "Social Security Number";
-	static final String ATTRIBUTE_NAME_RACE = "Race";
+	static final String ATTRIBUTE_NAME_RACE = "Race Code";
 	static final String ATTRIBUTE_NAME_TELEPHONE = "Telephone";
 	static final String ATTRIBUTE_NAME_MARRIED = "Marrital Status";
 	
     private static Log log = LogFactory.getLog(PatientSummaryImportServiceImpl.class);
     static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+	private ImportedCCDDAO dao;
     
 	
 	public Patient consumeCCD(InputStream is) throws Exception {	
@@ -55,12 +61,22 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		
 		org.openhealthtools.mdht.uml.cda.Patient ohtPatient = ccdDocument.getPatients().get(0);
 		Patient omrsPatient = createOrUpdateOmrsPatient(ohtPatient);
+		saveCCD(is, omrsPatient);
 		//String name = pat.getNames().get(0).getGivens().get(0).getText() + " " + pat.getNames().get(0).getFamilies().get(0).getText();		
 		//assertNotNull(name);
 		return omrsPatient;
 	}
 	
-    protected Patient createOrUpdateOmrsPatient(org.openhealthtools.mdht.uml.cda.Patient ohtPatient) throws Exception {		    	
+    private void saveCCD(InputStream is, Patient omrsPatient) {
+    	ImportedCCD ccd = new ImportedCCD();
+    	ccd.setImportedFor(omrsPatient);
+    	ccd.setCcdImported(is.toString());
+    	ccd.setImportedBy(Context.getAuthenticatedUser());
+    	ccd.setDateImported(new Date());
+		dao.saveImportedCCD(ccd);		
+	}
+
+	protected Patient createOrUpdateOmrsPatient(org.openhealthtools.mdht.uml.cda.Patient ohtPatient) throws Exception {		    	
 		Patient inputPatient = convertToOmrsPatient(ohtPatient);		
 		Patient exsitingPatient = findPatientFromDatabase(inputPatient);		
 		if (exsitingPatient == null) {
@@ -91,20 +107,23 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		String sex = ohtPatient.getAdministrativeGenderCode().getDisplayName();
 		pat.setGender(sex);
 		
-		//set patient SSN
 		PatientRole patRole = (PatientRole) ohtPatient.eContainer();
-		EList<II> ids = patRole.getIds();
-		String ssn = null;
-		for (II id : ids) {
-			if(ROOT_SSN.equals(id.getRoot())) {
-				ssn = id.getExtension();
+
+		//set patient SSN
+		PersonAttributeType ssnType = personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_SSN);
+        if(ssnType != null && !ssnType.isRetired()) {		
+			EList<II> ids = patRole.getIds();
+			String ssn = null;
+			for (II id : ids) {
+				if(ROOT_SSN.equals(id.getRoot())) {
+					ssn = id.getExtension();
+				}
 			}
-		}
-		PersonAttribute ssnAttr = new PersonAttribute();
-		ssnAttr.setAttributeType(personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_SSN));
-		ssnAttr.setValue(ssn);
-		pat.addAttribute(ssnAttr);
-		
+			PersonAttribute ssnAttr = new PersonAttribute();
+			ssnAttr.setAttributeType(ssnType);
+			ssnAttr.setValue(ssn);
+			pat.addAttribute(ssnAttr);
+        }
 		//set patient DOB
 		String dobStr = ohtPatient.getBirthTime().getValue();	
 		try{
@@ -136,28 +155,31 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
         pat.addAddress(address);	
         
 		//get patient race
-        if(personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_RACE) != null && !personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_RACE).isRetired()) {
+        PersonAttributeType raceType = personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_RACE);
+        if(raceType != null && !raceType.isRetired()) {
 			String race = ohtPatient.getRaceCode() == null? null : ohtPatient.getRaceCode().getDisplayName();
 			PersonAttribute raceAttr = new PersonAttribute();
-			raceAttr.setAttributeType(personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_RACE));
+			raceAttr.setAttributeType(raceType);
 			raceAttr.setValue(race);
 			pat.addAttribute(raceAttr);
         }
 		
 		//set patient telephone numbers
-        if(personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_TELEPHONE) != null && !personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_TELEPHONE).isRetired()) {
+        PersonAttributeType phoneType = personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_TELEPHONE);
+        if(phoneType != null && !phoneType.isRetired()) {
 			String telephone = (patRole.getTelecoms()==null || patRole.getTelecoms().isEmpty()) ? null : patRole.getTelecoms().get(0).getValue();
 			PersonAttribute phoneAttr = new PersonAttribute();
-			phoneAttr.setAttributeType(personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_TELEPHONE));
+			phoneAttr.setAttributeType(phoneType);
 			phoneAttr.setValue(telephone);
 			pat.addAttribute(phoneAttr);
         }
         
 		//set patient marital status
-        if(personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_MARRIED) != null && !personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_MARRIED).isRetired()) {
+        PersonAttributeType marryType = personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_MARRIED);
+        if(marryType != null && !marryType.isRetired()) {
 			String marrital = ohtPatient.getMaritalStatusCode().getDisplayName();
 			PersonAttribute marriedAttr = new PersonAttribute();
-			marriedAttr.setAttributeType(personService.getPersonAttributeTypeByName(ATTRIBUTE_NAME_MARRIED));
+			marriedAttr.setAttributeType(marryType);
 			marriedAttr.setValue(marrital);
 			pat.addAttribute(marriedAttr);
 		}
@@ -165,13 +187,24 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		return pat;
 	}
     
-	private Patient findPatientFromDatabase(Patient inputPtient) {
+	private Patient findPatientFromDatabase(Patient inputPatient) {
 		PatientService patientService = Context.getPatientService();
 		
-		Patient pat = patientService.getPatientByExample(inputPtient);
+		//Patient pat = patientService.getPatientByExample(inputPtient); 
+		List<Patient> pats = patientService.getPatients(inputPatient.getGivenName()+ " " + inputPatient.getFamilyName());
 		
-	    log.debug("found patient=" + pat);
-		return pat;
+		Patient patFound = null;
+		String inputPatString = inputPatient.getGivenName()+ " " + inputPatient.getMiddleName() + " " + inputPatient.getFamilyName() + " " + inputPatient.getGender() +  " " + inputPatient.getBirthdate().getTime(); 
+		for(Patient pat : pats) {
+			String patString = pat.getGivenName()+ " " + pat.getMiddleName() + " " + pat.getFamilyName() +  " " + pat.getGender() +  " " + pat.getBirthdate().getTime();
+			if(inputPatString.equalsIgnoreCase(patString)) {
+				patFound = pat;
+				break;
+			}
+		}
+		
+	    log.debug("found patient=" + patFound);
+		return patFound;
 	}
 	
     private Patient updatePatient(Patient existingPatient, Patient inputPatient) {
@@ -180,9 +213,9 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		existingPatient.setAttributes(inputPatient.getAttributes());
 		existingPatient.setChangedBy(Context.getAuthenticatedUser());
 		existingPatient.setDateChanged(new Date());
-		Patient pat = patientService.savePatient(existingPatient);
-	    log.debug("updated patient=" + pat);
-		return pat;
+		//Patient pat = patientService.savePatient(existingPatient);
+	    log.debug("updated patient=" + existingPatient);
+		return existingPatient;
 	}
 
 
@@ -214,5 +247,19 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
        
        log.debug("saved patient=" + pat);
        return pat;
-   }  
+   }
+
+	public ImportedCCDDAO getDao() {
+		return dao;
+	}
+	
+	public void setDao(ImportedCCDDAO dao) {
+		this.dao = dao;
+	}
+
+	@Override
+	public ImportedCCD getCCD(Patient pat) throws Exception {
+		// TODO Auto-generated method stub
+		return dao.getImportedCCD(pat);
+	}  
 }

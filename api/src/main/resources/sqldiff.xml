@@ -28,9 +28,34 @@ CREATE TABLE  `openmrs`.`export_ccd_section_concept_map` (
   UNIQUE KEY `ccd_section_entity` (`ccd_section_entity`),
   KEY `concept_id` (`concept_id`),
   CONSTRAINT `concept_id` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 		
 		</sql>
 	</diff>
+
+<diff>
+		<version>0.9</version>
+		<author>Hui Xiao</author>
+		<date></date>
+		<description>Allow All PHR users to access exportccd module</description>
+		<sql>
+insert into phr_allowed_url (allowed_url, required_privilege, description, creator, date_created) values('/module/exportccd/*','PHR Authenticated','used by exportccd module',1,now());
+
+		 DROP TABLE IF EXISTS `openmrs`.`imported_ccd`;
+CREATE TABLE  `openmrs`.`imported_ccd` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `patient_id` int(11) NOT NULL,
+  `ccd` longtext DEFAULT NULL,
+  `date_imported` datetime DEFAULT NULL,
+  `imported_by` int(11) DEFAULT NULL,  
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_ccd_patient_id` (`patient_id`),
+  CONSTRAINT `cnstr_ccd_patient_id` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
+  CONSTRAINT `user_who_imported_ccd` FOREIGN KEY (`imported_by`) REFERENCES `users` (`user_id`)  
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+		</sql>
+	</diff>
+	
 	
 </sqldiff>

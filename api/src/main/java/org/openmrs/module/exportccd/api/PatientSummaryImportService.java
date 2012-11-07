@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.module.exportccd.CCDSectionEntity;
+import org.openmrs.module.exportccd.ImportedCCD;
 /**
  * This service exposes module's core functionality. It is a Spring managed bean which is configured in moduleApplicationContext.xml.
  * <p>
@@ -41,5 +42,5 @@ import org.openmrs.module.exportccd.CCDSectionEntity;
 public interface PatientSummaryImportService extends OpenmrsService {
 
 	public Patient consumeCCD(InputStream is) throws Exception;
-
+	public ImportedCCD getCCD(Patient pat) throws Exception;
 }
