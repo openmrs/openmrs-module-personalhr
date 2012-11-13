@@ -4,9 +4,9 @@
 
 <%@ include file="template/localHeader.jsp"%>
 
-<h2>
+<h3>
 	<spring:message code="exportccd.import.title" />
-</h2>
+</h3>
 
 FileName : "<strong> ${fileName} </strong>" - Uploaded Successful.
 

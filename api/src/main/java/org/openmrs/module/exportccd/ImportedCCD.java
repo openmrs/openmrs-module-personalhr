@@ -1,7 +1,9 @@
 package org.openmrs.module.exportccd;
 
+import java.io.Serializable;
 import java.util.Date;
 
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.User;
 
@@ -10,7 +12,9 @@ import org.openmrs.User;
  * @author hxiao
  *
  */
-public class ImportedCCD {
+public class ImportedCCD extends BaseOpenmrsObject implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private Integer id;
 	private Patient importedFor;
 	private User importedBy;
 	private Date dateImported;
@@ -49,6 +53,17 @@ public class ImportedCCD {
 
 	public void setCcdImported(String ccdImported) {
 		this.ccdImported = ccdImported;
+	}
+
+	@Override
+	public Integer getId() {
+		return id;
+	}
+
+
+	@Override
+	public void setId(Integer id) {
+		this.id = id;	
 	}
 	
 }

@@ -3,7 +3,12 @@
  */
 package org.openmrs.module.exportccd.api.impl;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -57,20 +62,44 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 	public Patient consumeCCD(InputStream is) throws Exception {	
 		CCDPackage.eINSTANCE.eClass();
 		//ContinuityOfCareDocument ccdDocument = (ContinuityOfCareDocument) CDAUtil.load(is);
-		ClinicalDocument ccdDocument = CDAUtil.load(is);
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		org.apache.commons.io.IOUtils.copy(is, baos);
+		byte[] bytes = baos.toByteArray();
+		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		
+		ClinicalDocument ccdDocument = CDAUtil.load(bais);
 		
 		org.openhealthtools.mdht.uml.cda.Patient ohtPatient = ccdDocument.getPatients().get(0);
 		Patient omrsPatient = createOrUpdateOmrsPatient(ohtPatient);
-		saveCCD(is, omrsPatient);
+		
+		bais.reset();		
+		saveCCD(bais, omrsPatient);
 		//String name = pat.getNames().get(0).getGivens().get(0).getText() + " " + pat.getNames().get(0).getFamilies().get(0).getText();		
 		//assertNotNull(name);
 		return omrsPatient;
 	}
 	
-    private void saveCCD(InputStream is, Patient omrsPatient) {
+    private void saveCCD(InputStream is, Patient omrsPatient) throws Exception {
+    	StringBuilder sb = new StringBuilder();
+    	try{
+        	//read it with BufferedReader
+        	BufferedReader br
+            	= new BufferedReader(
+            		new InputStreamReader(is));
+     
+     
+        	String line;
+        	while ((line = br.readLine()) != null) {
+        		sb.append(line);
+        	}   
+    	} catch(IOException e) {
+    		log.error("Failed to save CCD to database due to " + e.getMessage(), e);
+    		throw e;
+    	}
     	ImportedCCD ccd = new ImportedCCD();
     	ccd.setImportedFor(omrsPatient);
-    	ccd.setCcdImported(is.toString());
+    	ccd.setCcdImported(sb.toString());
     	ccd.setImportedBy(Context.getAuthenticatedUser());
     	ccd.setDateImported(new Date());
 		dao.saveImportedCCD(ccd);		
@@ -82,7 +111,7 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		if (exsitingPatient == null) {
 			exsitingPatient = savePatient(inputPatient);
 		} else {
-			updatePatient(exsitingPatient, inputPatient);
+			//updatePatient(exsitingPatient, inputPatient);
 		}
 					
 		return exsitingPatient;
@@ -208,7 +237,6 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 	}
 	
     private Patient updatePatient(Patient existingPatient, Patient inputPatient) {
-		PatientService patientService = Context.getPatientService();
 		existingPatient.setAddresses(inputPatient.getAddresses());
 		existingPatient.setAttributes(inputPatient.getAttributes());
 		existingPatient.setChangedBy(Context.getAuthenticatedUser());

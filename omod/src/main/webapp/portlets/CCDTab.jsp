@@ -1,12 +1,9 @@
 <%@ include file="/WEB-INF/view/module/personalhr/template/include.jsp" %>
 <personalhr:require privilege="PHR Authenticated" otherwise="/phr/login.htm" redirect="/module/exportccd/FileUploadSuccess.htm" />
-<%@ include file="/WEB-INF/view/module/personalhr/template/header.jsp" %>
 
-<%@ include file="template/localHeader.jsp"%>
-
-<h2>
+<h3>
 	<spring:message code="exportccd.ccdtab.title" />
-</h2>
+</h3>
 <c:choose>
 	<c:when test="${ccdExists}">
 		CCD was imported on ${dateImported}.
@@ -27,6 +24,3 @@
 	</c:otherwise>
 </c:choose>
 
-
-
-<%@ include file="/WEB-INF/template/footer.jsp"%>

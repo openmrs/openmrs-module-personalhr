@@ -49,7 +49,7 @@ public class ImportExportCCD extends PatientDashboardTabExt {
     @Override
     public String getPortletUrl() {
 	    // TODO Auto-generated method stub
-	    return "importExportCCD";
+	    return "CCDTab"; //"importExportCCD";
     }
 
 	/**
@@ -67,7 +67,7 @@ public class ImportExportCCD extends PatientDashboardTabExt {
     @Override
     public String getTabId() {
 	    // TODO Auto-generated method stub
-	    return "importexportCCD";
+	    return "CCDTab";//"importexportCCD";
     }
 
 	/**

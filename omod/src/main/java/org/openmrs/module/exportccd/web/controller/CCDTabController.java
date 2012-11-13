@@ -21,10 +21,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.openmrs.Concept;
 import org.openmrs.Patient;
-import org.openmrs.api.db.DAOException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,29 +30,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.request.WebRequest;
 import org.openmrs.module.exportccd.ImportedCCD;
 import org.openmrs.module.exportccd.api.*;
-import org.openmrs.api.APIException;
-import org.openmrs.web.WebConstants;
+import org.openmrs.web.controller.PortletController;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.ArrayList;
 /**
  * The main controller.
+ * 
  */
 @Controller
-@RequestMapping("/module/exportccd/CCDTab*")
-public class  CCDTabController {
-	
+@RequestMapping("/module/exportccd/portlets/CCDTab*")
+public class  CCDTabController {	
 	protected final Log log = LogFactory.getLog(getClass());
-	
-	
+		
 	@RequestMapping(method = RequestMethod.GET)
 	public void manage(ModelMap model, HttpServletRequest request) throws Exception {
         Patient pat = null;
@@ -64,7 +55,7 @@ public class  CCDTabController {
         if(patientIdStr==null) {
           	patientId = (Integer) request.getAttribute("patientId");
         } else {
-        	patientId = Integer.getInteger(patientIdStr);
+        	patientId = Integer.valueOf(patientIdStr);
         }
         log.debug("patientId=" + patientId);
             
@@ -77,7 +68,8 @@ public class  CCDTabController {
 			model.addAttribute("ccdExists", true);			
 			model.addAttribute("importedBy", ccd.getImportedBy());
 			model.addAttribute("dateImported", ccd.getDateImported());
-			model.addAttribute("fileContent", ccd.getCcdImported());
+			model.addAttribute("fileContent", "Display suppressed - " + ccd.getCcdImported().length() + " characters.");
+			//model.addAttribute("fileContent", ccd.getCcdImported());
 			model.addAttribute("displayContent", renderedCCD);
 		} else {
 			model.addAttribute("ccdExists", false);			

@@ -13,13 +13,20 @@
  */
 package org.openmrs.module.exportccd.api.db.hibernate;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.exportccd.ImportedCCD;
 import org.openmrs.module.exportccd.api.db.ImportedCCDDAO;
 /**
@@ -45,17 +52,27 @@ public class HibernateImportedCCDDAO implements ImportedCCDDAO {
 	    return sessionFactory;
     }
 	
-	public ImportedCCD getImportedCCD(Patient pat) {
-		return (ImportedCCD)sessionFactory.getCurrentSession().createCriteria(ImportedCCD.class).add(Restrictions.eq("importedFor",pat)).list().get(0);		
+	public ImportedCCD getImportedCCD(Patient pat) throws HibernateException {
+		List ccdList = sessionFactory.getCurrentSession().createCriteria(ImportedCCD.class).add(Restrictions.eq("importedFor",pat)).list();
+		return (ccdList == null || ccdList.isEmpty()) ? null : (ImportedCCD) (ccdList.get(0));
 	}
 	
-	public void saveImportedCCD(ImportedCCD ccd) {
-		try
-		{
-				sessionFactory.getCurrentSession().saveOrUpdate(ccd);
-		}catch(HibernateException c)
-		{
-			throw new APIException("Failed to store the imported CCD", c);
-		}		
-	}
+	public void saveImportedCCD(ImportedCCD ccd) throws HibernateException {
+		//sessionFactory.getCurrentSession().saveOrUpdate(ccd);
+		ImportedCCD existingCCD = getImportedCCD (ccd.getImportedFor());
+		if(existingCCD != null) {
+			existingCCD.setCcdImported(ccd.getCcdImported());
+			existingCCD.setDateImported(new Date());
+			existingCCD.setImportedBy(Context.getAuthenticatedUser());
+			sessionFactory.getCurrentSession().update(existingCCD);
+		} else {
+	        Session sess = sessionFactory.openSession();
+	        Transaction tx = sess.beginTransaction();
+	        sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
+	        sess.saveOrUpdate(ccd);
+	        tx.commit();
+	        //sess.flush();
+	        sess.close();
+		}			
+	} 	
 }

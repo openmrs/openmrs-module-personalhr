@@ -32,10 +32,9 @@
 	</extension>
 	
 	<!-- Maps hibernate file's, if present -->
-	<mappingFiles>
-				
+	<mappingFiles>			
 		CCDSectionEntity.hbm.xml
-				
+		ImportedCCD.hbm.xml		
 	</mappingFiles>
 
 	<!-- Internationalization -->

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,12 +16,15 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.exportccd.FileUpload;
+import org.openmrs.module.exportccd.ImportedCCD;
 import org.openmrs.module.exportccd.api.PatientSummaryImportService;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,12 +33,46 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class FileUploadController extends SimpleFormController{
 	protected final Log log = LogFactory.getLog(getClass());
+	private final String xslLocation = "/WEB-INF/view/module/exportccd/template/CCD.xsl";
 	
 	public FileUploadController(){
 		setCommandClass(FileUpload.class);
 		setCommandName("fileUploadForm");
 	}
- 
+	
+    @Override
+    protected ModelMap formBackingObject(HttpServletRequest request) throws Exception {
+        log.debug("Entering FileUploadController:formBackingObject");
+        ModelMap model = new ModelMap();
+        
+        Patient pat = null;
+        Integer patientId = null;
+        String patientIdStr = request.getParameter("patientId");            
+        if(patientIdStr==null) {
+          	patientId = (Integer) request.getAttribute("patientId");
+        } else {
+        	patientId = Integer.valueOf(patientIdStr);
+        }
+        log.debug("patientId=" + patientId);
+            
+        pat = Context.getPatientService().getPatient(patientId);
+		
+		PatientSummaryImportService importService = Context.getService(PatientSummaryImportService.class);
+		ImportedCCD ccd = importService.getCCD(pat);
+		if(ccd != null) {
+			String renderedCCD = renderCCD (request, ccd.getCcdImported());
+			model.addAttribute("ccdExists", true);			
+			model.addAttribute("importedBy", ccd.getImportedBy());
+			model.addAttribute("dateImported", ccd.getDateImported());
+			model.addAttribute("fileContent", ccd.getCcdImported());
+			model.addAttribute("displayContent", renderedCCD);
+		} else {
+			model.addAttribute("ccdExists", false);			
+		}
+        
+		return model;
+    }
+    
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request,
 		HttpServletResponse response, Object command, BindException errors)
@@ -53,7 +91,7 @@ public class FileUploadController extends SimpleFormController{
 			content = processFile(multipartFile);
 		}
 		
-        String result = transform(multipartFile.getInputStream(), new FileInputStream(request.getRealPath("/")+"/WEB-INF/view/module/exportccd/template/CCD.xsl"));
+        String result = transform(multipartFile.getInputStream(), new FileInputStream(request.getRealPath("/")+xslLocation));
 
         //consume CCD: create OpenMRS patient
         Patient pat = consumeCCD(multipartFile.getInputStream());
@@ -61,8 +99,9 @@ public class FileUploadController extends SimpleFormController{
         	Integer patientId = pat.getId();
         	String identifier = pat.getIdentifiers().iterator().next().getIdentifier();
            	String identifierName = pat.getIdentifiers().iterator().next().getIdentifierType().getName();
-           	content = "\nThis patient has been added to OpenMRS database successfully!\npatientId=" + patientId + "; OpenMRS identifier=" + identifierName + ": " + identifier + "\n\n" + content;
-        }
+           	//content = "\nThis patient has been added to OpenMRS database successfully!\npatientId=" + patientId + "; OpenMRS identifier=" + identifierName + ": " + identifier + "\n\n" + content;
+           	content = "\nThis patient has been added to OpenMRS database successfully!\npatientId=" + patientId + "; OpenMRS identifier=" + identifierName + ": " + identifier + "<br/>Display is suppressed - " + content.length() + " characters.";
+       }
         
 		ModelAndView mv = new ModelAndView(getSuccessView(),"fileName",fileName);		
 		mv.addObject("fileContent", content);
@@ -121,6 +160,10 @@ public class FileUploadController extends SimpleFormController{
 		
 		return result.toString();	    
 	} 
+	
+	private String renderCCD(HttpServletRequest request, String ccd) throws FileNotFoundException {
+	     return transform(IOUtils.toInputStream(ccd), new FileInputStream(request.getRealPath("/")+xslLocation));
+	}	
 
 	//@Override
 	//protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)

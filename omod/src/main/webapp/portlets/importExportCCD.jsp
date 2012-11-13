@@ -5,10 +5,6 @@
 <spring:message code="exportccd.tooltip.ccd"/>
 </div>
 <div id="importexportccd_div">
-<br/>
-<h3>Import/Export My CCD</h3>
-<br/>
- 
 <table>
 	<tbody>
 		<tr>
@@ -22,5 +18,30 @@
 		</tr>
 	</tbody>
 </table>
-</br>
+<br/>
+</div>
+
+<div id="importedCCD_div">
+<h3>
+	<spring:message code="exportccd.importedccd.title" />
+</h3>
+<c:choose>
+	<c:when test="${ccdExists}">
+			<spring:message code="exportccd.imported.on" /> ${dateImported}.
+		
+		<br/><br/>
+		<h3>Formatted display: </h3>
+		<br/>
+		
+		${displayContent}
+		 
+		<br/><br/>
+		<h3>FileContent: </h3>
+		<br/>
+		<c:out value="${fileContent}"></c:out>
+	</c:when>
+	<c:otherwise>
+		<spring:message code="exportccd.not.imported" />	
+	</c:otherwise>
+</c:choose>
 </div>
