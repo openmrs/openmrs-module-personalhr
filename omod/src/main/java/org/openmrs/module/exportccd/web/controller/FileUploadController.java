@@ -39,40 +39,7 @@ public class FileUploadController extends SimpleFormController{
 		setCommandClass(FileUpload.class);
 		setCommandName("fileUploadForm");
 	}
-	
-    @Override
-    protected ModelMap formBackingObject(HttpServletRequest request) throws Exception {
-        log.debug("Entering FileUploadController:formBackingObject");
-        ModelMap model = new ModelMap();
-        
-        Patient pat = null;
-        Integer patientId = null;
-        String patientIdStr = request.getParameter("patientId");            
-        if(patientIdStr==null) {
-          	patientId = (Integer) request.getAttribute("patientId");
-        } else {
-        	patientId = Integer.valueOf(patientIdStr);
-        }
-        log.debug("patientId=" + patientId);
-            
-        pat = Context.getPatientService().getPatient(patientId);
-		
-		PatientSummaryImportService importService = Context.getService(PatientSummaryImportService.class);
-		ImportedCCD ccd = importService.getCCD(pat);
-		if(ccd != null) {
-			String renderedCCD = renderCCD (request, ccd.getCcdImported());
-			model.addAttribute("ccdExists", true);			
-			model.addAttribute("importedBy", ccd.getImportedBy());
-			model.addAttribute("dateImported", ccd.getDateImported());
-			model.addAttribute("fileContent", ccd.getCcdImported());
-			model.addAttribute("displayContent", renderedCCD);
-		} else {
-			model.addAttribute("ccdExists", false);			
-		}
-        
-		return model;
-    }
-    
+	   
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request,
 		HttpServletResponse response, Object command, BindException errors)
@@ -100,7 +67,7 @@ public class FileUploadController extends SimpleFormController{
         	String identifier = pat.getIdentifiers().iterator().next().getIdentifier();
            	String identifierName = pat.getIdentifiers().iterator().next().getIdentifierType().getName();
            	//content = "\nThis patient has been added to OpenMRS database successfully!\npatientId=" + patientId + "; OpenMRS identifier=" + identifierName + ": " + identifier + "\n\n" + content;
-           	content = "\nThis patient has been added to OpenMRS database successfully!\npatientId=" + patientId + "; OpenMRS identifier=" + identifierName + ": " + identifier + "<br/>Display is suppressed - " + content.length() + " characters.";
+           	content = "\nThis patient has been added to OpenMRS database successfully!\npatientId=" + patientId + "; OpenMRS identifier=" + identifierName + ": " + identifier + ";\n\n Display is suppressed - " + content.length() + " characters.\n\n";
        }
         
 		ModelAndView mv = new ModelAndView(getSuccessView(),"fileName",fileName);		
@@ -116,23 +83,23 @@ public class FileUploadController extends SimpleFormController{
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()));
 
-            String pathSaveAs = "/data/CCDs/";
-            String saveAs = multipartFile.getOriginalFilename();            
-            saveAs = pathSaveAs + saveAs; 
+            //String pathSaveAs = "/data/CCDs/";
+            //String saveAs = multipartFile.getOriginalFilename();            
+            //saveAs = pathSaveAs + saveAs; 
             
             String line;
-            FileWriter fw = new FileWriter(saveAs);
-            BufferedWriter bw = new BufferedWriter(fw);
+            //FileWriter fw = new FileWriter(saveAs);
+            //BufferedWriter bw = new BufferedWriter(fw);
 
             while ((line = br.readLine()) != null) {
             	sb.append(line);            	
-                bw.write(line);
-                bw.newLine();
+                //bw.write(line);
+                //bw.newLine();
             }
 
-            bw.flush();
-            bw.close();
-            fw.close();  
+            //bw.flush();
+            //bw.close();
+            //fw.close();  
                         
         } catch (Exception e) {
         	log.error(e.getMessage(), e);

@@ -163,12 +163,12 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		}
 		
 		//set patient Home Address
-		String street1 = (patRole.getAddrs()==null || patRole.getAddrs().get(0).getStreetAddressLines().size()<1 )? null : patRole.getAddrs().get(0).getStreetAddressLines().get(0).getText();
-		String street2 = (patRole.getAddrs()==null || patRole.getAddrs().get(0).getStreetAddressLines().size() <= 1)? null : patRole.getAddrs().get(0).getStreetAddressLines().get(1).getText();
-		String city = (patRole.getAddrs()==null || patRole.getAddrs().get(0).getCities()==null || patRole.getAddrs().get(0).getCities().isEmpty())? null : patRole.getAddrs().get(0).getCities().get(0).getText();
-		String state = (patRole.getAddrs()==null || patRole.getAddrs().get(0).getStates()==null || patRole.getAddrs().get(0).getStates().isEmpty())? null : patRole.getAddrs().get(0).getStates().get(0).getText();
-		String country = (patRole.getAddrs()==null || patRole.getAddrs().get(0).getCounties() == null || patRole.getAddrs().get(0).getCounties().isEmpty())? null : patRole.getAddrs().get(0).getCounties().get(0).getText();
-		String zip = (patRole.getAddrs()==null || patRole.getAddrs().get(0).getPostalCodes()==null || patRole.getAddrs().get(0).getPostalCodes().isEmpty())? null : patRole.getAddrs().get(0).getPostalCodes().get(0).getText();
+		String street1 = (patRole.getAddrs()==null || patRole.getAddrs().isEmpty() || patRole.getAddrs().get(0).getStreetAddressLines().size()<1 )? null : patRole.getAddrs().get(0).getStreetAddressLines().get(0).getText();
+		String street2 = (patRole.getAddrs()==null || patRole.getAddrs().isEmpty() || patRole.getAddrs().get(0).getStreetAddressLines().size() <= 1)? null : patRole.getAddrs().get(0).getStreetAddressLines().get(1).getText();
+		String city = (patRole.getAddrs()==null || patRole.getAddrs().isEmpty() || patRole.getAddrs().get(0).getCities()==null || patRole.getAddrs().get(0).getCities().isEmpty())? null : patRole.getAddrs().get(0).getCities().get(0).getText();
+		String state = (patRole.getAddrs()==null || patRole.getAddrs().isEmpty() || patRole.getAddrs().get(0).getStates()==null || patRole.getAddrs().get(0).getStates().isEmpty())? null : patRole.getAddrs().get(0).getStates().get(0).getText();
+		String country = (patRole.getAddrs()==null || patRole.getAddrs().isEmpty() || patRole.getAddrs().get(0).getCounties() == null || patRole.getAddrs().get(0).getCounties().isEmpty())? null : patRole.getAddrs().get(0).getCounties().get(0).getText();
+		String zip = (patRole.getAddrs()==null || patRole.getAddrs().isEmpty() || patRole.getAddrs().get(0).getPostalCodes()==null || patRole.getAddrs().get(0).getPostalCodes().isEmpty())? null : patRole.getAddrs().get(0).getPostalCodes().get(0).getText();
         PersonAddress address = new PersonAddress();
         User ncdUser = Context.getUserContext().getAuthenticatedUser();
         Date now = new Date();

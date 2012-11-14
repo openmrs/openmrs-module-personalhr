@@ -1,26 +1,17 @@
 <spring:htmlEscape defaultHtmlEscape="true" />
 <ul id="menu">
-	<li class="first">
-		<personalhr:hasPrivilege role="PHR Patient">
-			<a style="color:navy;" href="${pageContext.request.contextPath}/phr/patientDashboard.form?"><spring:message code="personalhr.myPersonalRecord"/></a>
-		</personalhr:hasPrivilege>
+	<li class="first"><a
+		href="${pageContext.request.contextPath}/admin"><spring:message
+				code="admin.title.short" /></a></li>
 
-		<openmrs:hasPrivilege privilege="Administrator">
-			<a 	href="${pageContext.request.contextPath}/admin"><spring:message	code="admin.title.short" /></a>
-		</openmrs:hasPrivilege>
+	<li
+		<c:if test='<%=request.getRequestURI().contains("/manage")%>'>class="active"</c:if>>
+		<a
+		href="${pageContext.request.contextPath}/module/exportccd/ccdConfiguration.form"><spring:message
+				code="exportccd.manage.ccd.configuration" /></a>
+
+
 	</li>
-
-	<openmrs:hasPrivilege privilege="Administrator">
-		<li
-			<c:if test='<%=request.getRequestURI().contains("/manage")%>'>class="active"</c:if>>
-			<a
-			href="${pageContext.request.contextPath}/module/exportccd/ccdConfiguration.form"><spring:message
-					code="exportccd.manage.ccd.configuration" /></a>
-	
-	
-		</li>
-	</openmrs:hasPrivilege>
-	
 	<li
 		<c:if test='<%=request.getRequestURI().contains("/manage")%>'>class="active"</c:if>>
 		<a

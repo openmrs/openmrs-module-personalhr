@@ -66,6 +66,8 @@ public class HibernateImportedCCDDAO implements ImportedCCDDAO {
 			existingCCD.setImportedBy(Context.getAuthenticatedUser());
 			sessionFactory.getCurrentSession().update(existingCCD);
 		} else {
+			sessionFactory.getCurrentSession().saveOrUpdate(ccd);
+			/*
 	        Session sess = sessionFactory.openSession();
 	        Transaction tx = sess.beginTransaction();
 	        sess.setFlushMode(FlushMode.COMMIT); // allow queries to return stale state
@@ -73,6 +75,7 @@ public class HibernateImportedCCDDAO implements ImportedCCDDAO {
 	        tx.commit();
 	        //sess.flush();
 	        sess.close();
-		}			
+	        */
+		}		
 	} 	
 }
