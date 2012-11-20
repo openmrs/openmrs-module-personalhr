@@ -11,21 +11,50 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.emf.common.util.EList;
+import org.openhealthtools.mdht.uml.cda.AssignedEntity;
+import org.openhealthtools.mdht.uml.cda.CDAFactory;
 import org.openhealthtools.mdht.uml.cda.ClinicalDocument;
+import org.openhealthtools.mdht.uml.cda.Entry;
+import org.openhealthtools.mdht.uml.cda.Participant2;
+import org.openhealthtools.mdht.uml.cda.ParticipantRole;
+import org.openhealthtools.mdht.uml.cda.Performer2;
+import org.openhealthtools.mdht.uml.cda.PlayingEntity;
+import org.openhealthtools.mdht.uml.cda.StrucDocText;
+import org.openhealthtools.mdht.uml.cda.ccd.CCDFactory;
 import org.openhealthtools.mdht.uml.cda.ccd.CCDPackage;
+import org.openhealthtools.mdht.uml.cda.ccd.ContinuityOfCareDocument;
+import org.openhealthtools.mdht.uml.cda.ccd.EncountersSection;
 import org.openhealthtools.mdht.uml.cda.util.CDAUtil;
+import org.openhealthtools.mdht.uml.hl7.datatypes.CD;
+import org.openhealthtools.mdht.uml.hl7.datatypes.CE;
+import org.openhealthtools.mdht.uml.hl7.datatypes.DatatypesFactory;
+import org.openhealthtools.mdht.uml.hl7.datatypes.ED;
 import org.openhealthtools.mdht.uml.hl7.datatypes.II;
+import org.openhealthtools.mdht.uml.hl7.datatypes.IVL_TS;
+import org.openhealthtools.mdht.uml.hl7.datatypes.PN;
+import org.openhealthtools.mdht.uml.hl7.datatypes.ST;
+import org.openhealthtools.mdht.uml.hl7.vocab.ActClass;
+import org.openhealthtools.mdht.uml.hl7.vocab.EntityClassRoot;
+import org.openhealthtools.mdht.uml.hl7.vocab.NullFlavor;
+import org.openhealthtools.mdht.uml.hl7.vocab.ParticipationType;
+import org.openhealthtools.mdht.uml.hl7.vocab.RoleClassRoot;
+import org.openhealthtools.mdht.uml.hl7.vocab.x_ActRelationshipEntry;
+import org.openhealthtools.mdht.uml.hl7.vocab.x_DocumentEncounterMood;
 import org.openhealthtools.mdht.uml.cda.PatientRole;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
@@ -70,8 +99,12 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		
 		ClinicalDocument ccdDocument = CDAUtil.load(bais);
 		
+		//create OpenMRS Patient
 		org.openhealthtools.mdht.uml.cda.Patient ohtPatient = ccdDocument.getPatients().get(0);
 		Patient omrsPatient = createOrUpdateOmrsPatient(ohtPatient);
+		
+		//create OpenMRS encounters
+		createOrUpdateEncounters((ContinuityOfCareDocument) ccdDocument, omrsPatient);
 		
 		bais.reset();		
 		saveCCD(bais, omrsPatient);
@@ -117,6 +150,47 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		return exsitingPatient;
     }
     
+	private void  createOrUpdateEncounters(ContinuityOfCareDocument ccd, Patient patient) throws Exception
+	{
+		org.openhealthtools.mdht.uml.cda.Encounter e = ccd.getEncountersSection().getEncounters().get(0);
+		Encounter enc = new Encounter();
+		enc.setPatient(patient);
+		enc.setCreator(Context.getAuthenticatedUser());
+		enc.setDateCreated(new Date());
+		enc.setEncounterDatetime(sdf.parse(e.getEffectiveTime().getValue()));
+		//enc.setEncounterId(e.getIds().get(0).getAssigningAuthorityName()+e.getIds().get(0).getExtension());
+		
+		//encounter type
+		EncounterType et = new EncounterType();
+		et.setCreator(Context.getAuthenticatedUser());
+		et.setDateCreated(new Date());
+		et.setName(e.getTypeId().getExtension());
+		et.setDescription(e.getTypeId().getAssigningAuthorityName());		
+		enc.setEncounterType(et);
+
+		//encounter location
+		Location location = new Location();
+		location.setName(e.getIds().get(1).getExtension());
+		location.setDescription(e.getIds().get(1).getRoot());		
+		enc.setLocation(location);
+		
+		//encounter participants
+		Person pers = new Person();
+		PersonName pname = new PersonName();
+		PN pn = e.getPerformers().get(0).getAssignedEntity().getAssignedPerson().getNames().get(0);
+		pname.setFamilyName(pn.getFamilies().get(0).getText());
+		pname.setGivenName(pn.getGivens().get(0).getText());
+		//pname.setMiddleName(pn.getGivens().get(1).getText())
+		pers.addName(pname);
+		enc.setProvider(pers);
+		
+		//save all
+		Context.getPersonService().savePerson(pers);
+		Context.getLocationService().saveLocation(location);
+		Context.getEncounterService().saveEncounterType(et);
+		Context.getEncounterService().saveEncounter(enc);
+	}
+	
 	private Patient convertToOmrsPatient(org.openhealthtools.mdht.uml.cda.Patient ohtPatient) {
 		Patient pat = new Patient();
 	    PersonService personService = Context.getPersonService();

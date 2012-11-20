@@ -44,7 +44,7 @@ public class  PatientSummaryExportServiceTest extends BaseModuleContextSensitive
 	public void consumeCCD() throws Exception {
 		PatientSummaryImportService importService = Context.getService(PatientSummaryImportService.class);
 		assertNotNull(importService);
-		//InputStream is = new FileInputStream("G:\\COMMON\\everyone\\hxiao\\laf\\innovation\\CCD.xml");
-		//assertNotNull(importService.consumeCCD(is));		
+		InputStream is = new FileInputStream("G:\\COMMON\\everyone\\hxiao\\laf\\innovation\\CCD.xml");
+		assertNotNull(importService.consumeCCD(is));		
 	}	
 }
