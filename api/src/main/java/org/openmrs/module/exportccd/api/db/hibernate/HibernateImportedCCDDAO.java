@@ -60,6 +60,8 @@ public class HibernateImportedCCDDAO implements ImportedCCDDAO {
 	public void saveImportedCCD(ImportedCCD ccd) throws HibernateException {
 		//sessionFactory.getCurrentSession().saveOrUpdate(ccd);
 		ImportedCCD existingCCD = getImportedCCD (ccd.getImportedFor());
+	    //sessionFactory.getCurrentSession().setFlushMode(FlushMode.AUTO);		
+		
 		if(existingCCD != null) {
 			existingCCD.setCcdImported(ccd.getCcdImported());
 			existingCCD.setDateImported(new Date());

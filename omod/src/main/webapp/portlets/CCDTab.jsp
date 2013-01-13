@@ -7,6 +7,11 @@
 <c:choose>
 	<c:when test="${ccdExists}">
 		CCD was imported on ${dateImported}.
+		<br/><br/>
+		
+		<form action="../module/exportccd/importCancerTreatmentSummary.form" id='importCancerTreatmentSummary' method="POST">		
+			<input type="submit" value='Create or Update My Treatment History' >
+		</form>
 		
 		<br/><br/>
 		<h3>Formatted display: </h3>

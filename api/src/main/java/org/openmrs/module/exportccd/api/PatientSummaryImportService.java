@@ -43,4 +43,5 @@ public interface PatientSummaryImportService extends OpenmrsService {
 
 	public Patient consumeCCD(InputStream is) throws Exception;
 	public ImportedCCD getCCD(Patient pat) throws Exception;
+	public String importCancerTreatmentSummary(Patient pat) throws Exception;
 }
