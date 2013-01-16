@@ -97,7 +97,7 @@
 	<!-- /Module servlets, accessed via http://.../openmrs/moduleServlet/formEntry/servletName -->
 	<servlet>
 		<servlet-name>phrLoginServlet</servlet-name>
-		<servlet-class>org.openmrs.module.personalhr.web.servlet.LoginServlet</servlet-class>
+		<servlet-class>org.openmrs.module.personalhr.web.servlet.MedadherenceLoginServlet</servlet-class>
 	</servlet>
 
 	<servlet>
