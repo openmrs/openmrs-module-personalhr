@@ -66,6 +66,7 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -105,7 +106,7 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 	static final String CANCER_TREATMENT_RADIATION_ENCOUNTER = "CANCER TREATMENT - RADIATION";
 	static final String CANCER_TREATMENT_SURGERY_ENCOUNTER = "CANCER TREATMENT - SURGERY";
 	static final String CANCER_TREATMENT_SUMMARY_FORM = "Cancer Treatment Summary";
-	static final String CANCER_TREATMENT_CHEMOTHERAPY_FORM = "CANCER TREATMENT - CHEMOTHERAPY";
+	static final String CANCER_TREATMENT_CHEMOTHEROPY_FORM = "CANCER TREATMENT - CHEMOTHEROPY";
 	static final String CANCER_TREATMENT_RADIATION_FORM = "CANCER TREATMENT - RADIATION";
 	static final String CANCER_TREATMENT_SURGERY_FORM = "CANCER TREATMENT - SURGERY";
 
@@ -279,6 +280,10 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 					location = new Location();
 					location.setName(locationName);
 					location.setDescription(e.getParticipants().get(0).getTypeCode().getName().equals("LOC") ? e.getParticipants().get(0).getParticipantRole().getScopingEntity().getDesc().getText() : null);
+					location.setCityVillage(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getCities().get(0).getText());
+					location.setStateProvince(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStates().get(0).getText());
+					location.setAddress1(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStreetAddressLines().get(0).getText());
+					location.setPostalCode(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getPostalCodes().get(0).getText());
 					Context.getLocationService().saveLocation(location);
 				}
 				enc.setLocation(location);
@@ -383,12 +388,21 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 			} catch (Exception e) {
 				log.error("Unable to parse date: " + ma.getEffectiveTimes().get(0).getValue(), e);
 			}
+		} else if(!ma.getEntryRelationships().isEmpty() && ma.getEntryRelationships().get(0).getSupply()!= null && !ma.getEntryRelationships().get(0).getSupply().getAuthors().isEmpty()) {
+			try {
+				order.setStartDate(sdf.parse(ma.getEntryRelationships().get(0).getSupply().getAuthors().get(0).getTime().getValue()));
+			} catch (Exception e) {
+				log.error("Unable to parse date: " + ma.getEntryRelationships().get(0).getSupply().getAuthors().get(0).getTime().getValue(), e);
+			}			
 		}
 		order.setPatient(patient);
 		//set concept
 		order.setConcept(getOpenmrsCodedConceptByName(drugOrderConcept));
 		
 		//set Drug value	
+		if(ma.getConsumable()==null || ma.getConsumable().getManufacturedProduct() == null || ma.getConsumable().getManufacturedProduct().getManufacturedMaterial() == null || ma.getConsumable().getManufacturedProduct().getManufacturedMaterial().getName() == null) {
+			return;
+		}
 		String name = ma.getConsumable().getManufacturedProduct().getManufacturedMaterial().getName().getText();
 		
 		CE codedValue = ma.getConsumable().getManufacturedProduct().getManufacturedMaterial().getCode();
@@ -398,7 +412,9 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		drug.setDescription(codedValue.getDisplayName());
 		drug.setCreator(usr);
 		drug.setDateCreated(dt);
-		//drug.setDoseStrength(ma.getDoseQuantity().getValue().doubleValue());
+		if(ma.getDoseQuantity() != null && ma.getDoseQuantity().getValue() != null) {
+			drug.setDoseStrength(ma.getDoseQuantity().getValue().doubleValue());
+		}
 		drug.setName(name);		
 		Context.getConceptService().saveDrug(drug);
 		order.setDrug(drug);
@@ -441,7 +457,7 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		  obs = new Obs();
 		  obs.setUuid(uuid);
 		} else {
-			return;
+			//return; //update this obs instead
 		}
 		
 		//set basic info
@@ -467,19 +483,27 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		obs.setValueCoded(valueCoded);
 		
 		//procedure location
-		String locationName = pa.getParticipants().get(0).getTypeCode().getName().equals("LOC") ? pa.getParticipants().get(0).getParticipantRole().getPlayingEntity().getNames().get(0).getText() : null;
-		if(locationName != null) {
-			Location location = Context.getLocationService().getLocation(locationName);
-			if(location == null) {
-				location = new Location();
+		try {
+			String locationName = pa.getParticipants().get(0).getTypeCode().getName().equals("LOC") ? pa.getParticipants().get(0).getParticipantRole().getPlayingEntity().getNames().get(0).getText() : null;
+			if(locationName != null) {
+				Location location = Context.getLocationService().getLocation(locationName);
+				if(location == null) {
+					location = new Location();
+				}
 				location.setName(locationName);
-				location.setDescription(pa.getParticipants().get(0).getTypeCode().getName().equals("LOC") ? pa.getParticipants().get(0).getParticipantRole().getScopingEntity().getDesc().getText() : null);
+				location.setDescription(pa.getParticipants().get(0).getTypeCode().getName().equals("LOC") ? pa.getParticipants().get(0).getParticipantRole().getScopingEntity().getDesc().getText() : null);				
+				location.setCityVillage(pa.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getCities().get(0).getText());
+				location.setStateProvince(pa.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStates().get(0).getText());
+				location.setAddress1(pa.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStreetAddressLines().get(0).getText());
+				location.setPostalCode(pa.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getPostalCodes().get(0).getText());
 		        //Transaction tx = ((org.openmrs.module.exportccd.api.db.hibernate.HibernateImportedCCDDAO) dao).getSessionFactory().getCurrentSession().beginTransaction();
 		        //((org.openmrs.module.exportccd.api.db.hibernate.HibernateImportedCCDDAO) dao).getSessionFactory().getCurrentSession().setFlushMode(FlushMode.COMMIT);		
 				Context.getLocationService().saveLocation(location);
-				//tx.commit();
-			}
-			obs.setLocation(location);
+				//tx.commit();				
+				obs.setLocation(location);
+			} 
+		} catch (Exception e) {
+			log.error("Error in importing location: " + e.getMessage(), e);
 		}
 
 		saveOpenmrsObs(obs);		
@@ -545,7 +569,7 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		obs.setCreator(usr);
 		obs.setDateCreated(new Date());
 		obs.setPerson(patient);
-		if(pa.getEffectiveTime() != null && pa.getEffectiveTime().getLow().getValue() != null) {
+		if(pa.getEffectiveTime() != null && pa.getEffectiveTime().getLow()!= null && pa.getEffectiveTime().getLow().getValue() != null) {
 			obs.setObsDatetime(sdf.parse(pa.getEffectiveTime().getLow().getValue()));
 		}
 		
@@ -699,8 +723,11 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 	}	
 	
 	private Concept getOpenmrsConceptByName(CD codedValue) {
-		String displayName = codedValue.getDisplayName();
+		String displayName = codedValue.getDisplayName();		
 		if(displayName == null) return null;
+		if(displayName.length() > 100) {
+			displayName = displayName.substring(0, 100);
+		}
 		
 		String code = codedValue.getCode();
 		String codeSystem = codedValue.getCodeSystem();
@@ -1032,29 +1059,239 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 
 	private String importTreatmentHistory(Patient pat, String historyType) throws Exception {
 		// create cancer treatment summary encounter
-		Encounter enc = createOpenmrsEncounter(pat, historyType, null);
+		Encounter enc = createOpenmrsEncounter(pat, historyType);
 		
 		String status = "Importing " + historyType + ": ";
 		
 		// find cancer type, cancer stage and cancer diagnosis date
 		// and add them to cancer treatment summary encounter
 		if(CANCER_TREATMENT_SUMMARY_ENCOUNTER.equals(historyType)) {
-			status = status + importObs(pat, enc, "CANCER TYPE");
-			status = status + importObs(pat, enc, "CANCER STAGE");
-			status = status + importObs(pat, enc, "CANCER DIAGNOSIS DATE");
+			status = status + importObsValue(pat, enc, "CANCER TYPE", "COLON CANCER", "PROBLEM ADDED", "Malignant tumor of large intestine (disorder)");
+			//status = status + importObsValue(pat, enc, "CANCER STAGE", "PROBLEM ADDED", "Malignant tumor of large intestine (disorder)", "CANCER STAGE 1");
+			status = status + importObsDate(pat, enc, "CANCER DIAGNOSIS DATE", "PROBLEM ADDED", "Malignant tumor of large intestine (disorder)");
+			if(enc.getForm()==null) {
+				enc.setForm(Context.getFormService().getForm(CANCER_TREATMENT_SUMMARY_FORM));
+			}
 		} else if(CANCER_TREATMENT_SURGERY_ENCOUNTER.equals(historyType)) {
-			status = status + importObs(pat, enc, "SURGERY TYPE");
-			status = status + importObs(pat, enc, "SURGERY DATE");			
+			status = status + importObsValue(pat, enc, "SURGERY TYPE", "PERMANENT COLOSTOMY OR ILEOSTOMY", "PROCEDURE ADDED", "Colostomy (procedure)"); //importObs(pat, enc, "SURGERY TYPE");
+			status = status + importObsDate(pat, enc, "SURGERY DATE", "PROCEDURE ADDED", "Colostomy (procedure)"); //importObs(pat, enc, "SURGERY DATE");			
+			status = status + importObsLocation(pat, enc, "INSTITUTION NAME", "PROCEDURE ADDED", "Colostomy (procedure)"); //importObs(pat, enc, "SURGERY DATE");			
+			status = status + importObsLocation(pat, enc, "CITY NAME", "PROCEDURE ADDED", "Colostomy (procedure)"); //importObs(pat, enc, "SURGERY DATE");			
+			status = status + importObsLocation(pat, enc, "STATE NAME", "PROCEDURE ADDED", "Colostomy (procedure)"); //importObs(pat, enc, "SURGERY DATE");			
+			if(enc.getForm()==null) {
+				enc.setForm(Context.getFormService().getForm(CANCER_TREATMENT_SURGERY_FORM));
+			}
 		} else if(CANCER_TREATMENT_CHEMOTHERAPY_ENCOUNTER.equals(historyType)) {
-			status = status + importObs(pat, enc, "CHEMOTHERAPY MEDICATIONS USED");
+			status = status + importObs(pat, enc, "CHEMOTHERAPY MEDICATIONS USED"); //concept_id 6156
 			status = status + importObs(pat, enc, "CHEMOTHERAPY START DATE");			
-			status = status + importObs(pat, enc, "CHEMOTHERAPY FINISH DATE");			
+			status = status + importObs(pat, enc, "CHEMOTHERAPY FINISH DATE");	
+			
+			status = status + importDrugOrderValue(pat, enc, "CHEMOTHERAPY MEDICATION USED", "Mitomycin (multamycin)", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY TYPE");
+			status = status + importDrugOrderDate(pat, enc, "CHEMOTHERAPY START DATE", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY DATE");			
+			//status = status + importDrugOrderDate(pat, enc, "CHEMOTHERAPY FINISH DATE", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY DATE");			
+			//status = status + importDrugOrderLocation(pat, enc, "INSTITUTION NAME", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY DATE");			
+			//status = status + importDrugOrderLocation(pat, enc, "CITY NAME", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY DATE");			
+			//status = status + importDrugOrderLocation(pat, enc, "STATE NAME", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY DATE");			
+			if(enc.getForm()==null) {
+				enc.setForm(Context.getFormService().getForm(CANCER_TREATMENT_CHEMOTHEROPY_FORM));
+			}
 		} else if(CANCER_TREATMENT_RADIATION_ENCOUNTER.equals(historyType)) {
 			status = status + importObs(pat, enc, "RADIATION TYPE");
 			status = status + importObs(pat, enc, "RADIATION DATE");						
+			if(enc.getForm()==null) {
+				enc.setForm(Context.getFormService().getForm(CANCER_TREATMENT_RADIATION_FORM));
+			}
 		}
 		return status + ";    ";
 	}  
+
+	private String importDrugOrderDate(Patient pat, Encounter enc, String targetObsName, String sourceOrderName, String sourceDrugName) {
+		String status = "";
+		
+		Concept sourceObsConcept = Context.getConceptService().getConcept(sourceOrderName);
+		
+		if(sourceObsConcept != null) {
+			List<Order> orderList = Context.getOrderService().getOrdersByPatient(pat);
+			
+			if(orderList != null && !orderList.isEmpty()) {
+				for(Order order : orderList) {
+					if(order instanceof DrugOrder) {
+						Drug drug = ((DrugOrder) ((DrugOrder) order)).getDrug();
+						if(drug.getConcept().getName().getName().toLowerCase().contains(sourceDrugName.toLowerCase())){						
+							createObs(pat, enc, targetObsName, order.getStartDate());
+							status = targetObsName + "; ";
+							break;
+						}
+					}
+				}
+			}			
+		}
+		
+		return status;
+	}
+
+	private String importDrugOrderValue(Patient pat, Encounter enc, String targetObsName, String targetObsValue, String sourceOrderName, String sourceDrugName) {
+		String status = "";
+		
+		Concept sourceObsConcept = Context.getConceptService().getConcept(sourceOrderName);
+		
+		if(sourceObsConcept != null) {
+			List<Order> orderList = Context.getOrderService().getOrdersByPatient(pat);
+			
+			if(orderList != null && !orderList.isEmpty()) {
+				for(Order order : orderList) {
+					if(order instanceof DrugOrder) {
+						Drug drug = ((DrugOrder) ((DrugOrder) order)).getDrug();
+						if(drug.getConcept().getName().getName().toLowerCase().contains(sourceDrugName.toLowerCase())){						
+							createObs(pat, enc, targetObsName, targetObsValue);
+							status = targetObsName + "; ";
+							break;
+						}
+					}
+				}
+			}			
+		}
+		
+		return status;
+	}
+	
+	
+	private String importObsLocation(Patient pat, Encounter enc, String targetObsName, String sourceObsName, String sourceObsValue) {
+		String status = "";
+		String address = null;
+		
+		Concept sourceObsConcept = Context.getConceptService().getConcept(sourceObsName);
+		
+		if(sourceObsConcept != null) {
+			List<Obs> obsList = Context.getObsService().getObservationsByPersonAndConcept(pat, sourceObsConcept);
+			if(obsList != null && !obsList.isEmpty()) {
+				for(Obs obs : obsList) {
+					if(obs.getValueCoded().getDisplayString().equalsIgnoreCase(sourceObsValue)) {
+						if(targetObsName.equals("INSTITUTION NAME")) {
+							address = obs.getLocation().getName(); 
+						} else if(targetObsName.equals("CITY NAME")) {
+							address = obs.getLocation().getCityVillage(); 
+						} else if(targetObsName.equals("STATE NAME")) {
+							address = obs.getLocation().getStateProvince(); 
+						} 
+						break;
+					}
+				}
+				createObs(pat, enc, targetObsName, address);
+				status = targetObsName + "; ";
+			}			
+		}
+		
+		return status;
+	}
+	
+	private String importObsDate(Patient pat, Encounter enc, String targetObsName, String sourceObsName, String sourceObsValue) {
+		String status = "";
+		
+		Concept sourceObsConcept = Context.getConceptService().getConcept(sourceObsName);
+		
+		Date firstDate = null;
+		if(sourceObsConcept != null) {
+			List<Obs> obsList = Context.getObsService().getObservationsByPersonAndConcept(pat, sourceObsConcept);
+			if(obsList != null && !obsList.isEmpty()) {
+				for(Obs obs : obsList) {
+					if(obs.getValueCoded().getDisplayString().equalsIgnoreCase(sourceObsValue)) {
+						Date targetObsValue = obs.getObsDatetime(); 
+						if(firstDate == null || targetObsValue.before(firstDate)) {
+							firstDate = targetObsValue; 
+						}
+					}
+				}
+				createObs(pat, enc, targetObsName, firstDate);
+				status = targetObsName + "; ";
+			}			
+		}
+		
+		return status;
+	}
+
+	private Obs createObs(Patient pat, Encounter enc, String targetObsName, Date targetObsValue) {
+		Concept targetObsConcept = Context.getConceptService().getConcept(targetObsName);
+		List<Obs> obsList = Context.getObsService().getObservationsByPersonAndConcept(pat, targetObsConcept);
+		Obs obs = null;
+		if(obsList != null && !obsList.isEmpty()) {
+			obs = obsList.get(0);
+			if(obs.getEncounter()==null) {
+				obs.setEncounter(enc);
+			}
+		} else {
+			obs = new Obs();
+			obs.setCreator(Context.getAuthenticatedUser());
+			obs.setDateCreated(new Date());
+			obs.setPerson(pat);
+			obs.setObsDatetime(new Date());
+			//set concept
+			obs.setConcept(targetObsConcept); //obs.setConcept(getOpenmrsConceptByName(ro.getCode()));			
+			//set value
+			obs.setValueDatetime(targetObsValue);
+			obs.setEncounter(enc);
+		}
+		saveOpenmrsObs(obs);	
+		
+		return obs;
+	}
+
+	private String importObsValue(Patient pat, Encounter enc, String targetObsName, String targetObsValue, String sourceObsName, String sourceObsValue) {
+		String status = "";
+		
+		Concept sourceObsConcept = Context.getConceptService().getConcept(sourceObsName);
+		
+		if(sourceObsConcept != null) {
+			List<Obs> obsList = Context.getObsService().getObservationsByPersonAndConcept(pat, sourceObsConcept);
+			if(obsList != null && !obsList.isEmpty()) {
+				for(Obs obs : obsList) {
+					if(obs.getValueCoded().getDisplayString().equalsIgnoreCase(sourceObsValue)) {						
+						createObs(pat, enc, targetObsName, targetObsValue);
+						status = targetObsName + "; ";
+						break;
+					}
+				}
+			}			
+		}
+		
+		return status;
+	}
+	
+	private Obs createObs(Patient pat, Encounter enc, String targetObsName, String targetObsValue) {
+		Concept targetObsConcept = Context.getConceptService().getConcept(targetObsName);
+		Concept targetValueConcept = Context.getConceptService().getConcept(targetObsValue);
+		List<Obs> obsList = Context.getObsService().getObservationsByPersonAndConcept(pat, targetObsConcept);
+		Obs obs = null;
+		if(obsList != null && !obsList.isEmpty()) {
+			obs = obsList.get(0);
+			if(targetValueConcept != null) {
+				obs.setValueCoded(targetValueConcept);
+			} else {
+				obs.setValueText(targetObsValue);
+			}
+			if(obs.getEncounter()==null) {
+				obs.setEncounter(enc);
+			}
+		} else {
+			obs = new Obs();
+			obs.setCreator(Context.getAuthenticatedUser());
+			obs.setDateCreated(new Date());
+			obs.setPerson(pat);
+			obs.setObsDatetime(new Date());
+			//set concept
+			obs.setConcept(targetObsConcept); //obs.setConcept(getOpenmrsConceptByName(ro.getCode()));			
+			//set value
+			if(targetValueConcept != null) {
+				obs.setValueCoded(targetValueConcept);
+			} else {
+				obs.setValueText(targetObsValue);
+			}
+			obs.setEncounter(enc);
+		}
+		saveOpenmrsObs(obs);	
+		
+		return obs;
+	}
 	
 	private String importObs(Patient pat, Encounter enc, String conceptName) {
 		String status = "";
@@ -1072,22 +1309,48 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		return status;
 	}
 
-	private Encounter  createOpenmrsEncounter(Patient pat, String encounterTypeName, Date encounterDate) throws Exception
+	private Encounter  createOpenmrsEncounter(Patient patient, String encounterTypeName) throws Exception
 	{
+		List<Encounter> encList = Context.getEncounterService().getEncountersByPatient(patient);
+		EncounterType et = Context.getEncounterService().getEncounterType(encounterTypeName);
+		if(et==null) {
+			et = new EncounterType();
+			et.setCreator(Context.getAuthenticatedUser());
+			et.setDateCreated(new Date());
+			et.setName(encounterTypeName);
+			et.setDescription("Encounter type created from CCD imported data");
+			Context.getEncounterService().saveEncounterType(et);			
+		}
+		
+		for(Encounter enc : encList) {
+			if(enc.getEncounterType().getId().equals(et.getId())) {
+				return enc;
+			}
+		}
+		
 		Encounter enc = new Encounter();
-		enc.setPatient(pat);
+		enc.setPatient(patient);
 		enc.setCreator(Context.getAuthenticatedUser());
 		enc.setDateCreated(new Date());
-		enc.setEncounterDatetime(encounterDate);
-		//enc.setUuid(uuid);
-		
-		//encounter type
-		EncounterType et = Context.getEncounterService().getEncounterType(encounterTypeName);
+		enc.setEncounterDatetime(new Date()); //current date		
 		enc.setEncounterType(et);
-
-		//encounter location
-		Location location = Context.getLocationService().getDefaultLocation();
-		enc.setLocation(location);
+		//encounter location		
+		enc.setLocation(getUnknownLocation());
+		//encounter provider
+		if(Context.getPersonService().getPeople("Unknown Unknown Unknown", false).isEmpty()) {
+				Person pers = new Person();
+				PersonName pname = new PersonName();
+				pname.setFamilyName("Unknown");
+				pname.setGivenName("Unknown");
+				pname.setMiddleName("Unknown");
+				pers.addName(pname);
+				pers.setGender("Unknown");			
+				Context.getPersonService().savePerson(pers);				
+		}			
+		enc.setProvider(Context.getPersonService().getPeople("Unknown Unknown Unknown", false).get(0));
+				
+		//save encounter
+		Context.getEncounterService().saveEncounter(enc);
 		
 		return enc;
 	}	
