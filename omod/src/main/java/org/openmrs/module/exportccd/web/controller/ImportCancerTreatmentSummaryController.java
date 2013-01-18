@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 import org.openmrs.module.exportccd.api.PatientSummaryExportService;
 import org.openmrs.module.exportccd.api.PatientSummaryImportService;
 import org.openmrs.web.WebConstants;
@@ -57,7 +58,7 @@ public class  ImportCancerTreatmentSummaryController {
 		  PatientSummaryImportService importService = Context.getService(PatientSummaryImportService.class);
 		  String status = importService.importCancerTreatmentSummary(pat);
 		  
-		  ModelAndView mv = new ModelAndView("/openmrs/phr","status",status);
+		  ModelAndView mv = new ModelAndView(new RedirectView("/openmrs"),"status",status);
 		  request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, status);
 			
 		  //request.getSession().setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, true);

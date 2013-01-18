@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,42 +18,19 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.emf.common.util.EList;
-import org.hibernate.FlushMode;
-import org.hibernate.Transaction;
-import org.openhealthtools.mdht.uml.cda.AssignedEntity;
-import org.openhealthtools.mdht.uml.cda.CDAFactory;
 import org.openhealthtools.mdht.uml.cda.ClinicalDocument;
-import org.openhealthtools.mdht.uml.cda.Entry;
 import org.openhealthtools.mdht.uml.cda.Observation;
-import org.openhealthtools.mdht.uml.cda.Participant2;
-import org.openhealthtools.mdht.uml.cda.ParticipantRole;
-import org.openhealthtools.mdht.uml.cda.Performer2;
-import org.openhealthtools.mdht.uml.cda.PlayingEntity;
 import org.openhealthtools.mdht.uml.cda.Procedure;
-import org.openhealthtools.mdht.uml.cda.StrucDocText;
-import org.openhealthtools.mdht.uml.cda.ccd.CCDFactory;
 import org.openhealthtools.mdht.uml.cda.ccd.CCDPackage;
 import org.openhealthtools.mdht.uml.cda.ccd.ContinuityOfCareDocument;
-import org.openhealthtools.mdht.uml.cda.ccd.EncountersSection;
 import org.openhealthtools.mdht.uml.cda.ccd.MedicationActivity;
 import org.openhealthtools.mdht.uml.cda.ccd.ProblemAct;
 import org.openhealthtools.mdht.uml.cda.ccd.ResultOrganizer;
 import org.openhealthtools.mdht.uml.cda.util.CDAUtil;
 import org.openhealthtools.mdht.uml.hl7.datatypes.CD;
 import org.openhealthtools.mdht.uml.hl7.datatypes.CE;
-import org.openhealthtools.mdht.uml.hl7.datatypes.DatatypesFactory;
-import org.openhealthtools.mdht.uml.hl7.datatypes.ED;
 import org.openhealthtools.mdht.uml.hl7.datatypes.II;
-import org.openhealthtools.mdht.uml.hl7.datatypes.IVL_TS;
 import org.openhealthtools.mdht.uml.hl7.datatypes.PN;
-import org.openhealthtools.mdht.uml.hl7.datatypes.ST;
-import org.openhealthtools.mdht.uml.hl7.vocab.ActClass;
-import org.openhealthtools.mdht.uml.hl7.vocab.EntityClassRoot;
-import org.openhealthtools.mdht.uml.hl7.vocab.NullFlavor;
-import org.openhealthtools.mdht.uml.hl7.vocab.ParticipationType;
-import org.openhealthtools.mdht.uml.hl7.vocab.RoleClassRoot;
-import org.openhealthtools.mdht.uml.hl7.vocab.x_ActRelationshipEntry;
-import org.openhealthtools.mdht.uml.hl7.vocab.x_DocumentEncounterMood;
 import org.openhealthtools.mdht.uml.cda.PatientRole;
 import org.openmrs.Concept;
 import org.openmrs.ConceptMap;
@@ -84,7 +60,6 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.exportccd.ImportedCCD;
 import org.openmrs.module.exportccd.api.PatientSummaryImportService;
 import org.openmrs.module.exportccd.api.db.ImportedCCDDAO;
-import org.openmrs.module.exportccd.api.db.hibernate.*;
 
 /**
  * Class to implement processing CCD and updating patient information in OpenMRS database
@@ -280,10 +255,20 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 					location = new Location();
 					location.setName(locationName);
 					location.setDescription(e.getParticipants().get(0).getTypeCode().getName().equals("LOC") ? e.getParticipants().get(0).getParticipantRole().getScopingEntity().getDesc().getText() : null);
-					location.setCityVillage(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getCities().get(0).getText());
-					location.setStateProvince(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStates().get(0).getText());
-					location.setAddress1(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStreetAddressLines().get(0).getText());
-					location.setPostalCode(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getPostalCodes().get(0).getText());
+					if(e.getParticipants().get(0).getParticipantRole().getAddrs()!=null && !e.getParticipants().get(0).getParticipantRole().getAddrs().isEmpty()) {
+						if(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getCities()!= null && !e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getCities().isEmpty()) {					
+							location.setCityVillage(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getCities().get(0).getText());
+						}
+						if(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStates()!= null && !e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStates().isEmpty()) {					
+							location.setStateProvince(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStates().get(0).getText());
+						}
+						if(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStreetAddressLines()!= null && !e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStreetAddressLines().isEmpty()) {											
+							location.setAddress1(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getStreetAddressLines().get(0).getText());
+						}
+						if(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getPostalCodes()!= null && !e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getPostalCodes().isEmpty()) {						
+							location.setPostalCode(e.getParticipants().get(0).getParticipantRole().getAddrs().get(0).getPostalCodes().get(0).getText());
+						}
+					}
 					Context.getLocationService().saveLocation(location);
 				}
 				enc.setLocation(location);
@@ -1084,9 +1069,9 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		} else if(CANCER_TREATMENT_CHEMOTHERAPY_ENCOUNTER.equals(historyType)) {
 			status = status + importObs(pat, enc, "CHEMOTHERAPY MEDICATIONS USED"); //concept_id 6156
 			status = status + importObs(pat, enc, "CHEMOTHERAPY START DATE");			
-			status = status + importObs(pat, enc, "CHEMOTHERAPY FINISH DATE");	
+			//status = status + importObs(pat, enc, "CHEMOTHERAPY FINISH DATE");	
 			
-			status = status + importDrugOrderValue(pat, enc, "CHEMOTHERAPY MEDICATION USED", "Mitomycin (multamycin)", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY TYPE");
+			status = status + importDrugOrderValue(pat, enc, "CHEMOTHERAPY MEDICATION USED", "Mitomycin (mutamycin)", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY TYPE");
 			status = status + importDrugOrderDate(pat, enc, "CHEMOTHERAPY START DATE", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY DATE");			
 			//status = status + importDrugOrderDate(pat, enc, "CHEMOTHERAPY FINISH DATE", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY DATE");			
 			//status = status + importDrugOrderLocation(pat, enc, "INSTITUTION NAME", drugOrderConcept, "Mitomycin"); //importObs(pat, enc, "SURGERY DATE");			
@@ -1230,8 +1215,8 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 			//set value
 			obs.setValueDatetime(targetObsValue);
 			obs.setEncounter(enc);
+			saveOpenmrsObs(obs);	
 		}
-		saveOpenmrsObs(obs);	
 		
 		return obs;
 	}
@@ -1287,8 +1272,8 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 				obs.setValueText(targetObsValue);
 			}
 			obs.setEncounter(enc);
+			saveOpenmrsObs(obs);	
 		}
-		saveOpenmrsObs(obs);	
 		
 		return obs;
 	}
