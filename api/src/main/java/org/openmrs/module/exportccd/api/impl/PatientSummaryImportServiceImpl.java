@@ -97,6 +97,8 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
     static final String  procedurePerformer = "PROCEDURE PERFORMER ADDED";
     static final String  resultsConcept = "RESULTS ADDED";
     static final String  drugOrderConcept = "DRUG ORDER ADDED";  
+    static final String  encounterObservationConcept = "ENCOUNTER OBSERVATION ADDED";  
+    static final String  encounterObservationTextConcept = "ENCOUNTER OBSERVATION TEXT ADDED";  
 
 	public Patient consumeCCD(InputStream is) throws Exception {
 		CCDPackage.eINSTANCE.eClass();
@@ -196,23 +198,30 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		if(eList.isEmpty()) return;
 		for(org.openhealthtools.mdht.uml.cda.Encounter e: eList) {
 			try {
-					createOrUpdateEncounters(ccd, patient, usr, e);				
+					Encounter enc = createOrUpdateEncounters(ccd, patient, usr, e);
+					
+					//encounter observations	
+					if(e.getObservations() != null) {
+						for(Observation obsv : e.getObservations()) {
+							createOrUpdateEncounterObservations(enc, patient, usr, obsv);
+						}
+					}
 			} catch (Exception ex) {
 				log.error("Exception detected in createOrUpdateEncounters: " + ex.getMessage(), ex);
 			}
 		}
 	}
 	
-	private void  createOrUpdateEncounters(ContinuityOfCareDocument ccd, Patient patient, User usr, org.openhealthtools.mdht.uml.cda.Encounter e) throws Exception
+	private Encounter  createOrUpdateEncounters(ContinuityOfCareDocument ccd, Patient patient, User usr, org.openhealthtools.mdht.uml.cda.Encounter e) throws Exception
 	{
 		//org.openhealthtools.mdht.uml.cda.Encounter e = ccd.getEncountersSection().getEncounters().get(0);
 		if(e==null) {
-			return;
+			return null;
 		}
 		
 		String uuid = e.getIds().get(0).getExtension();
 		if(uuid == null) {
-			return;
+			return null;
 		}
 		Encounter enc = (Encounter) Context.getEncounterService().getEncounterByUuid(uuid);
 		
@@ -220,7 +229,7 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 			enc = new Encounter();
 			enc.setUuid(uuid);
 		} else {
-			return;
+			return enc;
 		}
 		enc.setPatient(patient);
 		enc.setCreator(Context.getAuthenticatedUser());
@@ -308,11 +317,73 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 			}			
 			enc.setProvider(Context.getPersonService().getPeople("Unknown Unknown Unknown", false).get(0));
 		}
-		
+				
 		//save encounter
 		Context.getEncounterService().saveEncounter(enc);
 		
 		//tx.commit();
+		
+		return enc;
+	}
+	
+	private void  createOrUpdateEncounterObservations(Encounter enc, Patient patient, User usr, Observation obsv) throws Exception
+	{
+		if(obsv == null) return;
+		String uuid = obsv.getIds().get(0).getExtension();
+		if(uuid == null) {
+			return;
+		}
+		Obs obs = Context.getObsService().getObsByUuid(uuid);
+		
+		if(obs == null) {
+		  obs = new Obs();
+		  obs.setUuid(uuid);
+		} else {
+			//return; //update this obs instead
+		}
+		
+		//set basic info
+		Date dt = new Date();
+		obs.setEncounter(enc);
+		obs.setCreator(usr);
+		obs.setPerson(patient);
+		obs.setDateCreated(dt);
+		obs.setObsDatetime(sdf.parse(obsv.getEffectiveTime().getValue()));
+		
+		//set concept
+		obs.setConcept(getOpenmrsCodedConceptByName(encounterObservationConcept));
+		
+		//set value
+		CD codedValue = obsv.getCode();
+		Concept valueCoded = getOpenmrsConceptByName(codedValue);
+		if(valueCoded == null) return;
+		obs.setValueCoded(valueCoded);
+		
+		if(obsv.getText() != null && obsv.getText().getText()!=null) {
+			String textValue= obsv.getText().getText();
+			String uuid2 = "text-" + uuid;
+			Obs obs2 = Context.getObsService().getObsByUuid(uuid2);
+			
+			if(obs2 == null) {
+			  obs2 = new Obs();
+			  obs2.setUuid(uuid2);
+			} else {
+				//return; //update this obs instead
+			}
+			//set basic info
+			obs2.setEncounter(enc);
+			obs2.setCreator(usr);
+			obs2.setPerson(patient);
+			obs2.setDateCreated(dt);
+			obs2.setObsDatetime(sdf.parse(obsv.getEffectiveTime().getValue()));
+			
+			//set concept
+			obs2.setConcept(getOpenmrsTextValueConceptByName(encounterObservationTextConcept));
+			obs2.setValueAsString(textValue);			
+			saveOpenmrsObs(obs2);				
+		}
+		
+		saveOpenmrsObs(obs);				
 	}	
 	
 	private Location getUnknownLocation() {
@@ -633,8 +704,10 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 
 	private void saveOpenmrsObs(Obs obs) {
         //Transaction tx = ((org.openmrs.module.exportccd.api.db.hibernate.HibernateImportedCCDDAO) dao).getSessionFactory().getCurrentSession().beginTransaction();
-        //((org.openmrs.module.exportccd.api.db.hibernate.HibernateImportedCCDDAO) dao).getSessionFactory().getCurrentSession().setFlushMode(FlushMode.COMMIT);		
-		Context.getObsService().saveObs(obs, "Imported from CCD");		
+        //((org.openmrs.module.exportccd.api.db.hibernate.HibernateImportedCCDDAO) dao).getSessionFactory().getCurrentSession().setFlushMode(FlushMode.COMMIT);
+		if(obs.getId() == null) {
+			Context.getObsService().saveObs(obs, "Imported from CCD");
+		} 
 		//tx.commit();
 	}
 
@@ -674,6 +747,42 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		return enc;
 	}
 	
+	private Concept getOpenmrsTextValueConceptByName(String displayName) {
+		ConceptService cs = Context.getConceptService();
+		Concept c = cs.getConceptByName(displayName);
+		
+		if(c==null) {
+			c = new Concept();				
+			c.setCreator(Context.getAuthenticatedUser());
+			ConceptName cn = new ConceptName();
+			cn.setName(displayName);
+			cn.setLocale(Context.getLocale());
+			cn.setCreator(Context.getAuthenticatedUser());
+			cn.setConcept(c);
+			//cn.setId(cs.get)
+			c.addName(cn);
+			c.setFullySpecifiedName(cn);
+			//c.setShortName(cn);
+			//c.setPreferredName(cn);
+			c.setDateCreated(new Date());
+			c.setDatatype(cs.getConceptDatatypeByName("Text"));
+			c.setUuid(UUID.randomUUID().toString());
+			//c.setId(cs.getMaxConceptId() + 1);
+			c.setConceptClass(cs.getConceptClassByName("Misc"));
+	        //Transaction tx = ((org.openmrs.module.exportccd.api.db.hibernate.HibernateImportedCCDDAO) dao).getSessionFactory().getCurrentSession().beginTransaction();
+	        //((org.openmrs.module.exportccd.api.db.hibernate.HibernateImportedCCDDAO) dao).getSessionFactory().getCurrentSession().setFlushMode(FlushMode.COMMIT);
+	        
+			cs.saveConcept(c);
+			//tx.commit();
+			
+		} else {
+			c.setDatatype(cs.getConceptDatatypeByName("Text"));
+			c.setConceptClass(cs.getConceptClassByName("Misc"));			
+		}
+		
+		return c;
+	}	
+	
 	private Concept getOpenmrsCodedConceptByName(String displayName) {
 		ConceptService cs = Context.getConceptService();
 		Concept c = cs.getConceptByName(displayName);
@@ -705,7 +814,7 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		}
 		
 		return c;
-	}	
+	}		
 	
 	private Concept getOpenmrsConceptByName(CD codedValue) {
 		String displayName = codedValue.getDisplayName();		
