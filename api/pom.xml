@@ -137,6 +137,13 @@
            <version>1.0.0.201209191551</version>
         </dependency>     
                   
+	<dependency>
+	      <groupId>org.openmrs.module</groupId>
+	      <artifactId>lancearmstrong</artifactId>
+	      <version>1.0.0</version>
+	      <scope>system</scope>
+	      <systemPath>C:\eclipse-jee-helios\eclipse\projects\innovation\lancearmstrong\dist\lancearmstrong-1.0.0.jar</systemPath>
+	</dependency>					
 		
 	</dependencies>
 	

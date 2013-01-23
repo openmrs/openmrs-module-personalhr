@@ -60,6 +60,8 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.exportccd.ImportedCCD;
 import org.openmrs.module.exportccd.api.PatientSummaryImportService;
 import org.openmrs.module.exportccd.api.db.ImportedCCDDAO;
+import org.openmrs.module.lancearmstrong.LafReminder;
+import org.openmrs.module.lancearmstrong.LafService;
 
 /**
  * Class to implement processing CCD and updating patient information in OpenMRS database
@@ -84,6 +86,7 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 	static final String CANCER_TREATMENT_CHEMOTHEROPY_FORM = "CANCER TREATMENT - CHEMOTHEROPY";
 	static final String CANCER_TREATMENT_RADIATION_FORM = "CANCER TREATMENT - RADIATION";
 	static final String CANCER_TREATMENT_SURGERY_FORM = "CANCER TREATMENT - SURGERY";
+	static final String CANCER_TREATMENT_FOLLOWUP_CARE = "CANCER FOLLOW-UP CARE";
 
     private static Log log = LogFactory.getLog(PatientSummaryImportServiceImpl.class);
     final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
@@ -1147,7 +1150,24 @@ public class PatientSummaryImportServiceImpl extends BaseOpenmrsService implemen
 		
 		//import radiation type and dates
 		status = status  + "\n" +  importTreatmentHistory(pat, CANCER_TREATMENT_RADIATION_ENCOUNTER);
+
+		//import completed follow up care
+		status = status  + "\n" +  importFollowupCare(pat);
 		
+		return status;
+	}
+
+	private String importFollowupCare(Patient pat) {
+		String status = "Importing " + CANCER_TREATMENT_FOLLOWUP_CARE + ": ";
+		
+		LafService service = Context.getService(LafService.class);
+		List<LafReminder> reminderList = service.addRemindersCompleted(pat);
+		if(reminderList != null) {
+			for(LafReminder rem : reminderList) {
+				status = status + rem.getFollowProcedureName();
+			}
+		}
+		// TODO Auto-generated method stub
 		return status;
 	}
 

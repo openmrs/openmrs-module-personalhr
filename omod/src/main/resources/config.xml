@@ -15,7 +15,10 @@
 	<require_version>${openMRSVersion}</require_version>
 	<!-- / Module Properties -->
 
-	
+	<require_modules>  	
+	     <require_module>org.openmrs.module.lancearmstrong</require_module>  	
+	</require_modules> 
+		
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ExportCCDActivator</activator>
 	
