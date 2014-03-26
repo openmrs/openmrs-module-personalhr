@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <phr_security_rule id="1" privilege="View Treatment Summary" required_role="Administrator" creator="1" retired="0" date_created="2012-01-01" uuid="f62ee0a8-4041-4d1c-a71f-ef603d893791"/>
+</dataset>

@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <phr_allowed_url id="1" allowed_url="/module/htmlformentry/htmlFormEntry.form"
+                     required_privilege="View Treatment Summary" creator="1" retired="0" date_created="2012-01-01"
+                     uuid="f62ee0a8-4041-4d1c-a71f-ef603d893791"/>
+</dataset>

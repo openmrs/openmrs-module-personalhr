@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <!-- Services -->
+
+    <bean id="phrSharingTokenDAO" class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrSharingTokenDAO">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="phrSharingTokenService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="target">
+            <bean class="org.openmrs.module.personalhr.service.impl.PhrSharingTokenServiceImpl">
+                <property name="dao" ref="phrSharingTokenDAO"/>
+            </bean>
+        </property>
+        <property name="preInterceptors" ref="serviceInterceptors"/>
+        <property name="transactionAttributeSource">
+            <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+        </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.personalhr.service.PhrSharingTokenService</value>
+                <ref bean="phrSharingTokenService"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="phrLogEventService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="target">
+            <bean class="org.openmrs.module.personalhr.service.impl.PhrLogEventServiceImpl">
+                <property name="dao">
+                    <bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrLogEventDAO">
+                        <property name="sessionFactory" ref="sessionFactory"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="preInterceptors" ref="serviceInterceptors"/>
+        <property name="transactionAttributeSource">
+            <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+        </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.personalhr.service.PhrLogEventService</value>
+                <ref bean="phrLogEventService"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="phrAllowedUrlService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="target">
+            <bean class="org.openmrs.module.personalhr.service.impl.PhrAllowedUrlServiceImpl">
+                <property name="dao">
+                    <bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrAllowedUrlDAO">
+                        <property name="sessionFactory" ref="sessionFactory"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="preInterceptors" ref="serviceInterceptors"/>
+        <property name="transactionAttributeSource">
+            <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+        </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.personalhr.service.PhrAllowedUrlService</value>
+                <ref bean="phrAllowedUrlService"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="phrPrivilegeService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="target">
+            <bean class="org.openmrs.module.personalhr.service.impl.PhrPrivilegeServiceImpl">
+                <property name="dao">
+                    <bean class="org.openmrs.module.personalhr.db.hibernate.HibernatePhrPrivilegeDAO">
+                        <property name="sessionFactory" ref="sessionFactory"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="preInterceptors" ref="serviceInterceptors"/>
+        <property name="transactionAttributeSource">
+            <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+        </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.personalhr.service.PhrPrivilegeService</value>
+                <ref bean="phrPrivilegeService"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="phrService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="target">
+            <bean class="org.openmrs.module.personalhr.service.impl.PhrServiceImpl">
+            </bean>
+        </property>
+        <property name="preInterceptors" ref="serviceInterceptors"/>
+        <property name="transactionAttributeSource">
+            <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+        </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.personalhr.service.PhrService</value>
+                <ref bean="phrService"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>

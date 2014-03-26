@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <phr_sharing_token id="1" patient_id="2" relationship_person_id="501" share_start_date="2010-01-01"
+                       share_activate_date="2010-02-01" share_expire_date="2010-03-01"
+                       relationship_person_email="test@yahoo.com" share_type="Administrator"
+                       creator="1" retired="0" date_created="2010-01-01"
+                       uuid="f62ee0a8-4041-4d1c-a71f-ef603d893791"/>
+</dataset>
